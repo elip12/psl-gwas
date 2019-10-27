@@ -30,8 +30,10 @@ raw.pickle is the entire input dataset as a dict of dicts of lists of strings.
 The idea is to map each kmer to the sample it comes from, then use the
 knowledge of which samples are resistant to infer which kmers cause resistance.
 
+```
 contains(s, k) & resistance(s) -> resistance(k)
 contains(s, k) & !resistance(s) -> !resistance(k)
+```
 
 Generalization: identify the kmers that occur almost uniquely in
 resistant samples and don't occur in non-resistant samples.
