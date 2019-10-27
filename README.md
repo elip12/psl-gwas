@@ -1,12 +1,24 @@
 What we have:
+    
     - a file containing the ~18 million unique kmers in the dataset that occur
     10 or more times
+    
     - the unaligned genome of each of the ~355 samples
+    
     - a mapping between samples and resistance
+
 What we need:
+    
     - a mapping between all samples and all unique kmers
-Why we can't get this:
+
+Problem:
+    
     - it takes a fucking long time: 18M * 355 * 3.5M comparisons
+
+Solution:
+    
+    - use a machine with lots of memory. Use multiprocessing to divide the
+    load by 4 or 8. Switch the bottleneck from time to memory.
 
 ## Notes
 
