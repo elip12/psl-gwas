@@ -119,5 +119,9 @@ binary, it will be somewhere else.
         TBD..............................stage 8
         TBD..............................stage 9
         TBD..............................stage 10
+    contigs/
+        sample1.fa
+        sample2.fa
+        ...
 ```
 
