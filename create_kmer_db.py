@@ -59,7 +59,7 @@ def process_wrapper(chunkStart, chunkSize):
     # print(len(kmers))
 
 # breaks input file into chunks to minimize reads
-def chunkify(fname, size=150 * 10**6):
+def chunkify(fname, size=1024):
     fileEnd = os.path.getsize(fname)
     with open(fname,'rb') as f:
         chunkEnd = f.tell()
@@ -79,15 +79,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
     DEBUG = args.d
 
+    NUM_WORKERS = 16
+    INPUT_SIZE = 554 * 10**6 * 1.049 # file size in MiB * bytes per MiB
+
     #initialize raw data, multiprocessing pool, and jobs queue
     raw = load_raw()
     #print(list(raw.items())[0])
-    pool = mp.Pool(4)
+    pool = mp.Pool(NUM_WORKERS)
     jobs = []
 
     # create jobs
     n = 0
-    for chunkStart,chunkSize in chunkify('data/input.txt'):
+    for chunkStart,chunkSize in chunkify('data/input.txt', int(INPUT_SIZE / NUM_WORKERS) + 1):
         n += 1
        # if n > 4:
         #    break
