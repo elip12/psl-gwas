@@ -33,7 +33,6 @@ def process_wrapper(chunkStart, chunkSize):
         f.seek(chunkStart)
         lines = f.read(chunkSize).splitlines()
     process(lines)
-    # print(len(kmers))
 
 # breaks input file into chunks to minimize reads
 def chunkify(fname, size=1024):
@@ -66,8 +65,6 @@ if __name__ == '__main__':
     n = 0
     for chunkStart,chunkSize in chunkify('data/input.txt', int(0.8 * 10**9)):
         n += 1
-       # if n > 4:
-        #    break
         printd(f'Starting chunk {n}...')
         jobs.append(pool.apply_async(process_wrapper, (chunkStart,chunkSize)))
 

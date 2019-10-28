@@ -56,7 +56,6 @@ def process_wrapper(chunkStart, chunkSize):
             kmers[kmer] = ''
             kmers[comp] = ''
     process(kmers)
-    # print(len(kmers))
 
 # breaks input file into chunks to minimize reads
 def chunkify(fname, size=1024):
@@ -84,7 +83,6 @@ if __name__ == '__main__':
 
     #initialize raw data, multiprocessing pool, and jobs queue
     raw = load_raw()
-    #print(list(raw.items())[0])
     pool = mp.Pool(NUM_WORKERS)
     jobs = []
 
@@ -92,8 +90,6 @@ if __name__ == '__main__':
     n = 0
     for chunkStart,chunkSize in chunkify('data/input.txt', int(INPUT_SIZE / NUM_WORKERS) + 1):
         n += 1
-       # if n > 4:
-        #    break
         printd(f'Starting chunk {n}...')
         jobs.append(pool.apply_async(process_wrapper,(chunkStart,chunkSize)))
 
@@ -105,3 +101,4 @@ if __name__ == '__main__':
         printd(f'Finished chunk {n}...')
 
     pool.close()
+
