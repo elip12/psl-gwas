@@ -96,6 +96,7 @@ The full schema for this repository, were you going to run the entire pipeline,
 would look something like this. Note that I assume if you have a local DSK
 binary, it will be somewhere else.
 
+```
 /........................................script associated with each stage of the pipeline
     README.md
     pickle_input.py......................stage 1
@@ -118,13 +119,5 @@ binary, it will be somewhere else.
         TBD..............................stage 8
         TBD..............................stage 9
         TBD..............................stage 10
-
-
-
-
-
-
-
-
-
+```
 
