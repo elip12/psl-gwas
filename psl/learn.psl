@@ -1,8 +1,29 @@
 // If a sample contains a kmer, and the sample is resistant to a certain class,
 // then the kmer is associated with resistance to that class
-1.0: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c)
+2.0: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c)
 
 // If a sample contains a kmer, and the sample is not resistant to a certain
 class, then the kmer is not associated with resistance to that class
-1.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c)
+2.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c)
 
+// 1-sided prior
+1.0: !KmerResistacne(k, c)
+
+// If two antibiotics are similar, and a kmer is resistant to one antibiotic,
+// it is likely resistant to the other antibiotic
+2.0: SimilarAntibiotic(a1, a2) & KmerResistance(k, c1) >> KmerResistance(k, c2)
+
+// This is a method of solving the problem of clonal population structure,
+// the single biggest challenge in microbial gwas.
+// If two samples are similar, they are likely related, via either ancestry,
+// HGT, or both. Let us denote `population` as the cluster of similar samples
+// that are tightly related in this way. If many members of a population contain
+// a kmer that connotes resistance, they also contain many kmers that do not
+// connote resistance. However, since these kmers occur in samples that are
+// resistant, they have a high probability of being false positives.
+// It follows that the strongest indicator that a kmer connotes resistance is
+// if it is present in two resistant samples that are weakly related. Thus:
+// If two samples are not similar, and both are resistant, and both contain a
+// certain kmer, that kmer likely connotes resistance.
+5.0: !SimilarSample(s1, s2) & SampleResistance(s1, c) & SampleResistance(s2, c) \
+    & Contains(s1, k) & Contains(s2, k) >> KmerResistance(k, c)

@@ -80,6 +80,13 @@ todo:
     - run contains_sample_kmer on full input
     - write create_kmer_int_map.py and run it on full input
 
+prior:
+    !KmerResistance(k, a)
+
+relation:
+    SameGene(k1, k2) & KmerResistance(k1, a) >> KmerResistance(k2, a)
+    SimilarAnti(a1, a2) & KmerResistance(k, a1) >> KmerResistance(k, a2)
+
 General: identify the kmers that occur almost uniquely in
 resistant samples and don't occur in non-resistant samples.
 ```

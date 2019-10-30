@@ -1,12 +1,19 @@
 predicates:
     Contains/2: closed
     SampleResistance/2: closed
+    SimilarSample/2: closed
+    SimilarAntibiotic/2: closed
     KmerResistance/2: open
 
 observations:
-    Contains: ../data/contains_sample_kmer_psl.txt
-    SampleResistance: ../data/resistance_sample_class_psl.txt
+    Contains: ../data/psl/contains_sample_kmer.txt
+    SampleResistance: ../data/psl/resistance_sample_class.txt
+    SimilarSample: ../data/psl/similar_sample_sample.txt
+    SimilarAntibiotic: ../data/psl/similar_antibiotic_antibiotic.txt
 
 targets
-    Rating: ../data/resistance_kmer_class.txt
+    KmerResistance: ../data/psl/resistance_kmer_class.txt
+
+truth:
+    KmerResistance: ../data/psl/resistance_kmer_class_truth.txt
 
