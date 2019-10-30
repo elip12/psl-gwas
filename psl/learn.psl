@@ -1,0 +1,8 @@
+// If a sample contains a kmer, and the sample is resistant to a certain class,
+// then the kmer is associated with resistance to that class
+1.0: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c)
+
+// If a sample contains a kmer, and the sample is not resistant to a certain
+class, then the kmer is not associated with resistance to that class
+1.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c)
+

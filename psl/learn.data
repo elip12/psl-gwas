@@ -1,0 +1,12 @@
+predicates:
+    Contains/2: closed
+    SampleResistance/2: closed
+    KmerResistance/2: open
+
+observations:
+    Contains: ../data/contains_sample_kmer_psl.txt
+    SampleResistance: ../data/resistance_sample_class_psl.txt
+
+targets
+    Rating: ../data/resistance_kmer_class.txt
+

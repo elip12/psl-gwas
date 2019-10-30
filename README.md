@@ -41,17 +41,15 @@ to know where in the genome a kmer occurs. The associated program is
 clean_kmer_db.py.
 
 1. The sixth stage is converting the reduced database to the exact form PSL likes
-as an input. The associated program is TBD.
-
-1. The seventh stage is converting the table that logs which samples are resistant
+as an input and the table that logs which samples are resistant
 to which antibiotics to a form that PSL likes as an input.
 
-1. The eighth stage is running PSL.
+1. The seventh stage is running PSL.
 
-1. The ninth stage is examining the subset of kmers that PSL flags,
+1. The eighth stage is examining the subset of kmers that PSL flags,
 and associating them with specific genes, indels, and SNPs.
 
-1. The tenth stage is comparing those attributes to existing datasets,
+1. The ninth stage is comparing those attributes to existing datasets,
 to determine the accuracy of our method and to hopefully find new genes,
 indels, and SNPs that contribute to resistance.
 
@@ -73,6 +71,15 @@ We are on stage 6 for our dataset. Since we haven't written the script
 that does this, there are no usage instructions yet.
 
 ## Notes
+data files in my local repo that need to be pushed:
+- class_int_map.pickle
+- contains_sample_kmer.txt - needs to be run on full input
+- resistance_sample_class.txt
+- sample_int_map.pickle
+todo:
+    - run contains_sample_kmer on full input
+    - write create_kmer_int_map.py and run it on full input
+
 General: identify the kmers that occur almost uniquely in
 resistant samples and don't occur in non-resistant samples.
 ```
