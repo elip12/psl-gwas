@@ -6,14 +6,25 @@ def printd(*args, **kwargs):
     if DEBUG == True:
         print(*args, **kwargs)
 
+def read_cim():
+    with open('../data/preprocess/class_int_map.pickle', 'rb') as f:
+        cim = pickle.load(f)
+    return cim
+
+def write_kmer_class(lines):
+    with open('data/psl/resistance_kmer_class.psl', 'a+') as f:
+        s = '\n'/join(lines) + '\n'
+        f.write(s)
+
 def write_kmers(lines):
     printd('Writing kmers to file...')
     with open('data/output_cleaned.txt', 'a+') as f:
         s = '\n'.join(lines) + '\n'
         f.write(s)
 
-def process(lines):
+def process(lines, cim):
     lines_to_write = []
+    resistance_kmer_class_lines = []
     printd('Removing location metadata')
     for line in lines:
         linelist = line.split()
@@ -24,15 +35,17 @@ def process(lines):
             values = csv.split(',')
             line_to_write.append(values[0])
         lines_to_write.append(' '.join(line_to_write))
+        rkcl = [linelist[0] + ' ' cim[c] for c in cim]
+        resistance_kmer_class_lines.append('\n'.join(rkcl))
     write_kmers(lines_to_write)
     printd('Done.')
 
 # creates kmer dict from input chunk
-def process_wrapper(chunkStart, chunkSize): 
+def process_wrapper(chunkStart, chunkSize, cim): 
     with open('data/input.txt') as f:
         f.seek(chunkStart)
         lines = f.read(chunkSize).splitlines()
-    process(lines)
+    process(lines, cim)
 
 # breaks input file into chunks to minimize reads
 def chunkify(fname, size=1024):
@@ -61,12 +74,14 @@ if __name__ == '__main__':
     pool = mp.Pool(NUM_WORKERS)
     jobs = []
 
+    cim = read_cim
+
     # create jobs
     n = 0
     for chunkStart,chunkSize in chunkify('data/input.txt', int(0.8 * 10**9)):
         n += 1
         printd(f'Starting chunk {n}...')
-        jobs.append(pool.apply_async(process_wrapper, (chunkStart,chunkSize)))
+        jobs.append(pool.apply_async(process_wrapper, (chunkStart,chunkSize, cim)))
 
     # wait for all jobs to finish
     n = 0
