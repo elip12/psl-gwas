@@ -5,8 +5,8 @@ class KmerDbToPSLInputConverter(LargeFileProcessor):
         super.__init__(num_workers, fname)
 
     # converts lines of the form 'KMER s1, s2, s3...' to lines of the form
-    # 'KMER s1'
-    # 'KMER s2'
+    # 's1 KMER'
+    # 's2 KMER'
     # ...
     # and writes to new file
     def process(self, data, sim, outfile):
@@ -16,7 +16,7 @@ class KmerDbToPSLInputConverter(LargeFileProcessor):
             kmer = linelist[0]
             kmer_sample_lines = []
             for sample in linelist[1:]:
-                kmer_sample_lines.append(f'{kmer}\t{sim[sample]}\t1.0')
+                kmer_sample_lines.append(f'{sim[sample]}\t{kmer}\t1.0')
             kmer_sample_chunk.append('\n'.join(kmer_sample_lines))
         self.write_list(kmer_sample_chunk, outfile)
 
