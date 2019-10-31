@@ -1,104 +1,53 @@
-import multiprocessing as mp, os, pickle, argparse
+from large_file_processor import LargeFileProcessor
 
-DEBUG = False
-pickle_file = 'data/raw.pickle'
-K = 30
+class KmerDbCreator(LargeFileProcessor):
+    def __init__(self, num_workers, fname):
+        super.__init__(num_workers, fname)
 
-def printd(*args, **kwargs):
-    if DEBUG == True:
-        print(*args, **kwargs)
+    # DNA base complement
+    def complement(self, base):
+        if base == 'A':
+            return 'T'
+        elif base == 'T':
+            return 'A'
+        elif base == 'G':
+            return 'C'
+        else:
+            return 'G'
 
-def load_raw():
-    printd('Loading data...')
-    with open(pickle_file, 'rb') as f:
-        raw = pickle.load(f)
-    return raw
-
-def complement(base):
-    if base == 'A':
-        return 'T'
-    elif base == 'T':
-        return 'A'
-    elif base == 'G':
-        return 'C'
-    else:
-        return 'G'
-
-def write_kmers(kmers):
-    printd('Writing kmers to file...')
-    with open('data/output.txt', 'a+') as f:
-        s = '\n'.join([f'{k}{v}' for k,v in kmers.items()]) + '\n'
-        f.write(s)
-
-def process(kmers):
-    printd('Extracting kmer locations...')
-    for count, (raw_id, seq) in enumerate(raw.items()):
-        for c_id, contig in enumerate(seq):
-            l = len(contig)
-            if l >= K: # ensure this contig is long enough to sample
-                for i in range(l - K + 1):
-                    kmer = contig[i:i + K]
-                    if kmer in kmers:
-                        kmers[kmer] += f' {raw_id},{c_id},{i}'
-        printd(f'\tProcessed genome {count + 1}', end='\r')
-    write_kmers(kmers)
-    printd('Done.')
-
-# creates kmer dict from input chunk
-def process_wrapper(chunkStart, chunkSize): 
-    kmers = {}
-    with open('data/input.txt') as f:
-        f.seek(chunkStart)
-        lines = f.read(chunkSize).splitlines()
-        for line in lines:
+    # Creates a dictionary of all kmers passed in data, and their complements
+    # Then, iterates through genomes. If a genome contains a kmer, that genome's
+    # metadata is added to dict entry for that kmer.
+    # After all samples have been iterated over, writes kmers to file.
+    def process(self, data, raw, K, outfile):
+        kmers = {}
+        for line in data:
             kmer = line.split(' ')[0]
             comp = ''.join(map(complement, kmer.split()))
             kmers[kmer] = ''
             kmers[comp] = ''
-    process(kmers)
-
-# breaks input file into chunks to minimize reads
-def chunkify(fname, size=1024):
-    fileEnd = os.path.getsize(fname)
-    with open(fname,'rb') as f:
-        chunkEnd = f.tell()
-        while True:
-            chunkStart = chunkEnd
-            f.seek(size,1)
-            f.readline()
-            chunkEnd = f.tell()
-            yield chunkStart, chunkEnd - chunkStart
-            if chunkEnd > fileEnd:
-                break
+        
+        for count, (raw_id, seq) in enumerate(raw.items()):
+            for c_id, contig in enumerate(seq):
+                l = len(contig)
+                if l >= K: # ensure this contig is long enough to sample
+                    for i in range(l - K + 1):
+                        kmer = contig[i: i + K]
+                        if kmer in kmers:
+                            kmers[kmer] += f' {raw_id},{c_id},{i}'
+            self.printd(f'\tProcessed genome {count + 1}', end='\r')
+        self.write_dict(kmers, outfile)
+    
+    # defines some variables we need to pass to process, then calls main
+    def main_wrapper():
+        pickle_file = 'data/preprocess/raw.pickle'
+        raw = self.load_pickle(pickle_file)
+        K = 30
+        outfile = 'data/preprocess/kmer_sample_map.txt'
+        self.main(raw=raw, K=k, outfile=outfile)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Runs GWAS on microbial genomes')
-    parser.add_argument('-d', action='store_true',
-        help='turn on debug mode')
-    args = parser.parse_args()
-    DEBUG = args.d
-
     NUM_WORKERS = 16
-    INPUT_SIZE = 554 * 10**6 * 1.049 # file size in MiB * bytes per MiB
-
-    #initialize raw data, multiprocessing pool, and jobs queue
-    raw = load_raw()
-    pool = mp.Pool(NUM_WORKERS)
-    jobs = []
-
-    # create jobs
-    n = 0
-    for chunkStart,chunkSize in chunkify('data/input.txt', int(INPUT_SIZE / NUM_WORKERS) + 1):
-        n += 1
-        printd(f'Starting chunk {n}...')
-        jobs.append(pool.apply_async(process_wrapper,(chunkStart,chunkSize)))
-
-    # wait for all jobs to finish
-    n = 0
-    for job in jobs:
-        job.get()
-        n += 1
-        printd(f'Finished chunk {n}...')
-
-    pool.close()
-
+    INPUT_FILE = 'data/preprocess/unique_kmers_reduced.txt'
+    kdc = KmerDbCreator(NUM_WORKERS, INPUT_FILE)
+    kdc.main_wrapper()

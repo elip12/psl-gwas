@@ -18,7 +18,8 @@ def pickle_input(in_dir):
             base, ext = os.path.splitext(filename)
             if ext == '.fa':
                 with open(os.path.join(dirname, filename)) as f:
-                    seqs[base] = [line.rstrip() for line in f if line[0] in ['A','T','C','G']]
+                    seqs[base] = [line.rstrip() for line in f \
+                        if line[0] in ['A','T','C','G']]
     
     with open(PICKLE_FILE, 'wb') as pickle_file:
         pickle.dump(seqs, pickle_file)
@@ -26,9 +27,12 @@ def pickle_input(in_dir):
 
 if __name__ == '__main__':
     if len(argv) != 2:
-        raise ValueError('Usage: python3 pickle_input.py <directory containing FASTQ files>')
+        raise ValueError(
+            'Usage: python3 pickle_input.py <directory containing FASTQ files>')
     in_dir = str(argv[1])
     if not os.path.isdir(in_dir):
-        raise ValueError('Usage: python3 pickle_input.py <directory containing FASTQ files>')    
+        raise ValueError(
+            'Usage: python3 pickle_input.py <directory containing FASTQ files>')    
 
     pickle_input(in_dir)
+

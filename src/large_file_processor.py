@@ -31,14 +31,14 @@ class LargeFileProcessor():
             print(*args, **kwargs)
 
     # loads a pickle file and returns the data
-    def load_pickle(fname):
+    def load_pickle(self, fname):
         self.printd(f'Loading pickled data from {fname}')
         with open(fname, 'rb') as f:
             data = pickle.load(f)
         return data
 
     # dumps data into a pickle file
-    def dump_pickle(data, fname):
+    def dump_pickle(self, data, fname):
         self.printd(f'Dumping pickled data to {fname}')
         with open(fname, 'wb') as f:
             pickle.dump(data, f)
@@ -48,7 +48,7 @@ class LargeFileProcessor():
     def write_dict(self, data, fname):
         self.printd(f'Writing data to {fname}')
         with open(fname, 'a+') as f:
-            s = '\n'.join([str(k) + str(v) for k,v in data.items()]) + '\n'
+            s = '\n'.join([f'{k}{v}' for k,v in data.items()]) + '\n'
             f.write(s)
 
     # writes data to a file, where each line corresponds to an element in
@@ -86,14 +86,14 @@ class LargeFileProcessor():
                 yield chunk_start, chunk_size
 
     # processes the file in chunks
-    def main(*args, **kwargs):
+    def main(self, *args, **kwargs):
         jobs = []
         with Pool(self.num_workers) as pool:
             n = 0
             size = int(self.input_size / self.num_workers) + 1
             for chunk_start, chunk_size in self.chunkify(self.fname, size):
                 n += 1
-                jobs.append(pool.apply_async(process_wrapper,
+                jobs.append(pool.apply_async(process_chunk,
                     (chunk_start, chunk_size, n, *args, **kwargs)))
 
             # wait for all jobs to finish
@@ -101,8 +101,8 @@ class LargeFileProcessor():
             for job in jobs:
                 job.get()
                 n += 1
-                printd(f'Finished chunk {n}...')
+                printd(f'Finished chunk {n}')
     
-    def main_wrapper():
+    def main_wrapper(self):
         raise NotImplementedError
 
