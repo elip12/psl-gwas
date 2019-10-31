@@ -34,8 +34,6 @@ of resurrection so you can see if it's finished after you die of boredom and
 old age a few times. Time scales sub-linearly with available memory because of
 the glory of O(1) hash table lookups.
 
-1. The fifth stage is combining adjacent kmers into longer chunks???
-
 1. The fifth stage is creating a reduced version of that database for PSL. We need
 the full thing for the post-psl analysis at the end, but PSL does not need
 to know where in the genome a kmer occurs. The associated program is
