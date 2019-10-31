@@ -24,25 +24,30 @@ already did this. The associated program is pickle_input.py.
 DSK for that.
 
 1. The third stage is pruning that list down to kmers that appear at least
-10 times, since we can't get any significant results on kmers that appear
-rarely. The associated program is reduce_input.py.
+10 times. The associated program is reduce_input.py.
 
 1. The fourth stage is assembling a database that maps kmers to samples in which
 those kmers appear. This allows us to have a contains(sample, kmer) lookup
 table. The associated program is create_kmer_db.py. This is extremely
 memory-intensive and you can't use a laptop to do it unless you have the power
 of resurrection so you can see if it's finished after you die of boredom and
-old age a few times. It scales non-linearly with available memory because of
+old age a few times. Time scales sub-linearly with available memory because of
 the glory of O(1) hash table lookups.
+
+1. The fifth stage is combining adjacent kmers into longer chunks???
 
 1. The fifth stage is creating a reduced version of that database for PSL. We need
 the full thing for the post-psl analysis at the end, but PSL does not need
 to know where in the genome a kmer occurs. The associated program is
 clean_kmer_db.py.
 
-1. The sixth stage is converting the reduced database to the exact form PSL likes
-as an input and the table that logs which samples are resistant
-to which antibiotics to a form that PSL likes as an input.
+1. The sixth stage is using the existing data to generate input files for PSL.
+The assoicated programs and input files are
+    - `convert_kmer_db_to_psl_input.py`, `contains_kmer_sample.txt`
+    - `convert_phenos_to_psl_input.py`, `resistance_sample_class.txt`
+    - `create_resistance_kmer_class_map.py`, `resistance_kmer_class.txt`
+    - `create_similar_antibiotic_map.py`, `similar_antibiotic_antibiotic.txt`
+    - `create_similar_sample_map.py`, `similar_sample_sample.txt`
 
 1. The seventh stage is running PSL.
 
@@ -53,89 +58,29 @@ and associating them with specific genes, indels, and SNPs.
 to determine the accuracy of our method and to hopefully find new genes,
 indels, and SNPs that contribute to resistance.
 
-
 ## Installation
-You need python 3.6 or later, but there's no reason not to use
-the latest version of python3. 
-
-This project requires no external dependencies as of yet. I imagine
-it will be easiest to use pandas for converting the tsv into a psl data
-file form.
-
-The only other thing to note here is that you should have a subdirectory
-called `data/` in the root of this repo. That holds all the data files.
+Requirements:
+    - python 3.6 or later
+    - pandas
 
 ## Usage
-Since the output of each stage is saved, you only need to do each stage once.
-We are on stage 6 for our dataset. Since we haven't written the script
-that does this, there are no usage instructions yet.
+Eventually the entire pipeline will be automated with a script.
 
 ## Notes
-data files in my local repo that need to be pushed:
-- class_int_map.pickle
-- contains_sample_kmer.txt - needs to be run on full input
-- resistance_sample_class.txt
-- sample_int_map.pickle
-todo:
-    - run contains_sample_kmer on full input
-    - write create_kmer_int_map.py and run it on full input
-
-prior:
-    !KmerResistance(k, a)
-
-relation:
-    SameGene(k1, k2) & KmerResistance(k1, a) >> KmerResistance(k2, a)
-    SimilarAnti(a1, a2) & KmerResistance(k, a1) >> KmerResistance(k, a2)
-
-General: identify the kmers that occur almost uniquely in
-resistant samples and don't occur in non-resistant samples.
-```
-contains(s, k) & resistance(s, a) -> resistance(k, a)
-contains(s, k) & !resistance(s, a) -> !resistance(k, a)
-```
-
-Extension: epistatic reactions between kmers.
-```
-contains(s, k1, k2) & resistance(s, a) & !resistance(k1, a) &
-    !resistance(k2, a) -> positiveepistatic(k1, k2, a)
-contains(s, k1, k2) & !resistance(s, a) & resistance(k1, a) &
-    resistance(k2, a) -> negativeepistatic(k1, k2, a)
-```
-I'm not sure if PSL can handle this. Lotta ground rules. May be
-ways to reduce tho.
-
-More extension: increase to reactions between 3 kmers. Pipe dream.
-
 The full schema for this repository, were you going to run the entire pipeline,
 would look something like this. Note that I assume if you have a local DSK
 binary, it will be somewhere else.
 
 ```
-/........................................script associated with each stage of the pipeline
+psl-gwas/
     README.md
-    pickle_input.py......................stage 1
-    reduce_input.py......................stage 2
-    create_kmer_db.py....................stage 4
-    clean_kmer_db.py.....................stage 5
-    TDB..................................stage 6
-    TBD..................................stage 7
-    TBD..................................stage 8
-    TBD..................................stage 9
-    TBD..................................stage 10
-    data/................................output of each stage of the pipeline
-        raw.pickle.......................stage 1
-        unique_kmers.txt.................stage 2
-        unique_kmers_reduced.txt.........stage 3
-        kmer_sample_map.txt..............stage 4
-        kmer_sample_map_reduced.txt......stage 5
-        TBD..............................stage 6
-        TBD..............................stage 7
-        TBD..............................stage 8
-        TBD..............................stage 9
-        TBD..............................stage 10
-    contigs/
-        sample1.fa
-        sample2.fa
-        ...
+    contigs/..........FASTQ files containing raw contigs
+    data/
+        preprocess/...interim files used in different pipeline stages
+        psl/..........input files for psl
+    src/..............python scripts used in different pipeline stages
+    psl/..............psl files defining predicates and input file paths
 ```
 
+## Todo
+    - combine kmers 
