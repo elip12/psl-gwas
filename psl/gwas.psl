@@ -6,8 +6,10 @@
 class, then the kmer is not associated with resistance to that class
 2.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c)
 
-// 1-sided prior
-1.0: !KmerResistacne(k, c)
+// 1-sided prior - NOTE THIS SHOULD BE CHANGED SO THAT THE PRIOR IS .5
+1.0: KmerResistance(k, c) = 0.5
+
+// KMERRESISTANCE 0 = VULNERABLE, 1 = RESISTANT, .5 = NO EFFECT
 
 // If two antibiotics are similar, and a kmer is resistant to one antibiotic,
 // it is likely resistant to the other antibiotic

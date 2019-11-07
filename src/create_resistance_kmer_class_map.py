@@ -1,26 +1,25 @@
-from large_file_processor import LargeFileProcessor
+from large_file_processor import main, write_list, parse_args, load_pickle
 
-class RKCMCreator(LargeFileProcessor):
-    def __init__(self, num_workers, fname):
-        super.__init__(num_workesr, fname)
+def process(data, cim, kim, outfile):
+    rkc_chunk = []
+    for line in data:
+        linelist = line.split()
+        lc = len(cim)
+        rkc_line = [f'{kim[linelist[0]]} {c}' for c in range(lc)]
+        rkc_chunk.append('\n'.join(rkc_line))
+    write_list(rkc_chunk, outfile)
 
-    def process(data, cim, rkc_file):
-        rkc_chunk = []
-        for line in data:
-            linelist = line.split()
-            rkc_line = [f'{linelist[0]} {cim[c]}' for c in cim]
-            rkc_chunk.append('\n'.join(rkc_line))
-        self.write_list(rkc_chunk, rkc_file)
+def main_wrapper():
+    NUM_WORKERS = 16
+    INPUT_FILE = 'data/preprocess/kmer_sample_map_reduced.txt'
+    cim_file = 'data/preprocess/class_int_map.pickle'
+    cim = load_pickle(cim_file)
+    kim_file = 'data/preprocess/kmer_int_map.pickle'
+    kim = load_pickle(kim_file)
+    outfile = 'data/psl/resistance_kmer_class.txt'
+    main(process, NUM_WORKERS, INPUT_FILE, cim=cim, kim=kim, outfile=outfile)
 
-    def main_wrapper(self):
-        cim_file = 'data/preprocess/class_int_map.pickle'
-        cim = self.load_pickle(cim_file)
-        rkc = 'data/psl/resistance_kmer_class.txt'
-        self.main(cim=cim, rkc_file=rkc)
-
-    if __name__ == '__main__':
-        NUM_WORKERS = 16
-        INPUT_FILE = 'data/preprocess/kmer_sample_map_reduced.txt'
-        rkcm = RKCMCreator(NUM_WORKERS, INPUT_FILE)
-        rkcm.main_wrapper()
+if __name__ == '__main__':
+    parse_args()
+    main_wrapper()
 

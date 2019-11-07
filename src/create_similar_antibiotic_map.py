@@ -17,6 +17,7 @@ def main():
     df = df.corr()
     df = df.stack()
     df = df.reset_index()
+    df[0] = df[0] / 2 + 0.5
     df.to_csv('data/psl/similar_antibiotic_antibiotic.txt', sep='\t',
         index=False, header=False)
 

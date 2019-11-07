@@ -81,4 +81,4 @@ psl-gwas/
 ```
 
 ## Todo
-    - combine kmers 
+started at 6:27pm
