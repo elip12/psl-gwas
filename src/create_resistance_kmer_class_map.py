@@ -7,7 +7,7 @@ def process(data, cim, outfile):
     for line in data:
         linelist = line.split()
         lc = int(len(cim) / 2)
-        rkc_line = [f'{kim[linelist[0]]} {c}' for c in range(lc)]
+        rkc_line = [f'{kim[linelist[0]]}\t{c}' for c in range(lc)]
         rkc_chunk.append('\n'.join(rkc_line))
     write_list(rkc_chunk, outfile)
 
