@@ -4,7 +4,7 @@ readonly PSL_VERSION='2.1.0'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly BASE_NAME='psl/gwas'
 
-readonly ADDITIONAL_PSL_OPTIONS=''
+readonly ADDITIONAL_PSL_OPTIONS='-D logj4j.threshold=TRACE'
 readonly ADDITIONAL_LEARN_OPTIONS='--learn'
 readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator'
 

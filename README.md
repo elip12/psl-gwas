@@ -80,5 +80,37 @@ psl-gwas/
     psl/..............psl files defining predicates and input file paths
 ```
 
+relational psl rule:
+    if a kmer is diferent (hamming) from another kmer by exactly 1 base,
+    it is likely a SNP/indel (possibility of random also, how to account for that?)
+
+    `KmerResistance(k1) && HammingDiff1(k1, k2) >> !KmerResistance(k2)`
+
+    there could be up to 30 random kmers totally unrelated that have a hamming distance of 1.
+    idea is you can identify the pop default, and the mutation holding kmer.
+
+iid method
+    - for each kmer, get all kmers that are a hamming distance of 1 away.
+       if that kmer is only associated with resistance and another 1d away kmer is not associated with
+       resistnace, keep it
+    - eliminate all kmers that are present in both resistant and nonresistant samples
+    - eliminstae all kmers that are present in nonresistance samples
+    score kmers by appearence in diverse samples
+    
+
 ## Todo
-started at 6:27pm
+- get access to a server
+- install and run pyseer
+
+Done
+- emailed Dr camps
+- emailed seer guy asking about dataset
+- thought up another possible rule
+- read documentation in preparation for running pyseer
+    kmerrsiistance k1 and mutationof k1, k2 >> not resitance k2
+    share
+        seer
+        knsp3
+        background
+        see if camps lab has published this data in any paper
+    
