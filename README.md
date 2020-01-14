@@ -107,4 +107,10 @@ Done
 - emailed seer guy asking about dataset
 - thought up another possible rule
 - read documentation in preparation for running pyseer
-
+    kmerrsiistance k1 and mutationof k1, k2 >> not resitance k2
+    share
+        seer
+        knsp3
+        background
+        see if camps lab has published this data in any paper
+    

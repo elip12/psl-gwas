@@ -1,17 +1,17 @@
 // If a sample contains a kmer, and the sample is resistant to a certain class,
 // then the kmer is associated with resistance to that class
-2.0: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c)
+1.0: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c) ^2
 
 // If a sample contains a kmer, and the sample is not resistant to a certain
-class, then the kmer is not associated with resistance to that class
-2.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c)
+// class, then the kmer is not associated with resistance to that class
+100.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c) ^2
 
 // 1-sided prior
-1.0: !KmerResistance(k, c)
+1.0: !KmerResistance(k, c) ^2
 
 // If two antibiotics are similar, and a kmer is resistant to one antibiotic,
 // it is likely resistant to the other antibiotic
-2.0: SimilarAntibiotic(a1, a2) & KmerResistance(k, c1) >> KmerResistance(k, c2)
+1.0: SimilarAntibiotic(c1, c2) & KmerResistance(k, c1) >> KmerResistance(k, c2) ^2
 
 // This is a method of solving the problem of clonal population structure,
 // the single biggest challenge in microbial gwas.
@@ -25,5 +25,4 @@ class, then the kmer is not associated with resistance to that class
 // if it is present in two resistant samples that are weakly related. Thus:
 // If two samples are not similar, and both are resistant, and both contain a
 // certain kmer, that kmer likely connotes resistance.
-5.0: !SimilarSample(s1, s2) & SampleResistance(s1, c) & SampleResistance(s2, c) \
-    & Contains(s1, k) & Contains(s2, k) >> KmerResistance(k, c)
+2.0: !SimilarSample(s1, s2) & SampleResistance(s1, c) & SampleResistance(s2, c) & Contains(s1, k) & Contains(s2, k) >> KmerResistance(k, c) ^2
