@@ -9,9 +9,9 @@ presence or absence of kmer is value for each cell
 '''
 
 size = 15000000
-X = np.zeros((300, size))
+X = np.zeros((300, size), dtype=np.ushort)
 y = np.zeros(300)
-test_X = np.zeros((55, size))
+test_X = np.zeros((55, size, dtype=np.ushort))
 test_y = np.zeros(55)
 
 samples = list(range(355))
@@ -27,7 +27,7 @@ for l in lines:
     r,c,v = l.split('\t')
     r = int(r)
     c = int(c)
-    v = float(v)
+    v = np.ushort(int(float(v)))
     if r in heldout:
         test_X[heldout.index(r)][c] = v
     else:
@@ -39,7 +39,7 @@ with open('../../data/psl/resistance_sample_class.txt', 'r') as f:
 for l in lines[332:661]:
     r, _, v = l.split('\t')
     r = int(r)
-    v = float(v)
+    v = np.ushort(int(float(v)))
     if r in heldout:
         test_y[heldout.index(r)] = v
     else:
