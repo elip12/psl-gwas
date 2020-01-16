@@ -11,7 +11,7 @@ presence or absence of kmer is value for each cell
 size = 15000000
 X = np.zeros((300, size), dtype=np.ushort)
 y = np.zeros(300)
-test_X = np.zeros((55, size, dtype=np.ushort))
+test_X = np.zeros((55, size), dtype=np.ushort)
 test_y = np.zeros(55)
 
 samples = list(range(355))
