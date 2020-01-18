@@ -17,8 +17,8 @@ def main():
     sim = read_sim()
     cim = read_cim()
     
-    df.drop(['Sample', 'Date', 'Species', 'Tissue'], axis=1, inplace=True)  
     df['sample_id'] = df['Sample'].apply(lambda x: sim[x])
+    df.drop(['Sample', 'Date', 'Species', 'Tissue'], axis=1, inplace=True)  
     df.rename(columns=cim, inplace=True) 
     
     new = pd.DataFrame(columns=['sample_id', 'class', 'value'])
