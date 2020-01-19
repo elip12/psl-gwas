@@ -15,17 +15,16 @@ def process(data, outfile, THRESH, df):
                 continue
             kmer_db_line.append(sample_id)
             # replace this part with a X-squared test maybe
-            slice_ = df.loc
+            slice_ = df.loc[sample_id]
             for i, antibiotic in enumerate(df.columns):
-                if df[antibiotic][sample_id] == 1.0:
+                if slice_[antibiotic] == 1.0:
                     prop_res[i] += 1
-        prop_res = [nr / (len(linelist) - 1) for nr in prop_res]
         kmer_passed = False
-        for pr in prop_res:
+        for nr in prop_res:
             # if more than 5% of samples that contain this kmer are not resistant,
             # this kmer does not confer resistance. The 5% is pretty arbitrary,
             # and is for the possibility of epistatic interactions
-            if pr >= 0.95:
+            if nr / (len(linelist) - 1) >= 0.95:
                 kmer_passed = True
                 break
         if kmer_passed:
