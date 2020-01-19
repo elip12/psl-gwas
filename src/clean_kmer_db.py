@@ -1,4 +1,5 @@
 from large_file_processor import main, write_list, parse_args
+import pandas as pd
 
 def process(data, outfile, THRESH, df):
     kmer_db_chunk = []
@@ -10,12 +11,15 @@ def process(data, outfile, THRESH, df):
         prop_res = [0 for _ in range(df.shape[1])]
         for sci in linelist[1:]:
             sample_id = sci.split(',')[0]
+            if sample_id not in df.index:
+                continue
             kmer_db_line.append(sample_id)
             # replace this part with a X-squared test maybe
-            for i, antibiotic in enumerate(df):
-                if df[antibiotic][sample_id] == '1':
+            slice_ = df.loc
+            for i, antibiotic in enumerate(df.columns):
+                if df[antibiotic][sample_id] == 1.0:
                     prop_res[i] += 1
-        prop_res = [nr / (len(linelist) - 1) for nr in prop_resistant]
+        prop_res = [nr / (len(linelist) - 1) for nr in prop_res]
         kmer_passed = False
         for pr in prop_res:
             # if more than 5% of samples that contain this kmer are not resistant,
@@ -33,8 +37,10 @@ def main_wrapper():
     INPUT_FILE = 'data/preprocess/kmer_sample_map.txt'
     outfile = 'data/preprocess/kmer_sample_map_reduced.txt'
     THRESH = 10
-    df = pd.read_csv('data/preprocess/abr_resist_phenos.tsv', delimiter='\t') 
+    df = pd.read_csv('data/preprocess/abr_resist_phenos.tsv', delimiter='\t')
+    df.drop(['Date', 'Species', 'Tissue'], axis=1, inplace=True)
     df.set_index('Sample', inplace=True)
+    #print(df)
     main(process, NUM_WORKERS, INPUT_FILE, outfile=outfile, THRESH=THRESH, df=df)
 
 if __name__ == '__main__':
