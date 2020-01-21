@@ -99,18 +99,12 @@ iid method
     
 
 ## Todo
-- get access to a server
-- install and run pyseer
+reorganize repo structure
+predict_pheno has its own directory containing bin, src, data, psl
+gwas has its own directroy containing bin, src, data, psl
+preprocess has its own directory containing bin, src, data
+    preprocess binaries include scripts for running dsm/dsk
 
-Done
-- emailed Dr camps
-- emailed seer guy asking about dataset
-- thought up another possible rule
-- read documentation in preparation for running pyseer
-    kmerrsiistance k1 and mutationof k1, k2 >> not resitance k2
-    share
-        seer
-        knsp3
-        background
-        see if camps lab has published this data in any paper
-    
+pipeline is now preprocess up to point of gwas and predict pheno divergence
+then either gwas or predict pheno preprocess
+then either gwas or predict pheno binaries for running psl/iid
