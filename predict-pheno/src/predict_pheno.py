@@ -8,6 +8,8 @@ convert kmer sample dict into matrix with samples as rows, kmers as columns.
 presence or absence of kmer is value for each cell
 '''
 
+dpath = 'preprocess/data/preprocessed'
+
 size = 15000000
 X = np.zeros((300, size), dtype=np.ushort)
 y = np.zeros(300)
@@ -21,7 +23,7 @@ heldout = samples[300:]
 
 # fill matrix
 # lines is list of all lines in file
-with open('../../data/psl/contains_sample_kmer.txt', 'r') as f:
+with open(f'{dpath}/contains_sample_kmer.txt', 'r') as f:
     lines = f.readlines()
 for l in lines:
     r,c,v = l.split('\t')
@@ -34,7 +36,7 @@ for l in lines:
         X[train.index(r)][c] = v
 
 # lines is now a list of resistances
-with open('../../data/psl/resistance_sample_class.txt', 'r') as f:
+with open(f'{dpath}/resistance_sample_class.txt', 'r') as f:
     lines = f.readlines()
 for l in lines[332:661]:
     r, _, v = l.split('\t')

@@ -18,12 +18,12 @@ def process(data, sim, kim, outfile):
 
 def main_wrapper():
     NUM_WORKERS = 16
-    INPUT_FILE = 'data/preprocess/kmer_sample_map_reduced.txt'
-    sim_file = 'data/preprocess/sample_int_map.pickle'
+    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    sim_file = 'data/intermediate/sample_int_map.pickle'
     sim = load_pickle(sim_file)
-    kim_file = 'data/preprocess/kmer_int_map.pickle'
+    kim_file = 'data/intermediate/kmer_int_map.pickle'
     kim = load_pickle(kim_file)
-    outfile = 'data/psl/contains_sample_kmer.txt'
+    outfile = 'data/preprocessed/contains_sample_kmer.txt'
     main(process, NUM_WORKERS, INPUT_FILE, sim=sim, kim=kim, outfile=outfile)
 
 if __name__ == '__main__':

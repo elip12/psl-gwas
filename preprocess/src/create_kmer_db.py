@@ -40,11 +40,11 @@ def process(data, raw, K, outfile):
 # defines some variables we need to pass to process, then calls main
 def main_wrapper():
     NUM_WORKERS = 16
-    INPUT_FILE = 'data/preprocess/unique_kmers_reduced.txt'
-    pickle_file = 'data/preprocess/raw.pickle'
+    INPUT_FILE = 'data/intermediate/unique_kmers_reduced.txt'
+    pickle_file = 'data/intermediate/raw.pickle'
     raw = load_pickle(pickle_file)
     K = 30
-    outfile = 'data/preprocess/kmer_sample_map.txt'
+    outfile = 'data/intermediate/kmer_sample_map.txt'
     main(process, NUM_WORKERS, INPUT_FILE, raw=raw, K=K, outfile=outfile)
 
 if __name__ == '__main__':

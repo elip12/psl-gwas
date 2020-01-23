@@ -7,7 +7,7 @@ import os
 import pickle
 from sys import argv
 
-PICKLE_FILE = 'data/preprocess/raw.pickle'
+PICKLE_FILE = 'data/intermediate/raw.pickle'
 
 # FASTQ files have metadata on odd lines and sequences on even lines
 # ignore all errors in fastq file structure

@@ -1,7 +1,7 @@
 from large_file_processor import main, write_list, parse_args, load_pickle
 
 def process(data, cim, outfile):
-    kim_file = 'data/preprocess/kmer_int_map.pickle'
+    kim_file = 'data/intermediate/kmer_int_map.pickle'
     kim = load_pickle(kim_file)
     rkc_chunk = []
     for line in data:
@@ -13,10 +13,10 @@ def process(data, cim, outfile):
 
 def main_wrapper():
     NUM_WORKERS = 16
-    INPUT_FILE = 'data/preprocess/kmer_sample_map_reduced.txt'
-    cim_file = 'data/preprocess/class_int_map.pickle'
+    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    cim_file = 'data/intermediate/class_int_map.pickle'
     cim = load_pickle(cim_file)
-    outfile = 'data/psl/resistance_kmer_class.txt'
+    outfile = 'data/preprocessed/resistance_kmer_class.txt'
     main(process, NUM_WORKERS, INPUT_FILE, cim=cim, outfile=outfile)
 
 if __name__ == '__main__':

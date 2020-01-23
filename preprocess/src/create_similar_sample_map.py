@@ -18,10 +18,10 @@ def process(data, sim, outfile, n, q):
 
 def main_wrapper():
     NUM_WORKERS = 32
-    INPUT_FILE = 'data/preprocess/kmer_sample_map_reduced.txt'
-    sim_file = 'data/preprocess/sample_int_map.pickle'
+    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    sim_file = 'data/intermediate/sample_int_map.pickle'
     sim = load_pickle(sim_file)
-    outfile = 'data/psl/similar_sample_sample.txt'
+    outfile = 'data/preprocessed/similar_sample_sample.txt'
     n = int(len(sim) / 2)
     m = Manager()
     q = m.Queue()

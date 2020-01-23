@@ -1,19 +1,22 @@
 import pandas as pd
 import pickle
 
+ipath = 'data/intermediate'
+ppath = 'data/preprocessed'
+
 # sample int map
 def read_sim():
-    with open('data/preprocess/sample_int_map.pickle', 'rb') as f:
+    with open(f'{ipath}/sample_int_map.pickle', 'rb') as f:
         sim = pickle.load(f)
     return sim
 
 def read_cim():
-    with open('data/preprocess/class_int_map.pickle', 'rb') as f:
+    with open(f'{ipath}/class_int_map.pickle', 'rb') as f:
         cim = pickle.load(f)
     return cim
 
 def main():
-    df = pd.read_csv('data/preprocess/abr_resist_phenos.tsv', delimiter='\t')
+    df = pd.read_csv(f'{ipath}/abr_resist_phenos.tsv', delimiter='\t')
     sim = read_sim()
     cim = read_cim()
     
@@ -30,7 +33,7 @@ def main():
             new = pd.concat([new, slice_[['sample_id', 'value', 'class']]],
                 ignore_index=True, sort=False) 
     df = new.dropna()
-    df.to_csv('data/psl/resistance_sample_class.txt', sep='\t',
+    df.to_csv(f'{ppath}/resistance_sample_class.txt', sep='\t',
         index=False, header=False)
 
 if __name__ == '__main__':

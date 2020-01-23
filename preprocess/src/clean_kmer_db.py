@@ -41,10 +41,10 @@ def process(data, outfile, THRESH, df):
 
 def main_wrapper():
     NUM_WORKERS = 16
-    INPUT_FILE = 'data/preprocess/kmer_sample_map.txt'
-    outfile = 'data/preprocess/kmer_sample_map_reduced.txt'
+    INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
+    outfile = 'data/intermediate/kmer_sample_map_reduced.txt'
     THRESH = 10 # this value should depend on the min frequency in the phenotype col.
-    df = pd.read_csv('data/preprocess/abr_resist_phenos.tsv', delimiter='\t')
+    df = pd.read_csv('data/intermediate/abr_resist_phenos.tsv', delimiter='\t')
     df.drop(['Date', 'Species', 'Tissue'], axis=1, inplace=True)
     df.set_index('Sample', inplace=True)
     main(process, NUM_WORKERS, INPUT_FILE, outfile=outfile, THRESH=THRESH, df=df)
