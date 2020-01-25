@@ -1,4 +1,6 @@
 contigs
-data
-*.jar
+*data
+jar
+*.swp
 *.pyc
+

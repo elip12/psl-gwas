@@ -36,7 +36,7 @@ for l in lines:
         X[train.index(r)][c] = v
 
 # lines is now a list of resistances
-with open(f'{dpath}/resistance_sample_class.txt', 'r') as f:
+with open(f'{dpath}/resistance_sample_class_ab1.txt', 'r') as f:
     lines = f.readlines()
 for l in lines[332:661]:
     r, _, v = l.split('\t')
