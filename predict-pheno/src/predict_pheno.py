@@ -38,7 +38,7 @@ for l in lines:
 # lines is now a list of resistances
 with open(f'{dpath}/resistance_sample_class_ab1.txt', 'r') as f:
     lines = f.readlines()
-for l in lines[332:661]:
+for l in lines:
     r, _, v = l.split('\t')
     r = int(r)
     v = np.ushort(int(float(v)))
