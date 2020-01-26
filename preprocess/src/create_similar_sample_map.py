@@ -1,4 +1,5 @@
-from large_file_processor import main, write_list, parse_args, load_pickle
+from large_file_processor import main, write_list, parse_args, load_pickle,
+dump_pickle
 from multiprocessing import Queue, Manager
 import numpy as np
 import pandas as pd
@@ -7,7 +8,7 @@ import random
 def process(data, sim, outfile, n, q): 
     sample_matrix = np.zeros((n, n))
     for line in data:
-        if random.random() > 0.1:
+        if random.random() > 0.01:
             continue
         linelist = line.split()
         for i, s1 in enumerate(linelist[1: -1]):
@@ -18,7 +19,7 @@ def process(data, sim, outfile, n, q):
 
 def main_wrapper():
     NUM_WORKERS = 32
-    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
     sim_file = 'data/intermediate/sample_int_map.pickle'
     sim = load_pickle(sim_file)
     outfile = 'data/preprocessed/similar_sample_sample.txt'
@@ -37,6 +38,7 @@ def main_wrapper():
     
     # scale to value in [0, 1]
     sample_matrix = (sample_matrix - a_min) / (a_max - a_min)
+    dump_pickle(sample_matrix, 'data/intermediate/relatedness_matrix.pickle')
     df = pd.DataFrame(sample_matrix)
     df = df.stack()
     df = df.reset_index()
