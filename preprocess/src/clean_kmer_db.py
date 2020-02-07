@@ -1,15 +1,14 @@
 from large_file_processor import main, write_list, parse_args
 import pandas as pd
-from scipi.stats import chisquare
+import numpy as np
+from scipy.stats import fisher_exact
 
 def process(data, outfile, THRESH, df):
     kmer_db_chunk = []
     for line in data:
         linelist = line.split()
-        if len(linelist) <= THRESH:
-            continue
         kmer_db_line = [linelist[0]]
-        prop_res = [(0,0) for _ in range(df.shape[1])]
+        prop_res = [[0,0] for _ in range(df.shape[1])]
         for sci in linelist[1:]:
             sample_id = sci.split(',')[0]
             if sample_id not in df.index:
@@ -29,10 +28,15 @@ def process(data, outfile, THRESH, df):
         # getting filtered out
         kmer_passed = False
         for observed in prop_res:
+            if sum(observed) < THRESH:
+                continue
             # null hypothesis in this test is that this kmer connotes resistance
-            expected = (sum(observed), 0)
-            p = chisquare(observed, f_exp=expected)[0]
-            if p > 0.05:
+            #p = fisher_exact(table)[1]
+            
+            # this is kinda iffy but we are doing it for now
+            p = 1 if observed[0] == 0 else observed[1] / observed[0]
+            if p < 0.05:
+                # print(p, observed, linelist[0])
                 kmer_passed = True
                 break
         if kmer_passed:
@@ -40,10 +44,10 @@ def process(data, outfile, THRESH, df):
     write_list(kmer_db_chunk, outfile)
 
 def main_wrapper():
-    NUM_WORKERS = 16
-    INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
-    outfile = 'data/intermediate/kmer_sample_map_reduced.txt'
-    THRESH = 10 # this value should depend on the min frequency in the phenotype col.
+    NUM_WORKERS = 1
+    INPUT_FILE = 'data/intermediate/kmer_sample_map_head.txt'
+    outfile = 'data/intermediate/kmer_sample_map_reduced_test.txt'
+    THRESH = 5 # this value should depend on the min frequency in the phenotype col.
     df = pd.read_csv('data/intermediate/abr_resist_phenos.tsv', delimiter='\t')
     df.drop(['Date', 'Species', 'Tissue'], axis=1, inplace=True)
     df.set_index('Sample', inplace=True)
