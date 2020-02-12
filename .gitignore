@@ -1,5 +1,5 @@
 contigs
-*data
+data/
 jar
 *.swp
 *.pyc
