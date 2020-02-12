@@ -1,6 +1,6 @@
 contigs
 data/
-jar
+*.jar
 *.swp
 *.pyc
-
+inferred-predicates/
