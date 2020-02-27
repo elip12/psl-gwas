@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
 from random import shuffle
 
@@ -8,7 +8,7 @@ convert kmer sample dict into matrix with samples as rows, kmers as columns.
 presence or absence of kmer is value for each cell
 '''
 
-dpath = 'preprocess/data/preprocessed'
+dpath = 'data/preprocessed'
 
 size = 15000000
 X = np.zeros((300, size), dtype=np.ushort)
@@ -48,9 +48,9 @@ for l in lines:
         y[train.index(r)] = v
 
 
-svm = LinearSVC()
-svm.fit(X,y)
-predicted = svm.predict(test_X)
+lr = LogisticRegression()
+lr.fit(X,y)
+predicted = lr.predict(test_X)
 print(accuracy_score(test_y, predicted))
 print(precision_recall_fscore_support(test_y, predicted))
 print(confusion_matrix(test_y, predicted))
