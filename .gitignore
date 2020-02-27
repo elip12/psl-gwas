@@ -1,5 +1,6 @@
 contigs
 data/
+logs/
 *.jar
 *.swp
 *.pyc

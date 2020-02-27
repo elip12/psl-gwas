@@ -1,12 +1,12 @@
 #!/bin/bash
 
-readonly PSL_VERSION='2.1.0'
+readonly PSL_VERSION='2.2.1'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly BASE_NAME='gwas/psl/gwas'
 
-readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG'
+readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --postgres epandolf --int-ids'
 readonly ADDITIONAL_LEARN_OPTIONS='--learn'
-readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator'
+readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator'
 
 function main() {
    trap exit SIGINT
@@ -18,14 +18,14 @@ function main() {
 
    # Run PSL
    #runWeightLearning
-   runEvaluation
+   runEvaluation "$@"
 }
 
 
 function runWeightLearning() {
    echo "Running PSL Weight Learning"
 
-   java -jar "${JAR_PATH}" --model "${BASE_NAME}.psl" --data "${BASE_NAME}.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS}
+   java -jar "${JAR_PATH}" --model "${BASE_NAME}.psl" --data "${BASE_NAME}.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
    if [[ "$?" -ne 0 ]]; then
       echo 'ERROR: Failed to run weight learning'
       exit 60
@@ -35,7 +35,7 @@ function runWeightLearning() {
 function runEvaluation() {
    echo "Running PSL Inference"
 
-   java -jar "${JAR_PATH}" --model "${BASE_NAME}.psl" --data "${BASE_NAME}.data" --output inferred-predicates ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS}
+   java -Xmx90G -jar "${JAR_PATH}" --model "${BASE_NAME}.psl" --data "${BASE_NAME}.data" --output inferred-predicates ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
    if [[ "$?" -ne 0 ]]; then
       echo 'ERROR: Failed to run infernce'
       exit 70
@@ -106,7 +106,7 @@ function fetch_psl() {
       local snapshotJARPath="$HOME/.m2/repository/org/linqs/psl-cli/${PSL_VERSION}/psl-cli-${PSL_VERSION}.jar"
       cp "${snapshotJARPath}" "${JAR_PATH}"
    else
-      local remoteJARURL="https://linqs-data.soe.ucsc.edu/maven/repositories/psl-releases/org/linqs/psl-cli/${PSL_VERSION}/psl-cli-${PSL_VERSION}.jar"
+      local remoteJARURL="https://repo1.maven.org/maven2/org/linqs/psl-cli/${PSL_VERSION}/psl-cli-${PSL_VERSION}.jar"
       fetch_file "${remoteJARURL}" "${JAR_PATH}" 'psl-jar'
    fi
 }

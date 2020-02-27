@@ -6,13 +6,13 @@ predicates:
     KmerResistance/2: open
 
 observations:
-    Contains: ../../data/preprocessed/contains_sample_kmer_head.txt
+    Contains: ../../data/preprocessed/contains_sample_kmer.txt
     SampleResistance: ../../data/preprocessed/resistance_sample_class.txt
     SimilarSample: ../../data/preprocessed/similar_sample_sample.txt
     SimilarAntibiotic: ../../data/preprocessed/similar_antibiotic_antibiotic.txt
 
 targets:
-    KmerResistance: ../../data/preprocessed/resistance_kmer_class_head.txt
+    KmerResistance: ../../data/preprocessed/resistance_kmer_class.txt
 
 truth:
 
