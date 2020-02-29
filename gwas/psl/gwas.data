@@ -1,0 +1,18 @@
+predicates:
+    Contains/2: closed
+    SampleResistance/2: closed
+    SimilarSample/2: closed
+    SimilarAntibiotic/2: closed
+    KmerResistance/2: open
+
+observations:
+    Contains: ../../data/preprocessed/contains_sample_kmer.txt
+    SampleResistance: ../../data/preprocessed/resistance_sample_class.txt
+    SimilarSample: ../../data/preprocessed/similar_sample_sample.txt
+    SimilarAntibiotic: ../../data/preprocessed/similar_antibiotic_antibiotic.txt
+
+targets:
+    KmerResistance: ../../data/preprocessed/resistance_kmer_class.txt
+
+truth:
+

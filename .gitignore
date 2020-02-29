@@ -1,6 +1,7 @@
 contigs
-*data
-jar
+data/
+logs/
+*.jar
 *.swp
 *.pyc
-
+inferred-predicates/
