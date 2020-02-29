@@ -4,7 +4,7 @@ from os.path import getsize
 # warning this script is fast but uses a lot of memory
 def create_kmer_int_map():
     kim = {}
-    fname = '/data/intermediate/kmer_sample_map_reduced.txt'
+    fname = 'data/intermediate/kmer_sample_map_reduced.txt'
     size = getsize(fname)
     with open(fname, 'r') as f:
         lines = f.read(size).splitlines()

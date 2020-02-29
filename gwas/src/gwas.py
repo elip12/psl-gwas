@@ -12,7 +12,7 @@ def mean_relatedness(m, samples):
     for s1 in samples:
         for s2 in samples:
             if s1 is not s2:
-                relatednesses.append(m[s1][s2])
+                relatednesses.append(m[int(s1)][int(s2)])
     return sum(relatednesses) / len(relatednesses)
 
 def min_relatedness(m, samples):
@@ -20,9 +20,11 @@ def min_relatedness(m, samples):
     for s1 in samples:
         for s2 in samples:
             if s1 is not s2:
-                relatednesses.append(m[s1][s2]) # ensure we are not double counting here.
+                relatednesses.append(m[int(s1)][int(s2)]) # ensure we are not double counting here.
                 #but if we are its probably fine?
                 #i think the matrix is only filled in the upper triangle anyway
+    if not relatednesses:
+        return 0
     return min(relatednesses)
 
 inpath = 'data/intermediate'
@@ -41,10 +43,10 @@ for line_ in lines:
     samples = [sim[sample] for sample in line[1:]]
     
     # use the int map also
-    kmers.append((kmer, min_relatedness(m, samples))
+    kmers.append((kmer, min_relatedness(m, samples)))
     #kmers.append((kmer, mean_relatedness(m, samples))
 
-kmers = sorted(kmers, key=lambda k: k[1])
+kmers = sorted(kmers, key=lambda k: k[1], reverse=True)
 with open(f'{outpath}/scored_kmers.txt', 'w') as f:
     f.writelines(f'{kmer}\t{score}\n' for kmer, score in kmers)
 

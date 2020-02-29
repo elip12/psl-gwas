@@ -44,9 +44,9 @@ def process(data, outfile, THRESH, df):
     write_list(kmer_db_chunk, outfile)
 
 def main_wrapper():
-    NUM_WORKERS = 1
-    INPUT_FILE = 'data/intermediate/kmer_sample_map_head.txt'
-    outfile = 'data/intermediate/kmer_sample_map_reduced_test.txt'
+    NUM_WORKERS = 16
+    INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
+    outfile = 'data/intermediate/kmer_sample_map_reduced.txt'
     THRESH = 5 # this value should depend on the min frequency in the phenotype col.
     df = pd.read_csv('data/intermediate/abr_resist_phenos.tsv', delimiter='\t')
     df.drop(['Date', 'Species', 'Tissue'], axis=1, inplace=True)

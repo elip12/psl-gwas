@@ -1,5 +1,4 @@
-from large_file_processor import main, write_list, parse_args, load_pickle,
-dump_pickle
+from large_file_processor import main, write_list, parse_args, load_pickle, dump_pickle
 from multiprocessing import Queue, Manager
 import numpy as np
 import pandas as pd
@@ -11,14 +10,16 @@ def process(data, sim, outfile, n, q):
         if random.random() > 0.01:
             continue
         linelist = line.split()
-        for i, s1 in enumerate(linelist[1: -1]):
-            for s2 in linelist[i + 1:]:
+        for i, s1_ in enumerate(linelist[1: -1]):
+            s1 = s1_.split(',')[0]
+            for s2_ in linelist[i + 1:]:
+                s2 = s2_.split(',')[0]
                 sample_matrix[int(sim[s1])][int(sim[s2])] += 1 
                 sample_matrix[int(sim[s2])][int(sim[s1])] += 1
     q.put(sample_matrix)
 
 def main_wrapper():
-    NUM_WORKERS = 32
+    NUM_WORKERS = 16
     INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
     sim_file = 'data/intermediate/sample_int_map.pickle'
     sim = load_pickle(sim_file)
