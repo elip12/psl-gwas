@@ -1,4 +1,4 @@
-from large_file_processor import main, write_list, parse_args, load_pickle,
+from large_file_processor import main, write_list, parse_args, load_pickle, \
 dump_pickle
 from multiprocessing import Queue, Manager
 import numpy as np
@@ -8,7 +8,7 @@ import random
 def process(data, sim, outfile, n, q): 
     sample_matrix = np.zeros((n, n))
     for line in data:
-        if random.random() > 0.01:
+        if random.random() > 0.001:
             continue
         linelist = line.split()
         for i, s1 in enumerate(linelist[1: -1]):
@@ -40,6 +40,16 @@ def main_wrapper():
     sample_matrix = (sample_matrix - a_min) / (a_max - a_min)
     dump_pickle(sample_matrix, 'data/intermediate/relatedness_matrix.pickle')
     df = pd.DataFrame(sample_matrix)
+
+    df.to_csv('similarities.tsv', sep='\t')
+    print(df)
+    '''
+        create histogram
+        drop everything below threshhold
+    '''
+    thresh = 0.5
+    df = df[df < thresh]
+    
     df = df.stack()
     df = df.reset_index()
     df.to_csv(outfile, sep='\t', index=False, header=False)
