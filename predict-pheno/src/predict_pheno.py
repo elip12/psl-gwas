@@ -10,7 +10,7 @@ presence or absence of kmer is value for each cell
 
 dpath = 'data/preprocessed'
 
-size = 15000000
+size = 2766999
 X = np.zeros((300, size), dtype=np.ushort)
 y = np.zeros(300)
 test_X = np.zeros((55, size), dtype=np.ushort)
