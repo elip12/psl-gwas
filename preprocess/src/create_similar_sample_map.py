@@ -3,6 +3,8 @@ from multiprocessing import Queue, Manager
 import numpy as np
 import pandas as pd
 import random
+from matplotlib import pyplot as plt
+
 
 def process(data, sim, outfile, n, q): 
     sample_matrix = np.zeros((n, n))
@@ -44,6 +46,8 @@ def main_wrapper():
 
     df.to_csv('similarities.tsv', sep='\t')
     print(df)
+    plt.hist(df.values, bins=10)
+    plt.savefig('hist.png', dpi=150)
     '''
         create histogram
         drop everything below threshhold
