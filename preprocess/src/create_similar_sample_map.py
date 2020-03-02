@@ -52,11 +52,12 @@ def main_wrapper():
         create histogram
         drop everything below threshhold
     '''
-    thresh = 0.2
+    thresh = 0.1
     df = df[df < thresh]
     
     df = df.stack()
     df = df.reset_index()
+    df = 1 - df # change from similarity to dissimilarity
     df.to_csv(outfile, sep='\t', index=False, header=False)
 
 if __name__ == '__main__':
