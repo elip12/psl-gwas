@@ -44,7 +44,7 @@ def main_wrapper():
         counter += q.get()
     print('finished consolidating counters')
     with open(outfile, 'w') as f:
-        f.writelines(f'{k}\t{v}' for k, v in counter.items())
+        f.writelines(f'{k}\t{v}\n' for k, v in counter.items())
     print('finished writing to outfile')
 
 if __name__ == '__main__':
