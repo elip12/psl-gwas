@@ -11,7 +11,7 @@
 
 // If two antibiotics are similar, and a kmer is resistant to one antibiotic,
 // it is likely resistant to the other antibiotic
-1.0: SimilarAntibiotic(c1, c2) & KmerResistance(k, c1) >> KmerResistance(k, c2) ^2
+//0.1: SimilarAntibiotic(c1, c2) & KmerResistance(k, c1) >> KmerResistance(k, c2) ^2
 
 // This is a method of solving the problem of clonal population structure,
 // the single biggest challenge in microbial gwas.
@@ -25,4 +25,7 @@
 // if it is present in two resistant samples that are weakly related. Thus:
 // If two samples are not similar, and both are resistant, and both contain a
 // certain kmer, that kmer likely connotes resistance.
-2.0: !SimilarSample(s1, s2) & SampleResistance(s1, c) & SampleResistance(s2, c) & Contains(s1, k) & Contains(s2, k) >> KmerResistance(k, c) ^2
+
+// THE RULE I CALL SIMILARSAMPLE IS ACTUALLY DISSIMILAR SAMPLE, I JUST DIDNT WANT TO CHANGE THE NAME YET
+// SO RIGHT NOW, !SIMILARSAMPLE MEANS THE SAMPLES ARE SIMILAR
+2.0: !SimilarSample(s1, s2) & SampleResistance(s1, c) & SampleResistance(s2, c) & Contains(s1, k) & Contains(s2, k) >> !KmerResistance(k, c) ^2
