@@ -17,7 +17,8 @@ def main():
     df = df.corr()
     df = df.stack()
     df = df.reset_index()
-    df[0] = df[0].apply(lambda x: max(x, 0))
+    # hacky remapping. turn everything under .75 into 0, and remap everything remaining to [0.5,1]
+    df[0] = df[0].apply(lambda x: 0 if x < 0.75 else 1 - ((1 - x) * 2))
     df.to_csv('data/preprocessed/similar_antibiotic_antibiotic.txt', sep='\t',
         index=False, header=False)
 

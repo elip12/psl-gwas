@@ -5,3 +5,4 @@ logs/
 *.swp
 *.pyc
 inferred-predicates/
+blast/

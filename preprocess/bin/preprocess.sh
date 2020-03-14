@@ -6,11 +6,11 @@ python3 preprocess/src/create_class_int_map.py
 # creates PSL input file for SIMILARANTIBIOTIC
 python3 preprocess/src/create_similar_antibiotic_map.py
 
-# creates PSL input file for SAMPLERESISTANCE
-python3 preprocess/src/convert_phenos_to_psl_input.py 
-
 # maps each sample to a unique int
 python3 preprocess/src/create_sample_int_map.py
+
+# creates PSL input file for SAMPLERESISTANCE
+python3 preprocess/src/convert_phenos_to_psl_input.py 
 
 # these all maximize the resources of the server
 # count all kmers in input FASTA files
