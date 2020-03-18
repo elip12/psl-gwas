@@ -1,4 +1,4 @@
-from large_file_processor import main, write_list, parse_args, load_pickle, dump_pickle
+from large_file_processor import main, write_list, parse_args, load_pickle, dump_pickle, printd
 from multiprocessing import Queue, Manager
 import numpy as np
 import pandas as pd
@@ -7,7 +7,6 @@ from matplotlib import pyplot as plt
 from collections import Counter
 
 def process(data, q, k):
-    print('process starting')
     counter = Counter()
     for line in data:
         if line.startswith('>') or len(line) < k:
@@ -15,7 +14,6 @@ def process(data, q, k):
         for i in range(len(line) - k):
             kmer = line[i: i + k]
             counter[kmer] += 1
-    print('process finishing')
     q.put(counter)
 
 def main_wrapper():
@@ -26,9 +24,9 @@ def main_wrapper():
     k = 30
 
     # input data: all input fasta files concatendated in any order
-    INPUT_FILE = 'data/contigs/blood-08-0081.fa'
+    INPUT_FILE = 'data/intermediate/samples.fa'
     # output data: a file containing all kmers in the population and their counts
-    outfile = 'data/intermediate/input_test.txt'
+    outfile = 'data/intermediate/unique_kmers.txt'
     
     # multiprocessing instances for transferring data to the main thread
     m = Manager()
@@ -42,10 +40,10 @@ def main_wrapper():
     counter = Counter()
     while not q.empty():
         counter += q.get()
-    print('finished consolidating counters')
+    printd('Finished consolidating counters.')
     with open(outfile, 'w') as f:
         f.writelines(f'{k}\t{v}\n' for k, v in counter.items())
-    print('finished writing to outfile')
+    printd('Finished writing to outfile.')
 
 if __name__ == '__main__':
     parse_args()
