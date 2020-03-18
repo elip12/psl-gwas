@@ -1,16 +1,21 @@
 import pickle
+from sys import argv
 
-def create_sample_int_map():
+def create_sample_int_map(infile):
     sim = {}
-    with open('data/intermediate/sample_int_map.txt', 'r') as f:
-        for line in f:
-            i, s = line.split()
-            s = s.split('.')[0]
-            sim[s] = i
-            sim[i] = s
-    with open('data/intermediate/sample_int_map.pickle', 'wb+') as f:
+    with open(infile, 'r') as f:
+        lines = f.readlines()
+    for i, line in enumerate(lines[1:]): # ignore header
+        name = line.split('\t')[0]
+        sim[name] = i
+        sim[i] = name
+    with open('data/intermediate/sample_int_map.pickle', 'wb') as f:
         pickle.dump(sim, f)
 
 if __name__ == '__main__':
-    create_sample_int_map()
+    if len(argv) != 2:
+        raise ValueError(
+            'Usage: python3 create_sample_int_map.py <samples>.tsv')
+    infile = argv[1]
+    create_sample_int_map(infile)
 
