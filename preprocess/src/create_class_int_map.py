@@ -5,7 +5,7 @@ def create_class_int_map():
     kim = {}
     fname = '/data/intermediate/abr_resist_phenos.tsv'
     df = pd.read_csv(fname)
-    df.drop(['Sample', 'Date', 'Species', 'Tissue'], axis=1, inplace=True)
+    df.drop(0, axis=1, inplace=True)
     cim = {}
     for i, c in enumerate(df.columns.values):
         cim[i] = c

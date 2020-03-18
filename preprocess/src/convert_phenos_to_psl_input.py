@@ -21,7 +21,8 @@ def main():
     sim = read_sim()
     cim = read_cim()
     
-    df['sample_id'] = df['ID'].apply(lambda x: sim[x])
+    df['sample_id'] = df[0].apply(lambda x: sim[x])
+    df.drop(0, axis=1, inplace=True)
     df.rename(columns=cim, inplace=True) 
     
     new = pd.DataFrame(columns=['sample_id', 'class', 'value'])
