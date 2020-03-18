@@ -1,6 +1,7 @@
 import pandas as pd
 import pickle
 
+rpath = 'data/raw'
 ipath = 'data/intermediate'
 ppath = 'data/preprocessed'
 
@@ -16,12 +17,11 @@ def read_cim():
     return cim
 
 def main():
-    df = pd.read_csv(f'{ipath}/abr_resist_phenos.tsv', delimiter='\t')
+    df = pd.read_csv(f'{rpath}/phenotypes.tsv', delimiter='\t')
     sim = read_sim()
     cim = read_cim()
     
-    df['sample_id'] = df['Sample'].apply(lambda x: sim[x])
-    df.drop(['Sample', 'Date', 'Species', 'Tissue'], axis=1, inplace=True)  
+    df['sample_id'] = df['ID'].apply(lambda x: sim[x])
     df.rename(columns=cim, inplace=True) 
     
     new = pd.DataFrame(columns=['sample_id', 'class', 'value'])
