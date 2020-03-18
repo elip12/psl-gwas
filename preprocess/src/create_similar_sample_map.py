@@ -10,7 +10,7 @@ def process(data, sim, outfile, n, q):
     sample_matrix = np.zeros((n, n))
     num_kmers = 0
     for line in data:
-        if random.random() > 0.001:
+        if random.random() > 0.01:
             continue
         num_kmers += 1
         linelist = line.split()
@@ -79,9 +79,6 @@ def main_wrapper():
     df = df[df < thresh]
     # rescale data to [0,1]
     df *= 1/thresh
-    
-    # change from similarity to dissimilarity
-    df = 1 - df
     
     # change format from
     #    c1 c2 
