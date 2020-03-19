@@ -5,7 +5,6 @@ import pandas as pd
 import random
 from matplotlib import pyplot as plt
 
-
 def process(data, sim, outfile, n, q): 
     sample_matrix = np.zeros((n, n))
     num_kmers = 0
@@ -23,8 +22,8 @@ def process(data, sim, outfile, n, q):
     q.put((num_kmers, sample_matrix))
 
 def main_wrapper():
-    # 4 processes in the pool
-    NUM_WORKERS = 4
+    # num processes in the pool
+    NUM_WORKERS = 20
 
     # input data
     INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
@@ -66,14 +65,14 @@ def main_wrapper():
     # optionally read csv for ease of restoring
     #df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', header=False)
     
-    print(df)
+    #print(df)
     
     # create similarity histogram and save it
     plt.hist(df.values, bins=10, facecolor='green')
     plt.savefig('data/intermediate/hist.png', dpi=150)
     
     # set threshold
-    thresh = 0.1
+    thresh = 0.2
 
     # cut off all values below (less similar than) threshold
     df = df[df < thresh]
