@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import pickle
+from sys import argv
 
 # class int map
 def read_cim():
@@ -8,11 +9,12 @@ def read_cim():
         cim = pickle.load(f)
     return cim
 
-def main():
-    df = pd.read_csv('data/intermediate/abr_resist_phenos.tsv', delimiter='\t')
+def main(infile):
+    df = pd.read_csv(infile, delimiter='\t')
     cim = read_cim()
     
-    df.drop(['Sample', 'Date', 'Species', 'Tissue'], axis=1, inplace=True)  
+    idcol = df.columns[0]
+    df.drop(idcol, axis=1, inplace=True)  
     df.rename(columns=cim, inplace=True) 
     df = df.corr()
     df = df.stack()
@@ -23,5 +25,9 @@ def main():
         index=False, header=False)
 
 if __name__ == '__main__':
-    main()
+    if len(argv) != 2:
+        raise ValueError(
+            'Usage: python3 create_similar_antibiotic_map.py <phenotypes>.tsv')
+    infile = argv[1]
+    main(infile)
 

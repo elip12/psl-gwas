@@ -1,7 +1,7 @@
 from large_file_processor import main, write_list, parse_args
 import pandas as pd
 import numpy as np
-from scipy.stats import fisher_exact
+#from scipy.stats import fisher_exact
 
 def process(data, outfile, THRESH, df):
     kmer_db_chunk = []
@@ -44,13 +44,13 @@ def process(data, outfile, THRESH, df):
     write_list(kmer_db_chunk, outfile)
 
 def main_wrapper():
-    NUM_WORKERS = 16
+    NUM_WORKERS = 20
     INPUT_FILE = 'data/intermediate/kmer_sample_map.txt'
     outfile = 'data/intermediate/kmer_sample_map_reduced.txt'
     THRESH = 5 # this value should depend on the min frequency in the phenotype col.
-    df = pd.read_csv('data/intermediate/abr_resist_phenos.tsv', delimiter='\t')
-    df.drop(['Date', 'Species', 'Tissue'], axis=1, inplace=True)
-    df.set_index('Sample', inplace=True)
+    df = pd.read_csv('data/raw/phenotypes.tsv', delimiter='\t')
+    idcol = df.columns[0]
+    df.set_index(idcol, inplace=True)
     main(process, NUM_WORKERS, INPUT_FILE, outfile=outfile, THRESH=THRESH, df=df)
 
 if __name__ == '__main__':

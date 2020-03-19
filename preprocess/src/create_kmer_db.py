@@ -21,7 +21,7 @@ def complement(base):
 def process(data, raw, K, outfile):
     kmers = {}
     for line in data:
-        kmer = line.split(' ')[0]
+        kmer = line.split('\t')[0]
         comp = ''.join(map(complement, kmer.split()))
         kmers[kmer] = ''
         kmers[comp] = ''
@@ -39,7 +39,7 @@ def process(data, raw, K, outfile):
     
 # defines some variables we need to pass to process, then calls main
 def main_wrapper():
-    NUM_WORKERS = 16
+    NUM_WORKERS = 20
     INPUT_FILE = 'data/intermediate/unique_kmers_reduced.txt'
     pickle_file = 'data/intermediate/raw.pickle'
     raw = load_pickle(pickle_file)

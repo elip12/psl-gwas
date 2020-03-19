@@ -15,7 +15,9 @@ def pickle_input(infile):
         lines = f.readlines()
     
     for line in lines:
-        sample, fname = line.split('\t')
+        sample, fname = line.rstrip().split('\t')
+        if not fname.endswith('.fa'):
+            continue
         with open(fname, 'r') as f:
             contiglines = f.readlines()
         seqs[sample] = [contigline.rstrip() for contigline in contiglines \
@@ -29,5 +31,5 @@ if __name__ == '__main__':
         raise ValueError(
             'Usage: python3 pickle_input.py <samples>.tsv')
     infile = argv[1]
-    pickle_input(in_dir)
+    pickle_input(infile)
 

@@ -1,9 +1,5 @@
 from large_file_processor import main, write_list, parse_args, load_pickle, dump_pickle, printd
 from multiprocessing import Queue, Manager
-import numpy as np
-import pandas as pd
-import random
-from matplotlib import pyplot as plt
 from collections import Counter
 
 def process(data, q, k):
@@ -17,8 +13,8 @@ def process(data, q, k):
     q.put(counter)
 
 def main_wrapper():
-    # 4 processes in the pool
-    NUM_WORKERS = 4
+    # num processes in the pool
+    NUM_WORKERS = 20
 
     # length of kmer
     k = 30
