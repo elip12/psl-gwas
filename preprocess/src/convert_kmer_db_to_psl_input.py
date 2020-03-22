@@ -18,7 +18,7 @@ def process(data, sim, kim, outfile):
 
 def main_wrapper():
     NUM_WORKERS = 16
-    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    INPUT_FILE = 'data/intermediate/unitig_sample_map_reduced.txt'
     sim_file = 'data/intermediate/sample_int_map.pickle'
     sim = load_pickle(sim_file)
     kim_file = 'data/intermediate/kmer_int_map.pickle'
