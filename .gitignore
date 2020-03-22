@@ -6,3 +6,4 @@ logs/
 *.pyc
 inferred-predicates/
 blast/
+*nohup.out
