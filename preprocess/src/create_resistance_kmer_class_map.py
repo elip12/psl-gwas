@@ -13,7 +13,7 @@ def process(data, cim, outfile):
 
 def main_wrapper():
     NUM_WORKERS = 20
-    INPUT_FILE = 'data/intermediate/kmer_sample_map_reduced.txt'
+    INPUT_FILE = 'data/intermediate/unitig_sample_map_reduced.txt'
     cim_file = 'data/intermediate/class_int_map.pickle'
     cim = load_pickle(cim_file)
     outfile = 'data/preprocessed/resistance_kmer_class.txt'
