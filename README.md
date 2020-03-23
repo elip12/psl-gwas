@@ -17,27 +17,28 @@ and are usable with unaligned genomes (we have only contigs of length 1000 to
 100000 bps).
 
 ## Repo structure
--   *predict-pheno*
-    Train and test a logistic regression classifier to predict the phenotype of a
-    sample.
--   *preprocess*
-    Python and bash scripts for the preprocessing pipeline
+-   *gwas*
+    PSL and bash scripts for running a psl gwas. Also includes baseline python GWAS.
 -   *postprocess*
-    Python and bash scripts for the postprocessing pipeline
+    Python and bash scripts for the postprocessing pipeline.
+-   *predict-pheno*
+    Python and bash scripts to train and test a logistic regression classifier
+    to predict the phenotype of a sample. Also includes in-progress PSL files.
+-   *preprocess*
+    Python and bash scripts for the preprocessing pipeline.
+-   *parameters.yaml*
+    In-progress. YAML file holding user-defined parameters for preprocessing.
+-   *requirements.txt*
+    Python requirements to run the preprocessing, GWAS, and postprocessing.
 
 ## Installation
 1. create virtual environment for python modules and activate it
+1. `cd` into your clone of this repo
 1. `./preprocess/bin/setup.sh`
 This will install all necessary python packages, and create the `data/`
 directory and subdirectories, which will not be tracked by git.
 
 ## Usage
-1.  Create phenotypes file. This should be a tab-separated file of the form
-    `ID    pheno1    pheno2...`
-    where ID is the unique string sample ID (unique among other samples)
-    and pheno* is in {1, 0, NA}, meaning a sample displays a phenotype,
-    does not display a phenotype, or pheno information is not known.
-    Put this file, which should be end in `.tsv`, in `data/raw/`
 1.  Create samples file. This should be a tab-separated file of the form
     `ID    path`
     where ID is the unique string sample ID (corresponding to IDs in
@@ -46,7 +47,20 @@ directory and subdirectories, which will not be tracked by git.
     Put this file, which should end in `.tsv`, in `data/raw`.
     It is fine for the FASTA files themselves to be in `data/raw/`,
     but not necessary.
-1.  more to follow...
+1.  Create phenotypes file. This should be a tab-separated file of the form
+    `ID    pheno1    pheno2...`
+    where ID is the unique string sample ID (unique among other samples)
+    and pheno* is in {1, 0, NA}, meaning a sample displays a phenotype,
+    does not display a phenotype, or pheno information is not known.
+    Put this file, which should be end in `.tsv`, in `data/raw/`
+1.  Run preprocessing pipeline: `./preprocess/bin/preprocess.sh <samples>.tsv <phenos>.tsv`.
+    This should take about 6 hours given 20 cores and 90GB available memory.
+1.  Run GWAS: `./gwas/bin/run.sh`. I cannot give a runtime estimate with current rules
+    at this time.
+1.  Run postprocessing pipeline: `./postprocess/bin/postprocess.sh`. This is still in
+    progress and there are some parameters that need to be set in the postprocessing scripts
+    themselves.
 
-
+In `data/postprocessed/`, there will be a file called `scored_kmers.fsa`. This is a fasta file
+holding the kmers with > 95% confidence to any antibiotic.
 
