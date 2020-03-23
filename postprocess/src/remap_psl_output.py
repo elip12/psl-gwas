@@ -6,7 +6,7 @@ def process(data, cim, outfile):
     chunk = []
     for line in data:
         linelist = line.split()
-        if float(linelist[2]) < 0.35: #0.9999999:
+        if float(linelist[2]) < 0.95:
             continue
         outline = f'{kim[int(linelist[0])]}\t{cim[int(linelist[1])]}\t{linelist[2]}'
         chunk.append(outline)
