@@ -67,5 +67,5 @@ holding the kmers with > 95% confidence to any antibiotic.
 ## Acknowledgements
 Thanks to the UCSC LINQS Lab and the UCSC Camps lab.
 
-## Disclaimer
-This project is open-source. There is no license as of yet.
+## License
+This project is licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
