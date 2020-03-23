@@ -64,3 +64,8 @@ directory and subdirectories, which will not be tracked by git.
 In `data/postprocessed/`, there will be a file called `scored_kmers.fsa`. This is a fasta file
 holding the kmers with > 95% confidence to any antibiotic.
 
+## Acknowledgements
+Thanks to the UCSC LINQS Lab and the UCSC Camps lab.
+
+## Disclaimer
+This project is open-source. There is no license as of yet.
