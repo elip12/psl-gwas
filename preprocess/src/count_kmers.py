@@ -35,8 +35,11 @@ def main_wrapper():
     
     counter = Counter()
     while not q.empty():
-        counter += q.get()
+        counter.update(q.get())
     printd('Finished consolidating counters.')
+    
+    num_kmers = len(counter)
+
     with open(outfile, 'w') as f:
         f.writelines(f'{k}\t{v}\n' for k, v in counter.items())
     printd('Finished writing to outfile.')
