@@ -38,46 +38,36 @@ def main_wrapper():
     m = Manager()
     q = m.Queue()
 
-    # chunkify INPUT_FILE into NUM_WORKERS parts, create MP Pool,
-    # and have each thread run process() on the chunk, with kwargs
-    main(process, NUM_WORKERS, INPUT_FILE,
-        sim=sim, outfile=outfile, n=n, q=q)
+    ## chunkify INPUT_FILE into NUM_WORKERS parts, create MP Pool,
+    ## and have each thread run process() on the chunk, with kwargs
+    #main(process, NUM_WORKERS, INPUT_FILE,
+    #   sim=sim, outfile=outfile, n=n, q=q)
     
-    # combine similarity matrices from each thread into a single matrix,
-    # and get total number of kmers sampled
-    num_kmers = 0
-    sample_matrix = np.zeros((n, n))
-    while not q.empty():
-        q_nkmers, q_matrix = q.get()
-        num_kmers += q_nkmers
-        sample_matrix += q_matrix
-    np.fill_diagonal(sample_matrix, np.nan) 
+    ## combine similarity matrices from each thread into a single matrix,
+    ## and get total number of kmers sampled
+    #num_kmers = 0
+    #sample_matrix = np.zeros((n, n))
+    #while not q.empty():
+    #    q_nkmers, q_matrix = q.get()
+    #    num_kmers += q_nkmers
+    #    sample_matrix += q_matrix
+    #np.fill_diagonal(sample_matrix, np.nan) 
     
-    # scale similarity counts to values in [0, 1]
-    sample_matrix /= num_kmers
+    ## scale similarity counts to values in [0, 1]
+    #sample_matrix /= num_kmers
 
-    df = pd.DataFrame(sample_matrix)
+    #df = pd.DataFrame(sample_matrix)
 
-    # dump to tsv file for ease of restoring, and because tsv file of similarities
-    # is a common input to other mGWAS programs
-    df.to_csv('data/intermediate/similarities.tsv', sep='\t')
+    ## dump to tsv file for ease of restoring, and because tsv file of similarities
+    ## is a common input to other mGWAS programs
+    #df.to_csv('data/intermediate/similarities.tsv', sep='\t')
     
     # optionally read csv for ease of restoring
-    #df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', header=False)
-    
-    #print(df)
+    # df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', index_col=0)
     
     # create similarity histogram and save it
     plt.hist(df.values, bins=10, facecolor='green')
-    plt.savefig('data/intermediate/hist.png', dpi=150)
-    
-    # set threshold
-    thresh = 0.2
-
-    # cut off all values below (less similar than) threshold
-    df = df[df < thresh]
-    # rescale data to [0,1]
-    df *= 1/thresh
+    plt.savefig('data/intermediate/hist_orig.png', dpi=150)
     
     # change format from
     #    c1 c2 
@@ -92,6 +82,27 @@ def main_wrapper():
     # as that is the format of PSL data files
     df = df.stack()
     df = df.reset_index()
+    
+    # set threshold; 0.75 means drop lowest 75%, keep highest 25%
+    thresh = 0.9
+    # find numeric cutoff; the lowest 75% of the data are below this value
+    cutoff = df[0].quantile(thresh)
+    # cut off all values below (less similar than) cutoff
+    df = df[df[0] > cutoff]
+    # determine new min, max, range
+    min_ = df[0].min()
+    max_ = df[0].max()
+    range_ = max_ - min_
+    # shift df left by the min so the new min is 0
+    df[0] -= min_
+    # rescale data to [0,0.5]
+    df[0] /= range_ * 2
+    # shift right by 0.5 so the new range is [0.5, 1]
+    df[0] += 0.5
+
+    # create similarity histogram and save it
+    plt.hist(df[0], bins=10, facecolor='green')
+    plt.savefig('data/intermediate/hist_scaled.png', dpi=150)
 
     # write to csv 
     df.to_csv(outfile, sep='\t', index=False, header=False)
