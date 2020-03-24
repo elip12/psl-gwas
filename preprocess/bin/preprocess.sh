@@ -32,6 +32,9 @@ python3 preprocess/src/create_kmer_db.py
 # take random sample of kmers to input data for PSL rule SIMILARSAMPLE
 python3 preprocess/src/create_similar_sample_map.py
 
+# extend kmers to unitigs as much as possible
+python3 preprocess/src/consolidate_kmer_db_to_unitigs.py
+
 # reduce kmer database with simple association test
 python3 preprocess/src/clean_kmer_db.py
 
