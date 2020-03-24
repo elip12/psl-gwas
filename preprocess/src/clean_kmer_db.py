@@ -40,8 +40,9 @@ def main_wrapper():
     df = pd.read_csv('data/raw/phenotypes.tsv', delimiter='\t')
     idcol = df.columns[0]
     df.set_index(idcol, inplace=True)
+    df = df.apply(lambda x: 1.0 if x > 1.0)
     dfres = df.fillna(0)
-    dfvul = 1 - df.fillna(1)
+    dfvul = 1 - df.fillna(1) 
     main(process, NUM_WORKERS, INPUT_FILE, outfile=outfile, THRESH=THRESH, dfres=dfres, dfvul=dfvul)
 
 if __name__ == '__main__':
