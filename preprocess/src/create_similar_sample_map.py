@@ -52,7 +52,8 @@ def main_wrapper():
     #    num_kmers += q_nkmers
     #    sample_matrix += q_matrix
     #np.fill_diagonal(sample_matrix, np.nan) 
-    
+    #sample_matrix = np.triu(sample_matrix)
+
     ## scale similarity counts to values in [0, 1]
     #sample_matrix /= num_kmers
 
@@ -63,12 +64,13 @@ def main_wrapper():
     #df.to_csv('data/intermediate/similarities.tsv', sep='\t')
     
     # optionally read csv for ease of restoring
-    # df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', index_col=0)
-    
+    df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', index_col=0)
+   
     # create similarity histogram and save it
     plt.hist(df.values, bins=10, facecolor='green')
     plt.savefig('data/intermediate/hist_orig.png', dpi=150)
-    
+   
+
     # change format from
     #    c1 c2 
     # r1 a  b
