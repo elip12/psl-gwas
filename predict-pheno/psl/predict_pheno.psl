@@ -1,1 +1,0 @@
-1.0: SimilarSample(S1, S2) & SampleResistant(S1) >> SampleResistant(S2) ^2
