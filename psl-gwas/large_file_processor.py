@@ -3,9 +3,9 @@ from os.path import getsize
 import pickle
 import argparse
 
-''' Description
+"""
 Many helper methods for processing large files.
-'''
+"""
 
 DEBUG = False
 
@@ -76,7 +76,7 @@ def chunkify(fname, size=1024):
             yield chunk_start, chunk_size
 
     # processes the file in chunks
-def main(process_fn, num_workers, fname, *args, **kwargs):
+def process_file(process_fn, num_workers, fname, *args, **kwargs):
     input_size = getsize(fname)
     with Pool(num_workers) as pool:
         jobs = []
