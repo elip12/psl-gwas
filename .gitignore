@@ -1,4 +1,4 @@
-contigs
+contigs/
 data/
 logs/
 *.jar
@@ -7,3 +7,4 @@ logs/
 inferred-predicates/
 blast/
 *nohup.out
+__pycache__/
