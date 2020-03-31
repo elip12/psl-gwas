@@ -15,6 +15,7 @@ def process(data, q, k):
 
 def main():
     params = get_params()
+    project = params['project']
     # num processes in the pool
     NUM_WORKERS = params['threads']
 
@@ -22,9 +23,9 @@ def main():
     k = params['k']
 
     # input data: all input fasta files concatendated in any order
-    INPUT_FILE = 'data/intermediate/samples.fa'
+    INPUT_FILE = f'{project}/data/intermediate/samples.fa'
     # output data: a file containing all kmers in the population and their counts
-    outfile = 'data/intermediate/unique_kmers.txt'
+    outfile = f'{project}/data/intermediate/unique_kmers.txt'
     check_outfile(outfile)
 
     # multiprocessing queue for transferring data to the main thread
@@ -41,7 +42,7 @@ def main():
     printd('Finished consolidating counters.')
    
     # write counter to file
-    write_dict(counter, outfile)
+    write_dict(counter, outfile, sep='\t')
 
 if __name__ == '__main__':
     parse_args()

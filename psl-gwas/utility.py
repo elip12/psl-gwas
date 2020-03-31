@@ -17,22 +17,33 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true',
         help='turn on debug mode')
-    parser.add_argument('--project', required=True, type=str)
+    parser.add_argument('--project', required=True, type=str,
+        help='name of project, defined with startproject.sh <name>')
+    parser.add_argument('--samples', required=True, type=str,
+        help='basename of samples file. ex: samples.tsv')
+    parser.add_argument('--phenos', required=True, type=str,
+        help='basename of phenos file. ex: phenos.tsv')
     parser.add_argument('-t', '--threads', default=2, type=int,
         help='max number of threads used concurrently')
     parser.add_argument('-m', '--mem', default=12, type=int,
         help='max amount of memory used concurrently (GB)')
     parser.add_argument('-k', '--k', default=30, type=int,
         help='kmer length in nucleotide bases')
+    parser.add_argument('--upperfreq', default=0.98, type=float,
+        help='kmer length in nucleotide base')
+    parser.add_argument('--lowerfreq', default=30, type=int,
+        help='kmer length in nucleotide bases')
+    parser.add_argument('--thresh', default=30, type=int,
+        help='kmer length in nucleotide bases')
     parser.add_argument('-p', '--param', action='store_true',
-        help=('ignore all command line options other than project and debug and use param'
-             ' file in project directory')
+        help=('ignore t, m, k, lowerfreq, upperfreq, and thresh options'
+            ' and use param file in project directory')
     args = parser.parse_args()
     global DEBUG
     DEBUG = args.debug
     global PARAMS
     if args.param:
-        PARAMS = read_yaml(args.param)
+        PARAMS = read_yaml(args.param).update({'project': args.project})
     else:
         PARAMS = vars(args)
 
