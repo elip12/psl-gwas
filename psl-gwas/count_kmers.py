@@ -1,4 +1,5 @@
-from large_file_processor import main, write_list, parse_args, load_pickle, dump_pickle, printd
+from utility import process_file, write_dict, parse_args, printd, \
+check_outfile, get_params
 from multiprocessing import Queue, Manager
 from collections import Counter
 
@@ -12,39 +13,37 @@ def process(data, q, k):
             counter[kmer] += 1
     q.put(counter)
 
-def main_wrapper():
+def main():
+    params = get_params()
     # num processes in the pool
-    NUM_WORKERS = 20
+    NUM_WORKERS = params['threads']
 
     # length of kmer
-    k = 30
+    k = params['k']
 
     # input data: all input fasta files concatendated in any order
     INPUT_FILE = 'data/intermediate/samples.fa'
     # output data: a file containing all kmers in the population and their counts
     outfile = 'data/intermediate/unique_kmers.txt'
-    
-    # multiprocessing instances for transferring data to the main thread
-    m = Manager()
-    q = m.Queue()
+    check_outfile(outfile)
+
+    # multiprocessing queue for transferring data to the main thread
+    q = Manager().Queue()
 
     # chunkify INPUT_FILE into NUM_WORKERS parts, create MP Pool,
     # and have each thread run process() on the chunk, with kwargs
-    main(process, NUM_WORKERS, INPUT_FILE,
+    process_file(process, NUM_WORKERS, INPUT_FILE,
         q=q, k=k)
     
     counter = Counter()
     while not q.empty():
         counter.update(q.get())
     printd('Finished consolidating counters.')
-    
-    num_kmers = len(counter)
-
-    with open(outfile, 'w') as f:
-        f.writelines(f'{k}\t{v}\n' for k, v in counter.items())
-    printd('Finished writing to outfile.')
+   
+    # write counter to file
+    write_dict(counter, outfile)
 
 if __name__ == '__main__':
     parse_args()
-    main_wrapper()
+    main()
 

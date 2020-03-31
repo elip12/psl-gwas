@@ -1,22 +1,44 @@
+#!/usr/bin/env python3
 from multiprocessing import Pool
-from os.path import getsize
+from os.path import getsize, isfile
 import pickle
 import argparse
+import yaml
 
 """
 Many helper methods for processing large files.
 """
 
 DEBUG = False
+PARAMS = None
 
     # parse args
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', action='store_true',
+    parser.add_argument('-d', '--debug', action='store_true',
         help='turn on debug mode')
+    parser.add_argument('--project', required=True, type=str)
+    parser.add_argument('-t', '--threads', default=2, type=int,
+        help='max number of threads used concurrently')
+    parser.add_argument('-m', '--mem', default=12, type=int,
+        help='max amount of memory used concurrently (GB)')
+    parser.add_argument('-k', '--k', default=30, type=int,
+        help='kmer length in nucleotide bases')
+    parser.add_argument('-p', '--param', action='store_true',
+        help=('ignore all command line options other than project and debug and use param'
+             ' file in project directory')
     args = parser.parse_args()
     global DEBUG
-    DEBUG = args.d
+    DEBUG = args.debug
+    global PARAMS
+    if args.param:
+        PARAMS = read_yaml(args.param)
+    else:
+        PARAMS = vars(args)
+
+def read_yaml(fname):
+    with open(fname, 'r') as f:
+        return yaml.safe_load(f)
 
 # prints only if debug mode is on
 def printd(*args, **kwargs):
@@ -37,12 +59,12 @@ def dump_pickle(data, fname):
         pickle.dump(data, f)
 
 # writes a data to a file, where each line in the file has one entry's
-# data in the dictionary, formatted as {k}{v}
-def write_dict(data, fname):
+# data in the dictionary, formatted as {k}{v}. Optional separator
+# to separate keys and values
+def write_dict(data, fname, sep=''):
     printd(f'Writing data to {fname}')
     with open(fname, 'a+') as f:
-        s = '\n'.join([f'{k}{v}' for k,v in data.items()]) + '\n'
-        f.write(s)
+        f.writelines(f'{k}{sep}{v}\n' for k,v in data.items())
 
 # writes data to a file, where each line corresponds to an element in
 # the data list
@@ -81,7 +103,11 @@ def process_file(process_fn, num_workers, fname, *args, **kwargs):
     with Pool(num_workers) as pool:
         jobs = []
         n = 0
-        size = int(input_size / num_workers) + 1
+
+        optimal_size = int(input_size / num_workers) + 1
+        max_mem_per_thread = int(10**9 * PARAMS['mem'] / PARAMS['threads'])
+        size = min(optimal_size, max_mem_per_thread)
+        
         for chunk_start, chunk_size in chunkify(fname, size):
             n += 1
             jobs.append(pool.apply_async(process_chunk,
@@ -94,3 +120,10 @@ def process_file(process_fn, num_workers, fname, *args, **kwargs):
             n += 1
             printd(f'Finished chunk {n}')    
 
+def get_params():
+    return PARAMS
+
+def check_outfile(outfile):
+    if isfile(outfile):
+        print(f'File {outfile} exists; exiting.')
+        exit(0)
