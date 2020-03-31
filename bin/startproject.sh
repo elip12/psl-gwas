@@ -48,7 +48,6 @@ echo 'Creating project data directory and subdirectories...'
 mkdir $1
 mkdir $1/data
 mkdir $1/data/raw
-mkdir $1/data/intermediate
 mkdir $1/data/preprocessed
 mkdir $1/data/postprocessed
 echo 'Successfully created project data directory and subdirectories.'
