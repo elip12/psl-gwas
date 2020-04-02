@@ -2,8 +2,9 @@ from utility import process_file, write_dict, parse_args, printd, \
 check_outfile, get_params
 from multiprocessing import Queue, Manager
 from collections import Counter
-from preprocess_helpers import get_num_lines, create_unitig_sample_map, \
+from preprocess_helpers import num_samples, create_unitig_sample_map, \
 parse_input, similar_sample
+import int_maps
 from os.path import join
 
 def create_disp_nodisp_dfs(phenos):
@@ -37,6 +38,16 @@ def main():
     similar_sample_file = join(project, 'data', 'preprocessed', 'similar_sample_sample.txt')
     check_outfile(similar_sample_file)
 
+    unitigs_file = f'{project}/data/preprocessed/unitig_sample_map.txt'
+    sim_file = f'{project}/data/preprocessed/sample_int_map.pkl'
+    pim_file = f'{project}/data/preprocessed/pheno_int_map.pkl'
+    uim_file = f'{project}/data/preprocessed/unitig_int_map.pkl'
+
+    int_maps.create_sim_file(samples, sim_file)
+    int_maps.create_pim_file(phenos, pim_file)
+    sim = load_pickle(sim_file)
+    
+
     # threshold for num samples for each kmer, pheno pair to keep
     thresh = params['thresh']
 
@@ -47,11 +58,11 @@ def main():
     seqs = parse_input(samples)
 
     # number of samples
-    num_samples = num_samples(samples)
+    n_samples = num_samples(samples)
 
     # upper and lower bounds for frequency of samples to filter kmers by
-    upper = int(params['upperfreq'] * num_samples)
-    lower = int(params['lowerfreq'] * num_samples)
+    upper = int(params['upperfreq'] * n_samples)
+    lower = int(params['lowerfreq'] * n_samples)
 
     # input data: all input fasta files concatendated in any order
     # output data: a file containing all kmers in the population and their counts
@@ -62,19 +73,20 @@ def main():
     # and have each thread run process() on the chunk, with kwargs
     process_file(create_unitig_sample_map, NUM_WORKERS, INPUT_FILE,
         raw=seqs, q=q, k=k, thresh=thresh, upper=upper, lower=lower,
-        dfdisp=dfdisp, dfnodisp=dfnodisp)
+        dfdisp=dfdisp, dfnodisp=dfnodisp, sim=sim, n=n_samples)
     
-    outfile = f'{project}/data/preprocessed/unitig_sample_map.txt'
-    check_outfile(outfile)
+    check_outfile(unitigs_file)
     
     sample_matrix = np.zeros((n, n), dtype=np.uint32)
     num_kmers = 0
     # write all chunks to output file sequentially
     while not q.empty():
         unitigs, q_num_kmers, q_sample_matrix = q.get()
-        write_list(unitigs, outfile)
+        write_list(unitigs, unitigs_file)
         num_kmers += q_num_kmers
         sample_matrix += q_sample_matrix
+
+    int_maps.create_unitig_int_map(unitigs_file, uim_file)
 
     similar_sample(sample_matrix, num_kmers, similarities_tsv,
        hist_orig_file, hist_scaled_file, similar_sample_file) 

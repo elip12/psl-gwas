@@ -135,7 +135,8 @@ def process_file(process_fn, fname, *args, **kwargs):
 def get_params():
     return PARAMS
 
-def check_outfile(outfile):
+def file_exists(outfile):
     if isfile(outfile):
-        print(f'File {outfile} exists; exiting.')
-        exit(0)
+        print(f'File {outfile} exists; ignoring.')
+        return 1
+    return 0
