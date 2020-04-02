@@ -109,8 +109,9 @@ def chunkify(fname, size=1024):
             yield chunk_start, chunk_size
 
     # processes the file in chunks
-def process_file(process_fn, num_workers, fname, *args, **kwargs):
+def process_file(process_fn, fname, *args, **kwargs):
     input_size = getsize(fname)
+    num_workers = PARAMS['threads']
     with Pool(num_workers) as pool:
         jobs = []
         n = 0
