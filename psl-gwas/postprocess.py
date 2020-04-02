@@ -20,7 +20,7 @@ def main():
     project = params['project']
     
     # define file paths
-    INPUT_FILE = join(project, 'data', 'postprocessed', 'KMERRESISTANCE.txt')
+    INPUT_FILE = join(project, 'data', 'postprocessed', 'UNITIGRESISTANCE.txt')
     pim_file = join(project, 'data', 'preprocessed', 'pheno_int_map.pkl')
     fsa_file = join(project, 'data', 'postprocessed', 'scored_unitigs.fsa')
     scored_unitigs_file = join(project, 'data', 'postprocessed', 'scored_unitigs.txt')

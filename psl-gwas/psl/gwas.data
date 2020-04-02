@@ -1,18 +1,18 @@
 predicates:
     Contains/2: closed
-    SampleResistance/2: closed
+    SamplePheno/2: closed
     SimilarSample/2: closed
-    SimilarAntibiotic/2: closed
-    KmerResistance/2: open
+    SimilarPheno/2: closed
+    UnitigPheno/2: open
 
 observations:
-    Contains: ../../data/preprocessed/contains_sample_kmer.txt
-    SampleResistance: ../../data/preprocessed/resistance_sample_class.txt
+    Contains: ../../data/preprocessed/contains_sample_unitig.txt
+    SamplePheno: ../../data/preprocessed/value_sample_pheno.txt
     SimilarSample: ../../data/preprocessed/similar_sample_sample.txt
-    SimilarAntibiotic: ../../data/preprocessed/similar_antibiotic_antibiotic.txt
+    SimilarPheno: ../../data/preprocessed/similar_pheno_pheno.txt
 
 targets:
-    KmerResistance: ../../data/preprocessed/resistance_kmer_class.txt
+    UnitigPheno: ../../data/preprocessed/value_unitig_pheno.txt
 
 truth:
 

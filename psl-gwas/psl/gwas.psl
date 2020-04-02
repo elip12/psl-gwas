@@ -1,22 +1,22 @@
 // If a sample contains a kmer, and the sample is resistant to a certain class,
 // then the kmer is associated with resistance to that class.
-0.1: Contains(s, k) & SampleResistance(s, c) >> KmerResistance(k, c) ^2
+0.1: Contains(s, k) & SamplePheno(s, c) >> UnitigPheno(k, c) ^2
 
 // If a sample contains a kmer, and the sample is not resistant to a certain
 // class, then the kmer is not associated with resistance to that class
-100.0: Contains(s, k) & !SampleResistance(s, c) >> !KmerResistance(k, c) ^2
+100.0: Contains(s, k) & !SamplePheno(s, c) >> !UnitigPheno(k, c) ^2
 
 // negative prior
-2.0: !KmerResistance(k, c) ^2
+2.0: !UnitigPheno(k, c) ^2
 
 // If two antibiotics are similar, and a kmer is resistant to one antibiotic,
 // it is likely resistant to the other antibiotic
-1.0: SimilarAntibiotic(c1, c2) & KmerResistance(k, c1) >> KmerResistance(k, c2) ^2
+1.0: SimilarPheno(c1, c2) & UnitigPheno(k, c1) >> UnitigPheno(k, c2) ^2
 
 
 // If two samples are similar, and the resistant one contains a kmer and the
 // vulnerable one does not, there is evidence the kmer causes resistance
-1.0: SimilarSample(s1, s2) & SampleResistance(s1, c) & !SampleResistance(s2, c) & Contains(s1, k) & !Contains(s2, k) >> KmerResistance(k, c) ^2
+1.0: SimilarSample(s1, s2) & SamplePheno(s1, c) & !SamplPheno(s2, c) & Contains(s1, k) & !Contains(s2, k) >> UnitigPheno(k, c) ^2
 
 
 //-------------------------------- Potential ---------------------------------
