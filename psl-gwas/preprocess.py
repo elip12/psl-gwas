@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from utility import process_file, write_dict, parse_args, printd, \
 file_exists, get_params
 from multiprocessing import Queue, Manager

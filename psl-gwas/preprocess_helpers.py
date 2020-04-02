@@ -1,4 +1,5 @@
-from random import sample
+#! usr/bin/env python3
+from random import Random
 import numpy as np
 import pandas as pd
 
@@ -85,10 +86,11 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
     return kmer_db_chunk
 
 # data is just values in dict
-def sample_kmers(data, sim, n)
+def sample_kmers(data, sim, n, seed=65665)
     sample_matrix = np.zeros((n, n), dtype=np.uint32)
     num_kmers = int(len(data) * 0.01)
-    sampled_kmers = sample(data, num_kmers)
+    rng = Random(seed)
+    sampled_kmers = rng.sample(data, num_kmers)
 
     for line in sampled_kmers:
         for i, s1_ in enumerate(line[:-1]):
