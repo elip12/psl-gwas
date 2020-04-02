@@ -6,6 +6,14 @@
 # project. The preprocessing, association testing, and postprocessing
 # code gets shared between all projects.
 ###############################################################################
+
+# copies .parameters.yaml to project parameters.yaml for user to edit,
+# removing do not edit message at top
+project_params() {
+    tail -n +3 .parameters.yaml > $1
+    chmod o+w $1
+}
+
 # ensure user inputs name
 if [[ "$#" -ne 1 ]]; then
     echo "Please specify a project name."
@@ -37,20 +45,23 @@ case $yn in
 esac
 echo
 # install/update python modules
-echo 'Updating python3 modules...'
+echo "Updating python3 modules..."
 python3 -m pip install -U pip --quiet
 python3 -m pip install -r requirements.txt --quiet
 echo 'python3 modules up to date.'
 echo
 # create project data directory. All data files PSL-GWAS generates will
 # be stored in these directories
-echo 'Creating project data directory and subdirectories...'
+echo "Creating project data directory and subdirectories..."
 mkdir $1
 mkdir $1/data
 mkdir $1/data/raw
 mkdir $1/data/preprocessed
 mkdir $1/data/postprocessed
-echo 'Successfully created project data directory and subdirectories.'
+echo "Successfully created project data directory and subdirectories."
 echo
+echo "Creating parameters file..."
+project_params "$1/parameters.yaml"
+echo "Sucessfully created parameters file."
 echo 'Done.'
 

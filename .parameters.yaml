@@ -1,18 +1,20 @@
-# NOTE: WIP
+DO NOT MODIFY THIS FILE! IF YOU CREATED A PROJECT USING THE STARTPROJECT
+SCRIPT, THERE WILL BE A COPY OF THIS FILE IN YOUR PROJECT DIRECTORY. 
+
 # This file holds parameters that will be used by the pre and post processing
 # pipelines. Currently, this file is not used.
 
 # input files holding locations of fasta files and phenotype data
-SAMPLES_FILE: data/raw/samples.tsv
-PHENOTYPES_FILE: data/raw/phenotypes.tsv
+samples: samples.tsv
+phenos: phenos.tsv
 
 # initial kmer size
-K: 30
+k: 30
 
 # in the initial count, any kmers that occur in more than MAX% or fewer than
 # MIN% of samples will be dropped.
-MAX_KMER_FREQ: 0.98
-MIN_KMER_FREQ: 0.02
+upper: 0.98
+lower: 0.02
 
 # proportion of kmers to sample when constructing distance matrix between samples
 KMER_SAMPLE_PROP: 0.01
@@ -20,7 +22,7 @@ KMER_SAMPLE_PROP: 0.01
 # for each kmer, there must exist a phenotype such that the number of samples
 # with data recorded for that phenotype is greater or equal to this threshold
 # or that kmer will be thrown out
-SAMPLES_THRESH: 5
+thresh: 5
 
 # the allowed absence/presence ratio for a kmer, phenotype pair. if no phenotypes
 # meet this ratio for a kmer, that kmer will be thrown out. For example,
@@ -30,9 +32,9 @@ SAMPLES_THRESH: 5
 PHENO_RATIO: 0.05
 
 # maximum number of threads the preprocessing will use concurrently.
-MAX_THREADS: 20
+threads: 20
 
 # maximum amount of memory in gigabytes (G) the preprocessing/gwas/postprocessing
 # will use concurrently.
-MAX_MEMORY: 100
+mem: 100
 
