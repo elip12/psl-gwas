@@ -15,7 +15,7 @@ project_params() {
 }
 
 gwas_data() {
-    cp psl-gwas/psl/gwas.psl > $1/gwas.psl
+    cp psl-gwas/psl/gwas.psl $1/gwas.psl
     sed "s/data/$1\/data/g" psl-gwas/psl/gwas.data > $1/gwas.data
     chmod o+w $1/gwas.psl $1/gwas.data
 }
