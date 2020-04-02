@@ -29,7 +29,7 @@ check_project() {
 
 check_sample() {
     sample_file="$project/data/raw/$sample"
-    if [[ -e $sample_file ]];
+    if [[ -e $sample_file ]]; then
         echo "Found sample file: $sample_file"
     else
         echo "Could not find sample file: $sample_file."
@@ -41,7 +41,7 @@ check_sample() {
 
 check_pheno() {
     pheno_file="$project/data/raw/$pheno"
-    if [[ -e $pheno_file ]];
+    if [[ -e $pheno_file ]]; then
         echo "Found pheno file: $pheno_file"
     else
         echo "Could not find pheno file: $pheno_file."
@@ -51,28 +51,36 @@ check_pheno() {
     fi
 }
 
-# ensure user inputs necessary args
-TEMP=`getopt -o d::k::\
---long project:,samples:,phenos:,threads::,mem::,upperfreq::,lowerfreq::,\
-thresh::,param::,debug:: -- "$@"`
-eval set -- "$TEMP"
+check_usage() {
+    if [[ "--" == $2 ]]; then
+        echo "No $1 given"
+        exit 1
+    fi
+}
+
+set -- "$@" "--"
 
 # extract options and their arguments into variables.
-while true ; do
+while (( "$#" )) ; do
     case "$1" in
         --project)
+            check_usage "project name" $2
             project=$2
-            check_project ; shift 2;;
+            shift 2;;
         --sample)
-            sample=$2 ; shift 2;;
+            check_usage "sample file name" $2
+            sample=$2
+            shift 2;;
         --pheno)
-            pheno=$2 ; shift 2;;
-        -d|--debug) ; shift;;
-        --) shift 2; break ;;
-        *) echo "Internal error!" ; exit 1 ;;
+            check_usage "pheno file name" $2
+            pheno=$2
+            shift 2;;
+        -d|--debug) shift;;
+        --) shift;;
+        *) echo "Invalid param" ; exit 1;;
     esac
 done
-
+check_project
 check_sample
 check_pheno
 
@@ -125,20 +133,19 @@ echo
 # runs preprocessing pipeline
 run_preprocess() {
     echo "Running preprocessing pipeline"
-    ./bin/preprocess.sh $ARGS
+    #./bin/preprocess.sh $ARGS
 }
 
 # runs psl assocations test
 run_psl() {
     echo "Running association test"
-    ./bin/prep_psl_data.sh $ARGS
-    ./bin/run_psl.sh $ARGS
+    #./bin/run_psl.sh $ARGS
 }
 
 # runs postprocessing pipeline
 run_postprocess() {
     echo "Running postprocessing pipeline"
-    ./bin/postprocess.sh $ARGS
+    #./bin/postprocess.sh $ARGS
 }
 
 # run required pipelines idempotently
