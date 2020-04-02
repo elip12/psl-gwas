@@ -1,5 +1,5 @@
 from utility import process_file, write_dict, parse_args, printd, \
-check_outfile, get_params
+file_exists, get_params
 from multiprocessing import Queue, Manager
 from collections import Counter
 from preprocess_helpers import num_samples, create_unitig_sample_map, \
@@ -36,7 +36,7 @@ def main():
     hist_orig_file = join(project, 'data', 'preprocessed', 'hist_orig.png')
     hist_scaled_file = join(project, 'data', 'preprocessed', 'hist_scaled.png')
     similar_sample_file = join(project, 'data', 'preprocessed', 'similar_sample_sample.txt')
-    check_outfile(similar_sample_file)
+    file_exists(similar_sample_file)
 
     unitigs_file = f'{project}/data/preprocessed/unitig_sample_map.txt'
     sim_file = f'{project}/data/preprocessed/sample_int_map.pkl'
@@ -75,7 +75,7 @@ def main():
         raw=seqs, q=q, k=k, thresh=thresh, upper=upper, lower=lower,
         dfdisp=dfdisp, dfnodisp=dfnodisp, sim=sim, n=n_samples)
     
-    check_outfile(unitigs_file)
+    file_exists(unitigs_file)
     
     sample_matrix = np.zeros((n, n), dtype=np.uint32)
     num_kmers = 0

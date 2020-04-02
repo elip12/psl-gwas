@@ -1,5 +1,5 @@
 from utility import process_file, write_dict, parse_args, printd, \
-check_outfile, get_params, write_list
+file_exists, get_params, write_list
 from multiprocessing import Queue, Manager
 from collections import Counter
 from os import remove
@@ -37,18 +37,26 @@ def main():
     project = params['project']
     k = params['k']
 
+    # define file paths
     samples_file = join(project, 'data', 'raw', params['samples'])
     outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
-    catted_samples = join(project, 'data', 'preprocessed', 'samples.fa')
-    check_outfile(outfile)
-    check_outfile(catted_samples)
-    cat_samples(samples_file, catted_samples)
+    catted_samles = join(project, 'data', 'preprocessed', 'samples.fa')
+    
+    # check if output file exists; if so, do nothing.
+    if file_exists(outfile):
+        exit(0)
+
+    # create catted samples file if it does not exist.
+    if not file_exists(catted_samples):
+        cat_samples(samples_file, catted_samples)
 
     # multiprocessing queue for transferring data to the main thread
     q = Manager().Queue()
 
+    # invoke process(...) on catted_samples files with kwargs 
     process_file(process, catted_samples, q=q, k=k)
     
+    # consolidate all threads' counters into single counter holding all kmers
     counter = Counter()
     while not q.empty():
         counter.update(q.get())
@@ -58,7 +66,8 @@ def main():
     write_dict(counter, outfile, sep='\t')
 
     # remove catted samples file
-    remove(catted_samples)
+    if file_exists(catted_samples):
+        remove(catted_samples)
 
 if __name__ == '__main__':
     parse_args()

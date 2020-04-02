@@ -137,6 +137,6 @@ def get_params():
 
 def file_exists(outfile):
     if isfile(outfile):
-        print(f'File {outfile} exists; ignoring.')
+        print(f'File {outfile} exists; skipping.')
         return 1
     return 0
