@@ -66,12 +66,16 @@ mkdir $1/data/preprocessed
 mkdir $1/data/postprocessed
 echo "Successfully created project data directory and subdirectories."
 echo
+echo "Creating project logs directory..."
+mkdir $1/logs
+echo "Successfully created project logs directory."
+echo
 echo "Creating parameters file..."
 project_params "$1/parameters.yaml"
 echo "Sucessfully created parameters file."
 echo
-echo "Creating gwas data file"
+echo "Creating project psl files..."
 gwas_data "$1"
-echo "Successfully created gwas data file."
+echo "Successfully created project psl files."
 echo 'Done.'
 
