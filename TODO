@@ -1,5 +1,4 @@
-make run sh pass args to python scripts
 update preprocess script
 update postprocess script, just use py file
 outfile fix not exit
-
+psl data prepare gotta add project to data paths
