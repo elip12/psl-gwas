@@ -3,7 +3,8 @@ check_outfile, get_params
 from multiprocessing import Queue, Manager
 from collections import Counter
 from preprocess_helpers import get_num_lines, create_unitig_sample_map, \
-parse_input
+parse_input, similar_sample
+from os.path import join
 
 def create_disp_nodisp_dfs(phenos):
     df = pd.read_csv(phenos, delimiter='\t')
@@ -29,7 +30,13 @@ def main():
     # name of phenos file
     phenos = params['phenos']
     phenos = f'{project}/data/raw/{phenos}'
-    
+
+    similarities_tsv = join(project, 'data', 'preprocessed', 'sample_similarities.tsv'
+    hist_orig_file = join(project, 'data', 'preprocessed', 'hist_orig.png')
+    hist_scaled_file = join(project, 'data', 'preprocessed', 'hist_scaled.png')
+    similar_sample_file = join(project, 'data', 'preprocessed', 'similar_sample_sample.txt')
+    check_outfile(similar_sample_file)
+
     # threshold for num samples for each kmer, pheno pair to keep
     thresh = params['thresh']
 
@@ -59,9 +66,18 @@ def main():
     
     outfile = f'{project}/data/preprocessed/unitig_sample_map.txt'
     check_outfile(outfile)
+    
+    sample_matrix = np.zeros((n, n), dtype=np.uint32)
+    num_kmers = 0
     # write all chunks to output file sequentially
     while not q.empty():
-        write_list(q.get(), outfile)
+        unitigs, q_num_kmers, q_sample_matrix = q.get()
+        write_list(unitigs, outfile)
+        num_kmers += q_num_kmers
+        sample_matrix += q_sample_matrix
+
+    similar_sample(sample_matrix, num_kmers, similarities_tsv,
+       hist_orig_file, hist_scaled_file, similar_sample_file) 
    
 
 if __name__ == '__main__':
