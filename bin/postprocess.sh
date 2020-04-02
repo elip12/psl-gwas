@@ -1,2 +1,2 @@
-python3 postprocess/src/remap_psl_output.py
-python3 postprocess/src/convert_scored_kmers_to_fsa.py
+#!/bin/bash
+python3 psl-gwas/postprocess.py "$@"
