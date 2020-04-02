@@ -2,27 +2,25 @@
 
 readonly PSL_VERSION='2.2.1'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
-BASE_NAME=''
-
-readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --postgres epandolf --int-ids'
+readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --int-ids'
 readonly ADDITIONAL_LEARN_OPTIONS='--learn'
 readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator'
 
-function main() {
-     trap exit SIGINT
-    
-    # ensure user inputs necessary args
-    TEMP=`getopt --long project: -- "$@"`
-    eval set -- "$TEMP"
+BASE_NAME=''
+MEM=''
 
-    # extract options and their arguments into variables.
-    while true ; do
+function main() {
+    trap exit SIGINT
+
+    ARGS=()
+    while (( "$#" )) ; do
         case "$1" in
-            --project)
-                BASE_NAME="$2" ; shift 2;;
-            *) ;;
+            --project) BASE_NAME="$2" ; shift 2;;
+            --mem) MEM="-Xmx$2G" ; shift 2;;
+            *) echo "Invalid param: $1" ; exit 1;;
         esac
     done
+    set -- $ARGS
     if [[ -z BASE_NAME ]]; then
         echo "No project name given. Aborting."
         exit 1
@@ -41,7 +39,7 @@ function main() {
 function runWeightLearning() {
     echo "Running PSL Weight Learning"
 
-    java -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java ${MEM} -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run weight learning'
         exit 60
@@ -51,7 +49,7 @@ function runWeightLearning() {
 function runEvaluation() {
     echo "Running PSL Inference"
 
-    java -Xmx90G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java ${MEM} -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run infernce'
         exit 70

@@ -7,7 +7,6 @@
 # perform the association test. Finally, it invokes the postprocessing
 # pipeline, and logs the settings used in the GWAS.
 ###############################################################################
-ARGS="$@"
 # define colors for pretty printing
 RED="\033[0;31m"
 GRN="\033[0;32m"
@@ -59,30 +58,62 @@ check_usage() {
 }
 
 set -- "$@" "--"
+PSL_OPTS=()
+PRE_OPTS=()
 
-# extract options and their arguments into variables.
 while (( "$#" )) ; do
     case "$1" in
         --project)
             check_usage "--project" $2
             project=$2
+            PSL_OPTS+=("--project" "$2")
+            PRE_OPTS+=("--project" "$2")
             shift 2;;
         --sample)
             check_usage "--sample" $2
             sample=$2
+            PRE_OPTS+=("--sample" "$2")
             shift 2;;
         --pheno)
             check_usage "--pheno" $2
             pheno=$2
+            PRE_OPTS+=("--pheno" "$2")
             shift 2;;
-        -d|--debug) shift;;
-        --threads) check_usage "--threads" $2 ; shift 2;;
-        --mem) check_usage "--mem" $2 ; shift 2;;
-        -k|--k) check_usage "-k/--k" $2 ; shift 2;;
-        --upperfreq) check_usage "--upperfreq" $2 ; shift 2;;
-        --lowerfreq) check_usage "--lowerfreq" $2 ; shift 2;;
-        --thresh) check_usage "--thresh" $2 ; shift 2;;
-        -p|--param) shift;;
+        -d|--debug)
+            PRE_OPTS+=("--project" "$2")
+            shift;;
+        --threads)
+            PRE_OPTS+=("--threads" "$2")
+            check_usage "--threads" $2
+            shift 2;;
+        --mem)
+            check_usage "--mem" $2
+            PSL_OPTS+=("--mem" "$2")
+            PRE_OPTS+=("--mem" "$2")
+            shift 2;;
+        -k|--k)
+            check_usage "-k/--k" $2
+            PRE_OPTS+=("--k" "$2")
+            shift 2;;
+        --upperfreq)
+            check_usage "--upperfreq" $2 
+            PRE_OPTS+=("--upperfreq" "$2")
+            shift 2;;
+        --lowerfreq)
+            check_usage "--lowerfreq" $2
+            PRE_OPTS+=("--lowerfreq" "$2")
+            shift 2;;
+        --thresh)
+            check_usage "--thresh" $2 
+            PRE_OPTS+=("--thresh" "$2")
+            shift 2;;
+        --postgres)
+            check_usage "--postgres" $2
+            PSL_OPTS+=("--postgres" "$2")
+            shift 2;;
+        -p|--param)
+            PRE_OPTS+=("--param")
+            shift;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
@@ -137,19 +168,19 @@ fi
 # runs preprocessing pipeline
 run_preprocess() {
     echo "Running preprocessing pipeline"
-    ./bin/preprocess.sh $ARGS
+    ./bin/preprocess.sh $PRE_OPTS
 }
 
 # runs psl assocations test
 run_psl() {
     echo "Running association test"
-    #./bin/run_psl.sh $ARGS
+    ./bin/run_psl.sh $PSL_OPTS
 }
 
 # runs postprocessing pipeline
 run_postprocess() {
     echo "Running postprocessing pipeline"
-    #./bin/postprocess.sh $ARGS
+    ./bin/postprocess.sh $PRE_OPTS
 }
 
 # run required pipelines idempotently
