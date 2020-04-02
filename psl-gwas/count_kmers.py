@@ -8,7 +8,6 @@ from os.path import join
 
 # cat all samples together
 def cat_samples(samples, outfile):
-    output_lines = []
     with open(samples, 'r') as f:
         lines = f.readlines()
     
@@ -18,7 +17,6 @@ def cat_samples(samples, outfile):
             continue
         with open(fname, 'r') as f:
             write_list(f.readlines(), outfile)
-   return seqs 
 
 # takes in a chunk of contigs, and creates a counter holding all the kmers
 # and their counts in that chunk

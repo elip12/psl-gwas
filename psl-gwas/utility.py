@@ -37,7 +37,7 @@ def parse_args():
         help='kmer length in nucleotide bases')
     parser.add_argument('-p', '--param', action='store_true',
         help=('ignore threads, mem, k, lowerfreq, upperfreq, and thresh options'
-            ' and use param file in project directory')
+            ' and use param file in project directory'))
     args = parser.parse_args()
     global DEBUG
     DEBUG = args.debug
