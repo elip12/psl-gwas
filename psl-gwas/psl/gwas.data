@@ -6,13 +6,13 @@ predicates:
     UnitigPheno/2: open
 
 observations:
-    Contains: ../../data/preprocessed/contains_sample_unitig.txt
-    SamplePheno: ../../data/preprocessed/value_sample_pheno.txt
-    SimilarSample: ../../data/preprocessed/similar_sample_sample.txt
-    SimilarPheno: ../../data/preprocessed/similar_pheno_pheno.txt
+    Contains: ./data/preprocessed/contains_sample_unitig.txt
+    SamplePheno: ./data/preprocessed/value_sample_pheno.txt
+    SimilarSample: ./data/preprocessed/similar_sample_sample.txt
+    SimilarPheno: ./data/preprocessed/similar_pheno_pheno.txt
 
 targets:
-    UnitigPheno: ../../data/preprocessed/value_unitig_pheno.txt
+    UnitigPheno: ./data/preprocessed/value_unitig_pheno.txt
 
 truth:
 
