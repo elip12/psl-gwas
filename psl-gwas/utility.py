@@ -31,9 +31,9 @@ def parse_args():
         help='kmer length in nucleotide bases')
     parser.add_argument('--upperfreq', default=0.98, type=float,
         help='kmer length in nucleotide base')
-    parser.add_argument('--lowerfreq', default=30, type=int,
+    parser.add_argument('--lowerfreq', default=0.02, type=float,
         help='kmer length in nucleotide bases')
-    parser.add_argument('--thresh', default=30, type=int,
+    parser.add_argument('--thresh', default=5, type=int,
         help='kmer length in nucleotide bases')
     parser.add_argument('-p', '--param', action='store_true',
         help=('ignore threads, mem, k, lowerfreq, upperfreq, and thresh options'
@@ -137,6 +137,6 @@ def get_params():
 
 def file_exists(outfile):
     if isfile(outfile):
-        print(f'File {outfile} exists; skipping.')
+        printd(f'File {outfile} exists; skipping.')
         return 1
     return 0

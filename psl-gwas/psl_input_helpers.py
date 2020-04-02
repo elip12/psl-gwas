@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from utility import write_list, load_pickle, printd,
+from utility import write_list, load_pickle, printd
 import pandas as pd
 import pickle
 from sys import argv
@@ -15,7 +15,7 @@ def unitig_db(data, sim, pim, uim_file, q):
         
         unitig_sample_lines = []
         for sample in linelist[1:]:
-            unitig_sample_lines.append(f'{sim[sample]}\t{kim[kmer]}\t1.0')
+            unitig_sample_lines.append(f'{sim[sample]}\t{uim[unitig]}\t1.0')
         unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
         
         num_phenos = int(len(pim) / 2)

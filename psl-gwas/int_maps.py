@@ -16,13 +16,12 @@ def create_sample_int_map(samples, sim_file):
     printd('Successfully created sample int map.')
 
 
-def create_phenos_int_map(phenos, pim_file):
+def create_pheno_int_map(phenos, pim_file):
     printd('Creating pheno int map...')
-    df = pd.read_csv(phenos, sep='\t')
     with open(phenos, 'r') as f:
         line = f.readline() # only need first line which contains headers
     pim = {}
-    for i, p in enumerate(line[1:]): # skip id column
+    for i, p in enumerate(line.split()[1:]): # skip id column
         pim[i] = p
         pim[p] = i
     with open(pim_file, 'wb') as f:

@@ -39,7 +39,7 @@ def main():
     # define file paths
     samples_file = join(project, 'data', 'raw', params['samples'])
     outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
-    catted_samles = join(project, 'data', 'preprocessed', 'samples.fa')
+    catted_samples = join(project, 'data', 'preprocessed', 'samples.fa')
     
     # check if output file exists; if so, do nothing.
     if file_exists(outfile):
