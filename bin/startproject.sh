@@ -14,6 +14,12 @@ project_params() {
     chmod o+w $1
 }
 
+gwas_data() {
+    cp psl-gwas/psl/gwas.psl > $1/gwas.psl
+    sed "s/data/$1\/data/g" psl-gwas/psl/gwas.data > $1/gwas.data
+    chmod o+w $1/gwas.psl $1/gwas.data
+}
+
 # ensure user inputs name
 if [[ "$#" -ne 1 ]]; then
     echo "Please specify a project name."
@@ -63,5 +69,9 @@ echo
 echo "Creating parameters file..."
 project_params "$1/parameters.yaml"
 echo "Sucessfully created parameters file."
+echo
+echo "Creating gwas data file"
+gwas_data "$1"
+echo "Successfully created gwas data file."
 echo 'Done.'
 
