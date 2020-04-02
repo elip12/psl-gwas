@@ -27,7 +27,7 @@ def parse_args():
         help='max number of threads used concurrently')
     parser.add_argument('--mem', default=12, type=int,
         help='max amount of memory used concurrently (GB)')
-    parser.add_argument('-k', default=30, type=int,
+    parser.add_argument('-k', '--k', default=30, type=int,
         help='kmer length in nucleotide bases')
     parser.add_argument('--upperfreq', default=0.98, type=float,
         help='kmer length in nucleotide base')
@@ -35,7 +35,7 @@ def parse_args():
         help='kmer length in nucleotide bases')
     parser.add_argument('--thresh', default=30, type=int,
         help='kmer length in nucleotide bases')
-    parser.add_argument('--param', action='store_true',
+    parser.add_argument('-p', '--param', action='store_true',
         help=('ignore threads, mem, k, lowerfreq, upperfreq, and thresh options'
             ' and use param file in project directory')
     args = parser.parse_args()

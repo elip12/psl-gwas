@@ -18,9 +18,9 @@ pheno=0
 
 check_project() {
     if [[ -d "$project" ]]; then
-        echo "Found project $project"
+        echo "Found project: $project"
     else
-        echo "Could not find project $project."
+        echo "Could not find project $project"
         echo "Did you create it with the startproject script?"
         echo "Aborting."
         exit 1
@@ -32,7 +32,7 @@ check_sample() {
     if [[ -e $sample_file ]]; then
         echo "Found sample file: $sample_file"
     else
-        echo "Could not find sample file: $sample_file."
+        echo "Could not find sample file: $sample_file"
         echo "Are you sure this file exists?"
         echo "Aborting."
         exit 1
@@ -44,7 +44,7 @@ check_pheno() {
     if [[ -e $pheno_file ]]; then
         echo "Found pheno file: $pheno_file"
     else
-        echo "Could not find pheno file: $pheno_file."
+        echo "Could not find pheno file: $pheno_file"
         echo "Are you sure this file exists?"
         echo "Aborting."
         exit 1
@@ -53,7 +53,7 @@ check_pheno() {
 
 check_usage() {
     if [[ "--" == $2 ]]; then
-        echo "No $1 given"
+        echo "$1 requires an argument"
         exit 1
     fi
 }
@@ -64,25 +64,30 @@ set -- "$@" "--"
 while (( "$#" )) ; do
     case "$1" in
         --project)
-            check_usage "project name" $2
+            check_usage "--project" $2
             project=$2
             shift 2;;
         --sample)
-            check_usage "sample file name" $2
+            check_usage "--sample" $2
             sample=$2
             shift 2;;
         --pheno)
-            check_usage "pheno file name" $2
+            check_usage "--pheno" $2
             pheno=$2
             shift 2;;
         -d|--debug) shift;;
+        --threads) check_usage "--threads" $2 ; shift 2;;
+        --mem) check_usage "--mem" $2 ; shift 2;;
+        -k|--k) check_usage "-k/--k" $2 ; shift 2;;
+        --upperfreq) check_usage "--upperfreq" $2 ; shift 2;;
+        --lowerfreq) check_usage "--lowerfreq" $2 ; shift 2;;
+        --thresh) check_usage "--thresh" $2 ; shift 2;;
+        -p|--param) shift;;
         --) shift;;
-        *) echo "Invalid param" ; exit 1;;
+        *) echo "Invalid argument: $1" ; exit 1;;
     esac
 done
 check_project
-check_sample
-check_pheno
 
 # define variables
 OPATH="$project/data/postprocessed"
@@ -99,9 +104,9 @@ echo "Checking for data files..."
 if [[ -r "$OPATH/scored_kmers.txt" ]] \
 && [[ -r "$OPATH/scored_kmers.fsa" ]]; then #TODO: add logs and meta check here
     postprocessed=1
-    echo -e "\t$Y postprocessed"
+    echo -e "$Y postprocessed"
 else
-    echo -e "\t$N postprocessed"
+    echo -e "$N postprocessed"
 fi
 # check for preprocessed files
 if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
@@ -116,24 +121,23 @@ if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
 && [[ -r "$PPATH/sample_similarities.tsv" ]] \
 && [[ -r "$PPATH/unique_kmers.txt" ]]; then
     preprocessed=1
-    echo -e "\t$Y preprocessed"
+    echo -e "$Y preprocessed"
 else
-    echo -e "\t$N preprocessed"
+    echo -e "$N preprocessed"
 fi
 # check for raw data
 if [[ -r "$RPATH/$sample" ]] \
 && [[ -r "$RPATH/$pheno" ]]; then
     raw=1
-    echo -e "\t$Y raw"
+    echo -e "$Y raw"
 else
-    echo -e "\t$N raw"
+    echo -e "$N raw"
 fi
-echo
 
 # runs preprocessing pipeline
 run_preprocess() {
     echo "Running preprocessing pipeline"
-    #./bin/preprocess.sh $ARGS
+    ./bin/preprocess.sh $ARGS
 }
 
 # runs psl assocations test
@@ -154,17 +158,15 @@ if [[ $postprocessed -eq 1 ]]; then
     echo "Exiting."
     exit 0
 elif [[ $preprocessed -eq 1 ]]; then
-    echo "Preprocessed data files found."
     run_psl && run_postprocess
     echo "Done."
     exit 0
 elif [[ $raw -eq 1 ]]; then
-    echo "Raw data files found."
     run_preprocess && run_psl && run_postprocess
     echo "Done."
     exit 0
 else
-    echo "Raw data files not found; nothing to do"
+    echo "Raw data files not found; nothing to do..."
     echo "Exiting."
     exit 0
 fi
