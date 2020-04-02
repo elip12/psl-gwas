@@ -77,9 +77,9 @@ check_sample
 check_pheno
 
 # define variables
-OPATH="$1/data/postprocessed"
-PPATH="$1/data/preprocessed"
-RPATH="$1/data/raw"
+OPATH="$project/data/postprocessed"
+PPATH="$project/data/preprocessed"
+RPATH="$project/data/raw"
 Y="$GRN\xE2\x9C\x93$NC"
 N="$RED\xE2\x9C\x97$NC"
 postprocessed=0
@@ -88,33 +88,33 @@ raw=0
 
 # check for postprocessed files
 echo "Checking for data files..."
-if [[ -e "$OPATH/scored_kmers.txt" ]] \
-&& [[ -e "$OPATH/scored_kmers.fsa" ]]; then #TODO: add logs and meta check here
+if [[ -r "$OPATH/scored_kmers.txt" ]] \
+&& [[ -r "$OPATH/scored_kmers.fsa" ]]; then #TODO: add logs and meta check here
     postprocessed=1
     echo -e "\t$Y postprocessed"
 else
     echo -e "\t$N postprocessed"
 fi
 # check for preprocessed files
-if [[ -e "$PPATH/contains_sample_unitig.txt" ]] \
-&& [[ -e "$PPATH/value_kmer_pheno.txt" ]] \
-&& [[ -e "$PPATH/value_sample_pheno.txt" ]] \
-&& [[ -e "$PPATH/similar_pheno_pheno.txt" ]] \
-&& [[ -e "$PPATH/similar_sample_sample.txt" ]] \
-&& [[ -e "$PPATH/pheno_int_map.pkl" ]] \
-&& [[ -e "$PPATH/sample_int_map.pkl" ]] \
-&& [[ -e "$PPATH/unitig_int_map.pkl" ]] \
-&& [[ -e "$PPATH/unitig_sample_map.txt" ]] \
-&& [[ -e "$PPATH/sample_similarities.tsv" ]] \
-&& [[ -e "$PPATH/unique_kmers.txt" ]]; then
+if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
+&& [[ -r "$PPATH/value_kmer_pheno.txt" ]] \
+&& [[ -r "$PPATH/value_sample_pheno.txt" ]] \
+&& [[ -r "$PPATH/similar_pheno_pheno.txt" ]] \
+&& [[ -r "$PPATH/similar_sample_sample.txt" ]] \
+&& [[ -r "$PPATH/pheno_int_map.pkl" ]] \
+&& [[ -r "$PPATH/sample_int_map.pkl" ]] \
+&& [[ -r "$PPATH/unitig_int_map.pkl" ]] \
+&& [[ -r "$PPATH/unitig_sample_map.txt" ]] \
+&& [[ -r "$PPATH/sample_similarities.tsv" ]] \
+&& [[ -r "$PPATH/unique_kmers.txt" ]]; then
     preprocessed=1
     echo -e "\t$Y preprocessed"
 else
     echo -e "\t$N preprocessed"
 fi
 # check for raw data
-if [[ -e "$RPATH/samples.tsv" ]] \
-&& [[ -e "$RPATH/phenos.tsv" ]]; then
+if [[ -r "$RPATH/$sample" ]] \
+&& [[ -r "$RPATH/$pheno" ]]; then
     raw=1
     echo -e "\t$Y raw"
 else
