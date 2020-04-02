@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from utility import write_list, load_pickle, printd,
 import pandas as pd
 import pickle

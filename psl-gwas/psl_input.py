@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from utility import process_file, write_list, parse_args, load_pickle, printd, \
 get_params, check_outfile
 from create_psl_input_helpers import unitig_db, sample_pheno, similar_pheno, \
