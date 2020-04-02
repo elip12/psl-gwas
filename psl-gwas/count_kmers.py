@@ -32,27 +32,22 @@ def process(data, q, k):
     q.put(counter)
 
 def main():
+    # load params 
     params = get_params()
     project = params['project']
-
-    samples_file = join(project, 'data', 'raw', params['samples'])
-
-    # length of kmer
     k = params['k']
 
-    # input data: all input fasta files concatendated in any order
+    samples_file = join(project, 'data', 'raw', params['samples'])
+    outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
     catted_samples = join(project, 'data', 'preprocessed', 'samples.fa')
+    check_outfile(outfile)
     check_outfile(catted_samples)
     cat_samples(samples_file, catted_samples)
-    # output data: a file containing all kmers in the population and their counts
-    outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
-    check_outfile(outfile)
 
     # multiprocessing queue for transferring data to the main thread
     q = Manager().Queue()
 
-    process_file(process, catted_samples,
-        q=q, k=k)
+    process_file(process, catted_samples, q=q, k=k)
     
     counter = Counter()
     while not q.empty():

@@ -54,7 +54,7 @@ def consolidate(data, k):
         prev_samples = this_samples
     return unitig_db_chunk
 
-def filter_unitigs(data, THRESH, dfdisp, dfnodisp):
+def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
     kmer_db_chunk = []
     nphenos = dfdisp.shape[1]
     for linelist in data:
@@ -73,9 +73,9 @@ def filter_unitigs(data, THRESH, dfdisp, dfnodisp):
 
         # 1 test per antibiotic; kmer needs to pass only 1 to avoid
         # getting filtered out
-        a = np.where((disp + nodisp >= THRESH) \
+        a = np.where((disp + nodisp >= thresh) \
                     & (disp > 0) \
-                    & (nodisp / disp < 0.05))[0]
+                    & (nodisp / disp < prop))[0]
 
         if a.size > 0:
             kmer_db_chunk.append('\t'.join(kmer_db_line))

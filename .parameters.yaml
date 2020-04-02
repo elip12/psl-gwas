@@ -24,13 +24,6 @@ KMER_SAMPLE_PROP: 0.01
 # or that kmer will be thrown out
 thresh: 5
 
-# the allowed absence/presence ratio for a kmer, phenotype pair. if no phenotypes
-# meet this ratio for a kmer, that kmer will be thrown out. For example,
-# if there is 1 phenotype of interest, a ratio of 0.05 means for each kmer,
-# there must be at least 20 samples that display the phenotype for every sample
-# that lacks it.
-PHENO_RATIO: 0.05
-
 # maximum number of threads the preprocessing will use concurrently.
 threads: 20
 
