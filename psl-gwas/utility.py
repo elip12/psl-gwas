@@ -136,7 +136,7 @@ def process_file(process_fn, fname, *args, **kwargs):
         n = 0
 
         optimal_size = int(input_size / num_workers) + 1
-        max_mem_per_thread = int(10**9 * PARAMS['mem'] / PARAMS['threads'])
+        max_mem_per_thread = int(10**9 / 2 * PARAMS['mem'] / PARAMS['threads'])
         size = min(optimal_size, max_mem_per_thread)
         
         for chunk_start, chunk_size in chunkify(fname, size):
