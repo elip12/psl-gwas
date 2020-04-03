@@ -58,61 +58,61 @@ check_usage() {
 }
 
 set -- "$@" "--"
-PSL_OPTS=()
-PRE_OPTS=()
+psl_opts=()
+pre_opts=()
 
 while (( "$#" )) ; do
     case "$1" in
         --project)
             check_usage "--project" $2
             project=$2
-            PSL_OPTS+=("--project" "$2")
-            PRE_OPTS+=("--project" "$2")
+            psl_opts+=("--project" "$2")
+            pre_opts+=("--project" "$2")
             shift 2;;
         --sample)
             check_usage "--sample" $2
             sample=$2
-            PRE_OPTS+=("--sample" "$2")
+            pre_opts+=("--sample" "$2")
             shift 2;;
         --pheno)
             check_usage "--pheno" $2
             pheno=$2
-            PRE_OPTS+=("--pheno" "$2")
+            pre_opts+=("--pheno" "$2")
             shift 2;;
         -d|--debug)
-            PRE_OPTS+=("--project" "$2")
+            pre_opts+=("--project" "$2")
             shift;;
         --threads)
-            PRE_OPTS+=("--threads" "$2")
+            pre_opts+=("--threads" "$2")
             check_usage "--threads" $2
             shift 2;;
         --mem)
             check_usage "--mem" $2
-            PSL_OPTS+=("--mem" "$2")
-            PRE_OPTS+=("--mem" "$2")
+            psl_opts+=("--mem" "$2")
+            pre_opts+=("--mem" "$2")
             shift 2;;
         -k|--k)
             check_usage "-k/--k" $2
-            PRE_OPTS+=("--k" "$2")
+            pre_opts+=("--k" "$2")
             shift 2;;
         --upperfreq)
             check_usage "--upperfreq" $2 
-            PRE_OPTS+=("--upperfreq" "$2")
+            pre_opts+=("--upperfreq" "$2")
             shift 2;;
         --lowerfreq)
             check_usage "--lowerfreq" $2
-            PRE_OPTS+=("--lowerfreq" "$2")
+            pre_opts+=("--lowerfreq" "$2")
             shift 2;;
         --thresh)
             check_usage "--thresh" $2 
-            PRE_OPTS+=("--thresh" "$2")
+            pre_opts+=("--thresh" "$2")
             shift 2;;
         --postgres)
             check_usage "--postgres" $2
-            PSL_OPTS+=("--postgres" "$2")
+            psl_opts+=("${psl_opts[@]}" "--postgres" "$2")
             shift 2;;
         -p|--param)
-            PRE_OPTS+=("--param")
+            pre_opts+=("--param")
             shift;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
@@ -141,7 +141,7 @@ else
 fi
 # check for preprocessed files
 if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
-&& [[ -r "$PPATH/value_kmer_pheno.txt" ]] \
+&& [[ -r "$PPATH/value_unitig_pheno.txt" ]] \
 && [[ -r "$PPATH/value_sample_pheno.txt" ]] \
 && [[ -r "$PPATH/similar_pheno_pheno.txt" ]] \
 && [[ -r "$PPATH/similar_sample_sample.txt" ]] \
@@ -168,19 +168,19 @@ fi
 # runs preprocessing pipeline
 run_preprocess() {
     echo "Running preprocessing pipeline"
-    ./bin/preprocess.sh $PRE_OPTS
+    ./bin/preprocess.sh ${pre_opts[@]}
 }
 
 # runs psl assocations test
 run_psl() {
     echo "Running association test"
-    ./bin/run_psl.sh $PSL_OPTS
+    ./bin/run_psl.sh ${psl_opts[@]}
 }
 
 # runs postprocessing pipeline
 run_postprocess() {
     echo "Running postprocessing pipeline"
-    ./bin/postprocess.sh $PRE_OPTS
+    ./bin/postprocess.sh ${pre_opts[@]}
 }
 
 # run required pipelines idempotently
