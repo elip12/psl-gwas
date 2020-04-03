@@ -1,4 +1,4 @@
-#! usr/bin/env python3
+#!/usr/bin/env python3
 ###############################################################################
 ##  preprocess_model.py
 ##  This file holds helper functions for preprocess.py.
@@ -100,11 +100,11 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
 
         # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
-        #a = np.where((disp + nodisp >= thresh) \
-        #            & (disp > 0) \
-        #            & (nodisp / (disp + 0.0001) < prop))[0]
-        #if a.size > 0:
-        unitig_db_chunk.append('\t'.join(unitig_db_line))
+        a = np.where((disp + nodisp >= thresh) \
+                    & (disp > 0) \
+                    & (nodisp / (disp + 0.0001) < prop))[0]
+        if a.size > 0:
+            unitig_db_chunk.append('\t'.join(unitig_db_line))
     return unitig_db_chunk
 
 # takes a random sample of kmers and creates a distance matrix between
@@ -186,21 +186,21 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df = df.reset_index()
     
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-#    thresh = 0.9
-#    # find numeric cutoff; the lowest 75% of the data are below this value
-#    cutoff = df[0].quantile(thresh)
-#    # cut off all values below (less similar than) cutoff
-#    df = df[df[0] > cutoff]
-#    # determine new min, max, range
-#    min_ = df[0].min()
-#    max_ = df[0].max()
-#    range_ = max_ - min_
-#    # shift df left by the min so the new min is 0
-#    df[0] -= min_
-#    # rescale data to [0,0.5]
-#    df[0] /= range_ * 2
-#    # shift right by 0.5 so the new range is [0.5, 1]
-#    df[0] += 0.5
+    thresh = 0.9
+    # find numeric cutoff; the lowest 75% of the data are below this value
+    cutoff = df[0].quantile(thresh)
+    # cut off all values below (less similar than) cutoff
+    df = df[df[0] > cutoff]
+    # determine new min, max, range
+    min_ = df[0].min()
+    max_ = df[0].max()
+    range_ = max_ - min_
+    # shift df left by the min so the new min is 0
+    df[0] -= min_
+    # rescale data to [0,0.5]
+    df[0] /= range_ * 2
+    # shift right by 0.5 so the new range is [0.5, 1]
+    df[0] += 0.5
 
     # create similarity histogram and save it
     plt.hist(df[0], facecolor='green')
