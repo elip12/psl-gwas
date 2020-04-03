@@ -127,13 +127,14 @@ RPATH="$project/data/raw"
 Y="$GRN\xE2\x9C\x93$NC"
 N="$RED\xE2\x9C\x97$NC"
 postprocessed=0
+processed=0
 preprocessed=0
 raw=0
 
 # check for postprocessed files
 echo "Checking for data files..."
-if [[ -r "$OPATH/scored_kmers.txt" ]] \
-&& [[ -r "$OPATH/scored_kmers.fsa" ]]; then #TODO: add logs and meta check here
+if [[ -r "$OPATH/scored_unitigs.txt" ]] \
+&& [[ -r "$OPATH/scored_unitigs.fsa" ]]; then #TODO: add logs and meta check here
     postprocessed=1
     echo -e "$Y postprocessed"
 else
@@ -189,7 +190,10 @@ if [[ $postprocessed -eq 1 ]]; then
     echo "Exiting."
     exit 0
 elif [[ $preprocessed -eq 1 ]]; then
-    run_psl && run_postprocess
+    if ! [[ -r $project/data/postprocessed/UNITIGPHENO.txt ]]; then
+        run_psl
+    fi
+    run_postprocess
     echo "Done."
     exit 0
 elif [[ $raw -eq 1 ]]; then

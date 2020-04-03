@@ -38,7 +38,7 @@ def main():
         while not q.empty():
             chunk = q.get()
             if not fsa_file_exists:
-                unitigs = [f'>{i}\n{line[0]}\n' for i, line in enumerate(chunk)]
+                unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
                 write_list(unitigs, fsa_file)
             if not scored_unitigs_file_exists:
                 values = ['\t'.join(tup) for tup in chunk]
