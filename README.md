@@ -52,6 +52,9 @@ It will create the necessary files and directories in your project directory.
 1.  Run the gwas:
     `./bin/run.sh --project <myproject> --samples <samples> --phenos <phenos> ...
     TODO: more guidance on running.
+    The processing pipeline is fully idempotent, so if you cannot run the full
+    pipeline all the way through, you can do `./bin/run.sh ...` again and it
+    will start where you left off.
 
 After it runs: in `<myproject>/data/postprocessed/`, there will be a file called
 `scored_unitigs.fsa`. This is a fasta file holding the unitigs with > 95% confidence
@@ -62,4 +65,7 @@ Thanks to the UCSC LINQS Lab and the UCSC Camps lab.
 
 ## License
 This project is licensed under the MIT license.
+
+## Future
+Ability to download test data and replicate results.
 
