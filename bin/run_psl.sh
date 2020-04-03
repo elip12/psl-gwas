@@ -1,5 +1,9 @@
 #!/bin/bash
-
+###############################################################################
+##  run_psl.sh
+##  Invokes PSL. 
+##  run.sh will parse the arguments and only give this script the ones it needs.
+###############################################################################
 readonly PSL_VERSION='2.2.1'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --int-ids'

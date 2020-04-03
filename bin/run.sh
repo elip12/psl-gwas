@@ -1,11 +1,11 @@
 #!/bin/bash
 ###############################################################################
-# run.sh
-# This script runs a GWAS. It checks for the existence of all preprocessed
-# files used in the association test. If they do not exist, it runs the
-# preprocessing pipeline to create them. It then invokes the PSL model to
-# perform the association test. Finally, it invokes the postprocessing
-# pipeline, and logs the settings used in the GWAS.
+##  run.sh
+##  This script runs a GWAS. It checks for the existence of all preprocessed
+##  files used in the association test. If they do not exist, it runs the
+##  preprocessing pipeline to create them. It then invokes the PSL model to
+##  perform the association test. Finally, it invokes the postprocessing
+##  pipeline.
 ###############################################################################
 # define colors for pretty printing
 RED="\033[0;31m"
@@ -15,6 +15,7 @@ project=0
 sample=0
 pheno=0
 
+# checks project directory exists
 check_project() {
     if [[ -d "$project" ]]; then
         echo "Found project: $project"
@@ -26,6 +27,7 @@ check_project() {
     fi
 }
 
+# checks user-given sample file exists
 check_sample() {
     sample_file="$project/data/raw/$sample"
     if [[ -e $sample_file ]]; then
@@ -38,6 +40,7 @@ check_sample() {
     fi
 }
 
+# checks user-given pheno file exists
 check_pheno() {
     pheno_file="$project/data/raw/$pheno"
     if [[ -e $pheno_file ]]; then
@@ -50,6 +53,7 @@ check_pheno() {
     fi
 }
 
+# ensures users give param value when one is required
 check_usage() {
     if [[ "--" == $2 ]]; then
         echo "$1 requires an argument"
@@ -63,7 +67,7 @@ run_preprocess() {
     ./bin/preprocess.sh ${pre_opts[@]}
 }
 
-# runs psl assocations test
+# runs psl assocation test
 run_psl() {
     echo "Running association test"
     ./bin/run_psl.sh ${psl_opts[@]}
@@ -79,7 +83,7 @@ trap exit SIGINT
 set -- "$@" "--"
 psl_opts=()
 pre_opts=()
-
+# parses command line options
 while (( "$#" )) ; do
     case "$1" in
         --project)
@@ -146,14 +150,14 @@ RPATH="$project/data/raw"
 Y="$GRN\xE2\x9C\x93$NC"
 N="$RED\xE2\x9C\x97$NC"
 postprocessed=0
-processed=0
 preprocessed=0
 raw=0
 
 # check for postprocessed files
 echo "Checking for data files..."
 if [[ -r "$OPATH/scored_unitigs.txt" ]] \
-&& [[ -r "$OPATH/scored_unitigs.fsa" ]]; then #TODO: add logs and meta check here
+&& [[ -r "$OPATH/scored_unitigs.fsa" ]] \
+&& [[ -r "$OPATH/UNITIGPHENO.txt" ]]; then
     postprocessed=1
     echo -e "$Y postprocessed"
 else
@@ -191,7 +195,7 @@ if [[ $postprocessed -eq 1 ]]; then
     echo "Exiting."
     exit 0
 elif [[ $preprocessed -eq 1 ]]; then
-    if ! [[ -r $project/data/postprocessed/UNITIGPHENO.txt ]]; then
+    if ! [[ -r "$OPATH/UNITIGPHENO.txt" ]]; then
         run_psl
     fi
     run_postprocess
@@ -202,7 +206,7 @@ elif [[ $raw -eq 1 ]]; then
     echo "Done."
     exit 0
 else
-    echo "Raw data files not found; nothing to do..."
+    echo "Raw data files not found; nothing to do."
     echo "Exiting."
     exit 0
 fi

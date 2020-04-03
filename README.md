@@ -17,19 +17,6 @@ and are usable with unaligned genomes (we have only contigs of length 1000 to
 100000 bps).
 
 ## Repo structure
--   *gwas*
-    PSL and bash scripts for running a psl gwas. Also includes baseline python GWAS.
--   *postprocess*
-    Python and bash scripts for the postprocessing pipeline.
--   *predict-pheno*
-    Python and bash scripts to train and test a logistic regression classifier
-    to predict the phenotype of a sample. Also includes in-progress PSL files.
--   *preprocess*
-    Python and bash scripts for the preprocessing pipeline.
--   *parameters.yaml*
-    In-progress. YAML file holding user-defined parameters for preprocessing.
--   *requirements.txt*
-    Python requirements to run the preprocessing, GWAS, and postprocessing.
 
 ## Installation
 1. create virtual environment for python modules and activate it

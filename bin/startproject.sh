@@ -1,10 +1,11 @@
 #!/bin/bash
 ###############################################################################
-# startproject.sh
-# This script initializes a PSL-GWAS project. The user specifies a name
-# for the project, which will have separate data and logs from any other
-# project. The preprocessing, association testing, and postprocessing
-# code gets shared between all projects.
+##  startproject.sh
+##  This script initializes a PSL-GWAS project. The user specifies a name
+##  for the project, which will have separate data and psl fiels from any other
+##  project. The preprocessing and postprocessing code gets shared between all
+##  projects. Users can customize their own psl files to take advantage of
+##  domain knowledge relating to their GWAS.
 ###############################################################################
 
 # copies .parameters.yaml to project parameters.yaml for user to edit,
@@ -14,6 +15,7 @@ project_params() {
     chmod o+w $1
 }
 
+# copies gwas psl and data files to project directory
 gwas_data() {
     cp psl-gwas/psl/gwas.psl $1/gwas.psl
     cp psl-gwas/psl/gwas.data $1/gwas.data
