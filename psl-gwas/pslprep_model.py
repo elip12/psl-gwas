@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+###############################################################################
+##  pslprep_model.py
+##  This file holds helper functions for pslprep.py
+###############################################################################
 from utility import write_list, load_pickle, printd
 import pandas as pd
 import pickle
 from sys import argv
 
-# kmer db to psl
+# convert unitig db to psl input
 def unitig_db(data, sim, pim, uim_file, q):
     uim = load_pickle(uim_file)
     unitig_sample_chunk = []
@@ -23,8 +27,7 @@ def unitig_db(data, sim, pim, uim_file, q):
         unitig_pheno_chunk.append('\n'.join(unitig_pheno_lines))
     q.put((unitig_sample_chunk, unitig_pheno_chunk))
 
-# resistance sample class
-# outfile is value_sample_pheno
+# convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):
     df = pd.read_csv(phenos, delimiter='\t')
     
@@ -44,10 +47,14 @@ def sample_pheno(phenos, sim, pim, outfile):
     df = new.dropna()
     df.to_csv(outfile, sep='\t', index=False, header=False)
 
-# similar antibiotic
+# rescale similar pheno data to have better distribution
+# cut off everything below 0.75, and stretch the remaining 25%
+# to be 0.5 <= x <= 1
 def remap_similar_pheno(series):
     return series.apply(lambda x: 0 if x < 0.75 else 1 - ((1 - x) * 2))
 
+# find correlations between phenos from input data and create pheno similarity
+# file 
 def similar_pheno(phenos, pim, outfile):
     df = pd.read_csv(phenos, delimiter='\t')
     

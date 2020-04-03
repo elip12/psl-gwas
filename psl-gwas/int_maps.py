@@ -1,4 +1,9 @@
 #!/usr/bin/env/python3
+###############################################################################
+##  int_maps.py
+##  This file holds helper functions for creating dict mappings between
+##  samples/phenos/unitigs and integers. Useful for speeding up PSL.
+###############################################################################
 import pickle
 from utility import printd
 
@@ -26,7 +31,7 @@ def create_pheno_int_map(phenos, pim_file):
         pim[p] = i
     with open(pim_file, 'wb') as f:
         pickle.dump(pim, f)
-    printd('Successfully created phenos int map.')
+    printd('Successfully created pheno int map.')
 
 
 def create_unitig_int_map(unitigs, uim_file):

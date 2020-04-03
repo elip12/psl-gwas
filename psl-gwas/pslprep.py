@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+###############################################################################
+##  pslprep.py
+##  This script creates the files PSL takes as input from other preprocessed
+##  and raw data.
+###############################################################################
 from utility import process_file, write_list, parse_args, load_pickle, printd, \
 get_params, file_exists
 from pslprep_model import unitig_db, sample_pheno, similar_pheno
@@ -8,8 +13,6 @@ from os.path import join
 def main():
     # get params
     params = get_params()
-
-    # get project name
     project = params['project']
 
     # define data paths

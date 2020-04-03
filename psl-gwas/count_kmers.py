@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+###############################################################################
+##  count_kmers.py
+##  Extracts all unique kmers from input data, and maps them to the number
+##  of times they occur.
+###############################################################################
 from utility import process_file, write_dict, parse_args, printd, \
 file_exists, get_params, write_list
 from multiprocessing import Queue, Manager
@@ -6,7 +11,7 @@ from collections import Counter
 from os import remove
 from os.path import join
 
-# cat all samples together
+# cat all sample .fa together
 def cat_samples(samples, outfile):
     with open(samples, 'r') as f:
         lines = f.readlines()
@@ -19,7 +24,7 @@ def cat_samples(samples, outfile):
             write_list(f.readlines(), outfile)
 
 # takes in a chunk of contigs, and creates a counter holding all the kmers
-# and their counts in that chunk
+# and their counts in that chunk.
 def process(data, q, k):
     counter = Counter()
     for line in data:
@@ -52,7 +57,7 @@ def main():
     # multiprocessing queue for transferring data to the main thread
     q = Manager().Queue()
 
-    # invoke process(...) on catted_samples files with kwargs 
+    # invoke process(...) on catted_samples files with kwargs, for each thread
     process_file(process, catted_samples, q=q, k=k)
     
     # consolidate all threads' counters into single counter holding all kmers

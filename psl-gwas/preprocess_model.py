@@ -1,5 +1,9 @@
 #! usr/bin/env python3
-from random import Random
+###############################################################################
+##  preprocess_model.py
+##  This file holds helper functions for preprocess.py.
+###############################################################################
+from random import Random, randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,16 +11,22 @@ import matplotlib.pyplot as plt
 # global complement map, only needs to be created once
 COMPLEMENT_MAP = str.maketrans('ATCG', 'TAGC')
 
+# check if a kmer occurs in fewer than upper samples and
+# in more than lower samples. This filters out kmers that are either
+# shared by all samples, in which case they cannot cause the pheno,
+# or are present in only a few samples, in which case they will not have
+# enough statistical power.
 def kmer_frequency_fails(val, upper, lower):
     if lower <= int(val) <= upper:
         return False
     return True
 
-# for small files
+# extracts the number of samples in the GWAS from the samples file
 def num_samples(fname):
     with open(fname, 'r') as f:                                                
         return len(f.readlines()) - 1
 
+# reads in all contigs from all input files into a dictionary
 def parse_input(infile):
     seqs = {}
     with open(infile, 'r') as f:
@@ -32,10 +42,17 @@ def parse_input(infile):
             if contigline[0] in ['A','T','C','G']]
     return seqs 
 
-# DNA base complement
+# complements a kmer
 def complement(kmer):
    return kmer.translate(COMPLEMENT_MAP)
 
+# consolidates kmers into unitigs. Note that we use python's dict property
+# that remembers the order in which items are added. Because of this, kmers
+# that occur next to each other are likely to be adjacent, barring any that
+# have been filtered out or were broken up by chunkifying. This step is
+# solely for reducing the number of variables, so if we miss a few, ie there
+# are some kmers that could be consolidated into a unitig but were not,
+# it will not affect the accuracy of the computation.
 def consolidate(data, k):
     prev_line = data[0]
     prev_unitig = prev_line[0]
@@ -45,7 +62,7 @@ def consolidate(data, k):
         this_unitig = line[0]
         this_samples = line[1]
 
-        # if kmers are sequential and the same set of samples contain both kmers
+        # kmers are sequential and the same set of samples contain both kmers
         if prev_unitig[-(k - 1):] == this_unitig[0:k - 1] \
                 and len(this_samples) == len(prev_samples) \
                 and set(this_samples) == set(prev_samples):
@@ -59,37 +76,46 @@ def consolidate(data, k):
         prev_samples = this_samples
     return unitig_db_chunk
 
+# removes all unitigs that are not correlated with any pheno.
+# thresh is a user-defined value that sets the number of samples which
+# contain this unitig and have recorded pheno values.
+# prop is the minimum ratio, for any pheno, of samples that do not display
+# the pheno to samples that display the pheno, for this unitig to be kept.
 def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
-    kmer_db_chunk = []
+    unitig_db_chunk = []
     nphenos = dfdisp.shape[1]
     for linelist in data:
-        kmer_db_line = [linelist[0]]
+        unitig_db_line = [linelist[0]]
         disp = np.zeros(nphenos)
         nodisp = np.zeros(nphenos)
 
         for sample_id, _ in linelist[1]:
             if sample_id not in dfdisp.index:
                 continue
-            kmer_db_line.append(sample_id)
+            unitig_db_line.append(sample_id)
             # collect resistant/vulnerable frequencies for each antibiotic for
-            # this kmer
+            # this unitig
             disp += dfdisp.loc[sample_id].to_numpy()
             nodisp += dfnodisp.loc[sample_id].to_numpy()
 
-        # 1 test per antibiotic; kmer needs to pass only 1 to avoid
+        # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
         #a = np.where((disp + nodisp >= thresh) \
         #            & (disp > 0) \
         #            & (nodisp / (disp + 0.0001) < prop))[0]
         #if a.size > 0:
-        kmer_db_chunk.append('\t'.join(kmer_db_line))
-    return kmer_db_chunk
+        unitig_db_chunk.append('\t'.join(unitig_db_line))
+    return unitig_db_chunk
 
-# data is just values in dict
-def sample_kmers(data, sim, n, seed=65665):
+# takes a random sample of kmers and creates a distance matrix between
+# samples. Optionally takes in a random seed.
+def sample_kmers(data, sim, n, seed=None):
     sample_matrix = np.zeros((n, n)) 
     num_kmers = int(len(data) * 1.0) # 0.01
-    rng = Random(seed)
+    if seed is not None:
+        rng = Random(seed)
+    else:
+        rng = Random(randint(1,100000))
     sampled_kmers = rng.sample(data, num_kmers)
 
     for line in sampled_kmers:
@@ -104,7 +130,7 @@ def sample_kmers(data, sim, n, seed=65665):
 # Creates a dictionary of all kmers passed in data, and their complements
 # Then, iterates through genomes. If a genome contains a kmer, that genome's
 # metadata is added to dict entry for that kmer.
-# After all samples have been iterated over, writes kmers to file.
+# calls sample_kmers, consolidate, and filter_unitigs
 def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
         dfdisp, dfnodisp, sim, n):
    

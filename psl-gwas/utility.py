@@ -1,18 +1,36 @@
 #!/usr/bin/env python3
+###############################################################################
+##  utility.py
+##  This file holds many helper functions for processing large files.
+##  Here is how it works:
+##
+##  Other scripts call parse_args(), defined here, to parse the command-line
+##  arguments into a global PARAMS variable which they can then access through
+##  the get_params() function, defined here. In this way, this file can access
+##  command line args like the max number of threads allowed.
+##  
+##  Other scripts also define their own main() and process() functions.
+##  In their main method, they invoke process_file(), defined here, passing
+##  in their process() function, an input file, and some list and/or kwargs
+##  corresponding to the parameters of their process function.
+##
+##  process_file() takes in, at minimum, a process function and an input file.
+##  It splits the input file into chunks. The number of chunks is derived from
+##  the number of allowed threads, and the max allowed memory. It then invokes
+##  the script's process() function on that chunk. This allows other scripts
+##  to efficiently utilize python's multiprocessing with very little code
+##  or complexity.
+###############################################################################
 from multiprocessing import Pool
 from os.path import getsize, isfile
 import pickle
 import argparse
 import yaml
 
-"""
-Many helper methods for processing large files.
-"""
-
 DEBUG = False
 PARAMS = None
 
-    # parse args
+# parse args and set global DEBUG and PARAMS vars
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true',
@@ -47,6 +65,7 @@ def parse_args():
     else:
         PARAMS = vars(args)
 
+# read a yaml file and return the python dict
 def read_yaml(fname):
     with open(fname, 'r') as f:
         return yaml.safe_load(f)
@@ -69,7 +88,7 @@ def dump_pickle(data, fname):
     with open(fname, 'wb') as f:
         pickle.dump(data, f)
 
-# writes a data to a file, where each line in the file has one entry's
+# writes a dict to a file, where each line in the file has one entry's
 # data in the dictionary, formatted as {k}{v}. Optional separator
 # to separate keys and values
 def write_dict(data, fname, sep=''):
@@ -108,7 +127,7 @@ def chunkify(fname, size=1024):
             chunk_size = chunk_end - chunk_start
             yield chunk_start, chunk_size
 
-    # processes the file in chunks
+# processes the file in chunks
 def process_file(process_fn, fname, *args, **kwargs):
     input_size = getsize(fname)
     num_workers = PARAMS['threads']
@@ -132,9 +151,11 @@ def process_file(process_fn, fname, *args, **kwargs):
             n += 1
             printd(f'Finished chunk {n}')    
 
+# allows other scripts to access PARAMS
 def get_params():
     return PARAMS
 
+# checks existence of a file and printds a warning if it does not
 def file_exists(outfile):
     if isfile(outfile):
         printd(f'File {outfile} exists; skipping.')

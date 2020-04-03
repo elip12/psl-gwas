@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+###############################################################################
+##  preprocess.py
+##  This script maps each kmer to the samples it appears in, takes a random
+##  sample of kmers and constructs a sample similarity matrix, consolidates
+##  kmers into longer unitigs, filters unitigs for correlation with pheno,
+##  and creates integer mappings for samples, phenos, and unitigs to
+## speed up the association test.
+###############################################################################
 from utility import process_file, parse_args, printd, \
 file_exists, get_params, load_pickle, write_list
 from multiprocessing import Queue, Manager
@@ -34,6 +42,7 @@ def main():
         int_maps.create_pheno_int_map(phenos_file, pim_file)
     sim = load_pickle(sim_file)
     
+    # only do processing if output files do not exist
     if not file_exists(unitigs_file) or not file_exists(similar_sample_file):
         # dfs holding samples that display vs not display pheno
         dfdisp, dfnodisp = create_disp_nodisp_dfs(phenos_file)
@@ -52,7 +61,7 @@ def main():
        
         sample_matrix = np.zeros((n_samples, n_samples))
         num_kmers = 0
-        # write all chunks to output file sequentially
+        # write all chunks to output files sequentially
         create_unitigs_file = False
         if not file_exists(unitigs_file):
             create_unitigs_file = True
@@ -63,10 +72,11 @@ def main():
             num_kmers += q_num_kmers
             sample_matrix += q_sample_matrix
         
+        # create sample similarity file
         if not file_exists(similar_sample_file):
             similar_sample(sample_matrix, num_kmers, similarities_tsv,
                 hist_orig_file, hist_scaled_file, similar_sample_file)
-    
+    # create unitig int map
     if not file_exists(uim_file):
         int_maps.create_unitig_int_map(unitigs_file, uim_file)
 
