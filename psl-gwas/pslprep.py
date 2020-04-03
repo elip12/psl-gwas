@@ -1,67 +1,56 @@
 #!/usr/bin/env python3
-from utility import write_list, load_pickle, printd
-import pandas as pd
-import pickle
-from sys import argv
+from utility import process_file, write_list, parse_args, load_pickle, printd, \
+get_params, file_exists
+from pslprep_model import unitig_db, sample_pheno, similar_pheno
+from multiprocessing import Manager, Queue
+from os.path import join
 
-# kmer db to psl
-def unitig_db(data, sim, pim, uim_file, q):
-    uim = load_pickle(uim_file)
-    unitig_sample_chunk = []
-    unitig_pheno_chunk = []
-    for line in data:
-        linelist = line.split()
-        unitig = linelist[0]
-        
-        unitig_sample_lines = []
-        for sample in linelist[1:]:
-            unitig_sample_lines.append(f'{sim[sample]}\t{uim[unitig]}\t1.0')
-        unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
-        
-        num_phenos = int(len(pim) / 2)
-        unitig_pheno_lines = [f'{uim[unitig]}\t{i}' for i in range(num_phenos)]
-        unitig_pheno_chunk.append('\n'.join(unitig_pheno_lines))
-    q.put((unitig_sample_chunk, unitig_pheno_chunk))
+def main():
+    # get params
+    params = get_params()
 
-# resistance sample class
-# outfile is value_sample_pheno
-def sample_pheno(phenos, sim, pim, outfile):
-    df = pd.read_csv(phenos, delimiter='\t')
+    # get project name
+    project = params['project']
+
+    # define data paths
+    sim_file = join(project, 'data', 'preprocessed', 'sample_int_map.pkl')
+    pim_file = join(project, 'data', 'preprocessed', 'pheno_int_map.pkl')
+    uim_file = join(project, 'data', 'preprocessed', 'unitig_int_map.pkl')
+    unitig_sample_map_file = join(project, 'data', 'preprocessed', 'unitig_sample_map.txt')
+    phenos_file = join(project, 'data', 'raw', params['phenos'])
+    contains_sample_unitig_file = join(project, 'data', 'preprocessed', 'contains_sample_unitig.txt')
+    value_sample_pheno_file = join(project, 'data', 'preprocessed', 'value_sample_pheno.txt')
+    value_unitig_pheno_file = join(project, 'data', 'preprocessed', 'value_unitig_pheno.txt')
+    similar_pheno_pheno_file = join(project, 'data', 'preprocessed', 'similar_pheno_pheno.txt')
+   
+    sim = load_pickle(sim_file)
+    pim = load_pickle(pim_file)
+
+    # create smaller psl input files that can be efficiently done w 1 thread
+    if not file_exists(value_sample_pheno_file):
+        sample_pheno(phenos_file, sim, pim, value_sample_pheno_file)
+    if not file_exists(similar_pheno_pheno_file):
+        similar_pheno(phenos_file, pim, similar_pheno_pheno_file)
     
-    idcol = df.columns[0]
-    df['sample_id'] = df[idcol].apply(lambda x: sim[x])
-    df.drop(idcol, axis=1, inplace=True)
-    df.rename(columns=pim, inplace=True) 
-    
-    new = pd.DataFrame(columns=['sample_id', 'pheno', 'value'])
-    for col in df:
-        if col != 'sample_id':
-            slice_ = df[['sample_id', col]].copy()
-            slice_['pheno'] = col
-            slice_.rename(columns={col: 'value'}, inplace=True)
-            new = pd.concat([new, slice_[['sample_id', 'value', 'pheno']]],
-                ignore_index=True, sort=False) 
-    df = new.dropna()
-    df.to_csv(outfile, sep='\t', index=False, header=False)
+    contains_exists = file_exists(contains_sample_unitig_file)
+    value_exists = file_exists(value_unitig_pheno_file)
+    if not contains_exists or not value_exists:
+        # instantiate local vars to be passed to worker processes
+        sim = load_pickle(sim_file)
+        pim = load_pickle(pim_file)
+        q = Manager().Queue()
+        # instantiate worker processes to process large unitig file
+        process_file(unitig_db, unitig_sample_map_file, sim=sim, pim=pim, uim_file=uim_file, q=q)
 
-# similar antibiotic
-def remap_similar_pheno(series):
-    return series.apply(lambda x: 0 if x < 0.75 else 1 - ((1 - x) * 2))
-
-def similar_pheno(phenos, pim, outfile):
-    df = pd.read_csv(phenos, delimiter='\t')
-    
-    idcol = df.columns[0]
-    df.drop(idcol, axis=1, inplace=True)  
-    df.rename(columns=pim, inplace=True) 
-    df = df.corr()
-    df = df.stack()
-    df = df.reset_index()
-    # turn everything under .75 into 0, and remap everything remaining to [0.5,1]
-    df[0] = remap_similar_pheno(df[0])
-    df.to_csv(outfile, sep='\t', index=False, header=False)
-
+        # drain queue and write to output files sequentially
+        while not q.empty():
+            unitig_sample_chunk, unitig_pheno_chunk = q.get()
+            if not contains_exists:
+                write_list(unitig_sample_chunk, contains_sample_unitig_file)
+            if not value_exists:
+                write_list(unitig_pheno_chunk, value_unitig_pheno_file)
 
 if __name__ == '__main__':
     parse_args()
-    main_wrapper()
+    main()
+
