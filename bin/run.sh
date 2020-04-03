@@ -57,6 +57,25 @@ check_usage() {
     fi
 }
 
+# runs preprocessing pipeline
+run_preprocess() {
+    echo "Running preprocessing pipeline"
+    ./bin/preprocess.sh ${pre_opts[@]}
+}
+
+# runs psl assocations test
+run_psl() {
+    echo "Running association test"
+    ./bin/run_psl.sh ${psl_opts[@]}
+}
+
+# runs postprocessing pipeline
+run_postprocess() {
+    echo "Running postprocessing pipeline"
+    ./bin/postprocess.sh ${pre_opts[@]}
+}
+
+trap exit SIGINT 
 set -- "$@" "--"
 psl_opts=()
 pre_opts=()
@@ -166,24 +185,6 @@ else
     echo -e "$N raw"
 fi
 
-# runs preprocessing pipeline
-run_preprocess() {
-    echo "Running preprocessing pipeline"
-    ./bin/preprocess.sh ${pre_opts[@]}
-}
-
-# runs psl assocations test
-run_psl() {
-    echo "Running association test"
-    ./bin/run_psl.sh ${psl_opts[@]}
-}
-
-# runs postprocessing pipeline
-run_postprocess() {
-    echo "Running postprocessing pipeline"
-    ./bin/postprocess.sh ${pre_opts[@]}
-}
-
 # run required pipelines idempotently
 if [[ $postprocessed -eq 1 ]]; then
     echo "Postprocessed data files found; nothing to do."
@@ -205,4 +206,3 @@ else
     echo "Exiting."
     exit 0
 fi
-

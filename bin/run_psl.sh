@@ -17,10 +17,10 @@ function main() {
         case "$1" in
             --project) BASE_NAME="$2" ; shift 2;;
             --mem) MEM="-Xmx$2G" ; shift 2;;
-            *) echo "Invalid param: $1" ; exit 1;;
+            *) ARGS+=("$1") ; shift ;;
         esac
     done
-    set -- $ARGS
+    set -- ${ARGS[@]}
     if [[ -z BASE_NAME ]]; then
         echo "No project name given. Aborting."
         exit 1
