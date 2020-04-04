@@ -115,11 +115,13 @@ def sample_kmers(data, sim, n, seed=None):
         rng = Random(seed)
     else:
         rng = Random(randint(1,100000))
+    num_kmers = 0
 
     for line in data:
         if rng.random() > 0.01:
             continue
-        for i, s1_ in enumerate(line[:-1]):
+        num_kmers += 1
+        for i, s1_ in enumerate(line[1]):
             s1 = s1_[0]
             for s2_ in line[i + 1:]:
                 s2 = s2_[0]
@@ -153,10 +155,11 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                     kmer = contig[i: i + k]
                     if kmer in kmers:
                         kmers[kmer].append((raw_id, c_id))
-    kmers = {k:v for k,v in kmers.items() if len(v) > 0} 
-    num_kmers, sample_matrix = sample_kmers(kmers.values(), sim, n)
-    unitigs = consolidate(kmers.items(), k)
-    unitigs = filter_unitigs(unitigs, thresh, dfdisp, dfnodisp)
+    # convert kmer dict to list keeping only kmers that appear in data
+    kmers = [(k, v) for k,v in kmers.items() if len(v) > 0]
+    num_kmers, sample_matrix = sample_kmers(kmers, sim, n)
+    kmers = consolidate(kmers, k)
+    kmers = filter_unitigs(kmers, thresh, dfdisp, dfnodisp)
     q.put((unitigs, num_kmers, sample_matrix))
 
     ## combine similarity matrices from each thread into a single matrix,
