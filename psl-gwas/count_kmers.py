@@ -66,7 +66,6 @@ def main():
         counter.update(q.get())
     printd('Finished consolidating counters.')
 
-   
     # write counter to file
     write_dict(counter, outfile, sep='\t')
     
