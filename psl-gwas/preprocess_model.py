@@ -91,13 +91,13 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
         disp = sum(dfdisp.loc[sample_id].to_numpy() for sample_id in line[1:])
         nodisp = sum(dfnodisp.loc[sample_id].to_numpy() for sample_id in line[1:])
 
-        ## 1 test per antibiotic; unitig needs to pass only 1 to avoid
-        ## getting filtered out
-        #a = np.where((disp + nodisp >= thresh) \
-        #            & (disp > 0) \
-        #            & (nodisp / (disp + 0.0001) < prop))[0]
-        #if a.size > 0:
-        unitigs.append('\t'.join(line))
+        # 1 test per antibiotic; unitig needs to pass only 1 to avoid
+        # getting filtered out
+        a = np.where((disp + nodisp >= thresh) \
+                    & (disp > 0) \
+                    & (nodisp / (disp + 0.0001) < prop))[0]
+        if a.size > 0:
+            unitigs.append('\t'.join(line))
     return unitigs
 
 # takes a random sample of kmers and creates a distance matrix between
@@ -108,12 +108,10 @@ def sample_kmers(data, sim, n, seed=None):
         rng = Random(seed)
     else:
         rng = Random(randint(1,100000))
-    num_kmers = 0
+    num_kmers = int(len(data) * 0.01)
+    sampled = rng.sample(data, num_kmers)
 
-    for line in data:
-        if rng.random() > 1.0: #0.01
-            continue
-        num_kmers += 1
+    for line in sampled:
         for i, s1_ in enumerate(line[1:]):
             s1 = s1_[0]
             for s2_ in line[i + 1:]:
