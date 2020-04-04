@@ -10,12 +10,12 @@ from multiprocessing import Queue, Manager
 from collections import Counter
 from os import remove
 from os.path import join
+from int_maps import create_unitig_int_map
 
 # cat all sample .fa together
 def cat_samples(samples, outfile):
     with open(samples, 'r') as f:
-        lines = f.readlines()
-    
+        lines = f.readlines() 
     for line in lines:
         sample, fname = line.rstrip().split('\t')
         if not (fname.endswith('.fa') or fname.endswith('.fsa')):
@@ -45,7 +45,7 @@ def main():
     samples_file = join(project, 'data', 'raw', params['samples'])
     outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
     catted_samples = join(project, 'data', 'preprocessed', 'samples.fa')
-    
+
     # check if output file exists; if so, do nothing.
     if file_exists(outfile):
         exit(0)
@@ -65,10 +65,11 @@ def main():
     while not q.empty():
         counter.update(q.get())
     printd('Finished consolidating counters.')
+
    
     # write counter to file
     write_dict(counter, outfile, sep='\t')
-
+    
     # remove catted samples file
     if file_exists(catted_samples):
         remove(catted_samples)

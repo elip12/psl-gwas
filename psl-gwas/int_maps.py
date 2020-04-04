@@ -40,7 +40,7 @@ def create_unitig_int_map(unitigs, uim_file):
     with open(unitigs, 'r') as f:
         lines = f.readlines()
     for i, line in enumerate(lines):
-        u = line.split()[0]
+        u = line.split('\t')[0]
         uim[u] = i
         uim[i] = u
     with open(uim_file, 'wb') as f:
