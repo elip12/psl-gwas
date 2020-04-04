@@ -103,7 +103,7 @@ while (( "$#" )) ; do
             pre_opts+=("--pheno" "$2")
             shift 2;;
         -d|--debug)
-            pre_opts+=("--project" "$2")
+            pre_opts+=("--debug")
             shift;;
         --threads)
             pre_opts+=("--threads" "$2")

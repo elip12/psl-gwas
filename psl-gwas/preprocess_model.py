@@ -84,12 +84,12 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
     while(data):
         line = data.pop()
         # remove contig info and filter out all samples w/o pheno info
-        line = line[0] + [s for s,c in line[1:] if s in dfdisp.index]
+        line = [line[0], *[s for s,c in line[1:] if s in dfdisp.index]]
         
         # collect resistant/vulnerable frequencies for each antibiotic for
         # this unitig
-        disp = sum(dfdisp.loc[sample_id].to_numpy() for sample_id in linelist[1])
-        nodisp = sum(dfnodisp.loc[sample_id].to_numpy() for sample_id in linelist[1])
+        disp = sum(dfdisp.loc[sample_id].to_numpy() for sample_id in line[1:])
+        nodisp = sum(dfnodisp.loc[sample_id].to_numpy() for sample_id in line[1:])
 
         ## 1 test per antibiotic; unitig needs to pass only 1 to avoid
         ## getting filtered out
@@ -98,6 +98,7 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
         #            & (nodisp / (disp + 0.0001) < prop))[0]
         #if a.size > 0:
         unitigs.append('\t'.join(line))
+    return unitigs
 
 # takes a random sample of kmers and creates a distance matrix between
 # samples. Optionally takes in a random seed.
@@ -149,7 +150,7 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                         kmers[kmer].append((raw_id, c_id))
     # convert kmer dict to list keeping only kmers that appear in data
     kmers = [[k, *v] for k,v in kmers.items() if len(v) > 0]
-    kmers, sample_matrix = sample_kmers(kmers, sim, n)
+    num_kmers, sample_matrix = sample_kmers(kmers, sim, n)
     # consilidate() will clear kmers list as it builds unitigs list
     # with net 0 memory gain
     unitigs = consolidate(kmers, k)
