@@ -8,11 +8,22 @@ import pandas as pd
 import pickle
 from sys import argv
 
+def unitig_in_truths(unitig, seq):
+    if unitig in seq:
+        return 1
+    return 0
+    
+def pim_truths(pim, truths):
+    for pheno in truths:
+        if pheno in pim:
+            yield pim[pheno], pheno
+
 # convert unitig db to psl input
-def unitig_db(data, sim, pim, uim_file, q):
+def unitig_db(data, sim, pim, uim_file, truths, q):
     uim = load_pickle(uim_file)
     unitig_sample_chunk = []
     unitig_pheno_chunk = []
+    truth_chunk = []
     for line in data:
         linelist = line.split()
         unitig = linelist[0]
@@ -23,9 +34,14 @@ def unitig_db(data, sim, pim, uim_file, q):
         unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
         
         num_phenos = int(len(pim) / 2)
-        unitig_pheno_lines = [f'{uim[unitig]}\t{i}' for i in range(num_phenos)]
-        unitig_pheno_chunk.append('\n'.join(unitig_pheno_lines))
-    q.put((unitig_sample_chunk, unitig_pheno_chunk))
+        unitig_pheno_lines = [(f'{uim[unitig]}\t{i}',
+                unitig_in_truths(unitig, truths[pheno])
+                ) for i, pheno in pim_truths(pim, truths)]
+        truth_values = [l[1] for l in unitig_pheno_lines]
+        truth_chunk.extend(truth_values)
+        unitig_pheno_lines = [l[0] for l in unitig_pheno_lines]
+        unitig_pheno_chunk.extend(unitig_pheno_lines)
+    q.put((unitig_sample_chunk, unitig_pheno_chunk, truth_chunk))
 
 # convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):
