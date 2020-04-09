@@ -8,6 +8,17 @@ import pandas as pd
 import pickle
 from sys import argv
 
+def create_truths_dict(truths_infile):
+    truths = {}
+    with open(truths_infile, 'r') as f:
+        lines = f.readlines()
+    for i in range(0, len(lines), 2):
+        gene = lines[i][1:].rstrip()
+        seq = lines[i + 1].rstrip()
+        truths[gene] = seq
+    return truths
+        
+
 def unitig_in_truths(unitig, seq):
     if unitig in seq:
         return 1
