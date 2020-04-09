@@ -25,7 +25,15 @@ def main():
     value_sample_pheno_file = join(project, 'data', 'preprocessed', 'value_sample_pheno.txt')
     value_unitig_pheno_file = join(project, 'data', 'preprocessed', 'value_unitig_pheno.txt')
     similar_pheno_pheno_file = join(project, 'data', 'preprocessed', 'similar_pheno_pheno.txt')
-   
+    
+    # simulate truth data
+    if params.get('simulate'):
+        truths_infile = join(project, 'data', 'raw', 'genes.fa') # this might change
+        truths_dict = create_truths_dict(truths_infile)
+        truths_outfile = join(project, 'data', 'preprocess', 'truth_pheno_unitig.txt')
+    else:
+        truths_dict = None
+
     sim = load_pickle(sim_file)
     pim = load_pickle(pim_file)
 
@@ -43,15 +51,22 @@ def main():
         pim = load_pickle(pim_file)
         q = Manager().Queue()
         # instantiate worker processes to process large unitig file
-        process_file(unitig_db, unitig_sample_map_file, sim=sim, pim=pim, uim_file=uim_file, q=q)
+        process_file(unitig_db, unitig_sample_map_file, sim=sim, pim=pim,
+            uim_file=uim_file, q=q, truths=truths_dict)
 
         # drain queue and write to output files sequentially
         while not q.empty():
-            unitig_sample_chunk, unitig_pheno_chunk = q.get()
+            if params.get('simulate'):
+                unitig_sample_chunk, unitig_pheno_chunk, truths_chunk = q.get()
+            else:
+                unitig_sample_chunk, unitig_pheno_chunk = q.get()
             if not contains_exists:
                 write_list(unitig_sample_chunk, contains_sample_unitig_file)
             if not value_exists:
                 write_list(unitig_pheno_chunk, value_unitig_pheno_file)
+            if params.get('simulate') and not file_exists(truths_outfile):
+                unitig_pheno_chunk = [f'{unitig_pheno_chunk[i]}\t{truths_chunk[i]}' for i in range(len(unitig_pheno_chunk))]
+                write_list(unitig_pheno_chunk, truths_outfile)
 
 if __name__ == '__main__':
     parse_args()
