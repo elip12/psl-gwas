@@ -10,7 +10,7 @@ find_most_common() {
     done
     rm f.out
     rm f_consolidated.out
-    sort most_common_ab_genes.out | uniq -c | sort -r | head -5 > genes.out
+    sort most_common_ab_genes.out | uniq -c | sort -r  > genes.out
     rm most_common_ab_genes.out
 }
 

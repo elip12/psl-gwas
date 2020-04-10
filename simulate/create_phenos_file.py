@@ -1,7 +1,7 @@
 import pandas as pd
 from os import listdir
 
-all_samples = '../raw/samples.tsv'
+all_samples = '../../raw/samples.tsv'
 with open(all_samples, 'r') as f:
     lines = f.readlines()
 all_samples = [line.split('\t')[0] for line in lines][1:]

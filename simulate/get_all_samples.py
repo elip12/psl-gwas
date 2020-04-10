@@ -2,7 +2,7 @@ from sys import argv
 fname = argv[1]
 gene = argv[2]
 outfile = f'samples_containing_gene_{gene}.out'
-all_samples = '../raw/samples.tsv'
+all_samples = '../../raw/samples.tsv'
 
 with open(all_samples, 'r') as f:
     lines = f.readlines()
