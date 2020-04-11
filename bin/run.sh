@@ -83,6 +83,7 @@ trap exit SIGINT
 set -- "$@" "--"
 psl_opts=()
 pre_opts=()
+proj=()
 # parses command line options
 while (( "$#" )) ; do
     case "$1" in
@@ -90,7 +91,7 @@ while (( "$#" )) ; do
             check_usage "--project" $2
             project=$2
             psl_opts+=("--project" "$2")
-            pre_opts+=("--project" "$2")
+            proj+=("--project" "$2")
             shift 2;;
         --sample)
             check_usage "--sample" $2
@@ -132,7 +133,7 @@ while (( "$#" )) ; do
             shift 2;;
         --postgres)
             check_usage "--postgres" $2
-            psl_opts+=("${psl_opts[@]}" "--postgres" "$2")
+            psl_opts+=("--postgres" "$2")
             shift 2;;
         -p|--param)
             pre_opts+=("--param")
@@ -146,6 +147,7 @@ while (( "$#" )) ; do
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
 done
+pre_opts=("${proj[@]}" "${pre_opts[@]}")
 check_project
 
 # define variables

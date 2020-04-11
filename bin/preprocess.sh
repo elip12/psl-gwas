@@ -14,7 +14,12 @@
 ##  -   pslprep.py converts the preprocessed data into the form psl takes as
 ##      input.
 ###############################################################################
+CONTAINS='data/preprocessed/contains_sample_unitig.txt'
+TARGET='data/preprocessed/value_unitig_pheno.txt'
 python3 psl-gwas/count_kmers.py "$@" \
 && python3 psl-gwas/preprocess.py "$@" \
-&& python3 psl-gwas/pslprep.py "$@"
-
+&& python3 psl-gwas/pslprep.py "$@" \
+&& awk '!a[$0]++' "$1/$CONTAINS" > "$1/$CONTAINS.tmp" \
+&& mv "$1/$CONTAINS.tmp" "$1/$CONTAINS" \
+&& awk '!a[$0]++' "$1/$TARGET" > "$1/$TARGET.tmp" \
+&& mv "$1/$TARGET.tmp" "$1/$TARGET"

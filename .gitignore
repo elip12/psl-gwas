@@ -6,3 +6,5 @@ logs/
 *.pyc
 *nohup.out
 ecoli/
+train/
+ecoli_train/
