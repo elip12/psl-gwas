@@ -138,9 +138,9 @@ while (( "$#" )) ; do
         -p|--param)
             pre_opts+=("--param")
             shift;;
-        --truths)
-            check_usage "--truths" $2
-            pre_opts+=("--truths" "$2")
+        --truth)
+            check_usage "--truth" $2
+            pre_opts+=("--truth" "$2")
             psl_opts+=("--weight_learning")
             shift 2;;
         --) shift;;
