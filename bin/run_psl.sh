@@ -12,6 +12,7 @@ readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs
 
 BASE_NAME=''
 MEM=''
+runweightlearning=0
 
 function main() {
     trap exit SIGINT
@@ -21,6 +22,7 @@ function main() {
         case "$1" in
             --project) BASE_NAME="$2" ; shift 2;;
             --mem) MEM="-Xmx$2G" ; shift 2;;
+            --weight_learning) runweightlearning=1 ; shift;;
             *) ARGS+=("$1") ; shift ;;
         esac
     done
@@ -35,7 +37,9 @@ function main() {
     fetch_psl
 
     # Run PSL
-    #runWeightLearning
+    if [[ runweightlearning -eq 1 ]]; then
+        runWeightLearning "$@"
+    fi
     runEvaluation "$@"
 }
 
