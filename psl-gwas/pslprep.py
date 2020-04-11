@@ -27,7 +27,7 @@ def main():
     similar_pheno_pheno_file = join(project, 'data', 'preprocessed', 'similar_pheno_pheno.txt')
     
     # simulate truth data
-    if params.get('simulate'):
+    if params.get('truths'):
         truths_infile = join(project, 'data', 'raw', 'genes.fa') # this might change
         truths_dict = create_truths_dict(truths_infile)
         truths_outfile = join(project, 'data', 'preprocess', 'truth_pheno_unitig.txt')
@@ -56,7 +56,7 @@ def main():
 
         # drain queue and write to output files sequentially
         while not q.empty():
-            if params.get('simulate'):
+            if params.get('truths'):
                 unitig_sample_chunk, unitig_pheno_chunk, truths_chunk = q.get()
             else:
                 unitig_sample_chunk, unitig_pheno_chunk = q.get()
@@ -64,7 +64,7 @@ def main():
                 write_list(unitig_sample_chunk, contains_sample_unitig_file)
             if not value_exists:
                 write_list(unitig_pheno_chunk, value_unitig_pheno_file)
-            if params.get('simulate') and not file_exists(truths_outfile):
+            if params.get('truths') and not file_exists(truths_outfile):
                 unitig_pheno_chunk = [f'{unitig_pheno_chunk[i]}\t{truths_chunk[i]}' for i in range(len(unitig_pheno_chunk))]
                 write_list(unitig_pheno_chunk, truths_outfile)
 

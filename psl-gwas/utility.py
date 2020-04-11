@@ -56,6 +56,10 @@ def parse_args():
     parser.add_argument('-p', '--param', action='store_true',
         help=('ignore threads, mem, k, lowerfreq, upperfreq, and thresh options'
             ' and use param file in project directory'))
+    parser.add_argument('--truths', type=str,
+        help=('fasta file holding truths data for benchmarking.'
+            'Labels correspond to phenos, sequences hold genes or unitigs'
+            'that cause the phenotype'))
     args = parser.parse_args()
     global DEBUG
     DEBUG = args.debug

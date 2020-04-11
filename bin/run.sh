@@ -137,6 +137,11 @@ while (( "$#" )) ; do
         -p|--param)
             pre_opts+=("--param")
             shift;;
+        --truths)
+            check_usage "--truths" $2
+            pre_opts+=("--truths" "$2")
+            psl_opts+=("--weight_learning")
+            shift 2;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
