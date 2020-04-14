@@ -6,7 +6,7 @@
 ###############################################################################
 from utility import process_file, write_list, parse_args, load_pickle, printd, \
 get_params, file_exists
-from pslprep_model import unitig_db, sample_pheno, similar_pheno
+from pslprep_model import unitig_db, sample_pheno, similar_pheno, create_truths_dict
 from multiprocessing import Manager, Queue
 from os.path import join
 
@@ -30,7 +30,7 @@ def main():
     if params.get('truth'):
         truths_infile = join(project, 'data', 'raw', params['truth'])
         truths_dict = create_truths_dict(truths_infile)
-        truths_outfile = join(project, 'data', 'preprocess', 'truth_pheno_unitig.txt')
+        truths_outfile = join(project, 'data', 'preprocessed', 'truth_unitig_pheno.txt')
     else:
         truths_dict = None
 
@@ -45,7 +45,8 @@ def main():
     
     contains_exists = file_exists(contains_sample_unitig_file)
     value_exists = file_exists(value_unitig_pheno_file)
-    if not contains_exists or not value_exists:
+    truths_exists = file_exists(truths_outfile)
+    if not contains_exists or not value_exists or not truths_exists:
         # instantiate local vars to be passed to worker processes
         sim = load_pickle(sim_file)
         pim = load_pickle(pim_file)
@@ -64,7 +65,7 @@ def main():
                 write_list(unitig_sample_chunk, contains_sample_unitig_file)
             if not value_exists:
                 write_list(unitig_pheno_chunk, value_unitig_pheno_file)
-            if params.get('truth') and not file_exists(truths_outfile):
+            if params.get('truth') and not truths_exists:
                 unitig_pheno_chunk = [f'{unitig_pheno_chunk[i]}\t{truths_chunk[i]}' for i in range(len(unitig_pheno_chunk))]
                 write_list(unitig_pheno_chunk, truths_outfile)
 

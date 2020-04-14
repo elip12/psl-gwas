@@ -19,7 +19,7 @@ TARGET='data/preprocessed/value_unitig_pheno.txt'
 python3 psl-gwas/count_kmers.py "$@" \
 && python3 psl-gwas/preprocess.py "$@" \
 && python3 psl-gwas/pslprep.py "$@" \
-&& awk '!a[$0]++' "$1/$CONTAINS" > "$1/$CONTAINS.tmp" \
-&& mv "$1/$CONTAINS.tmp" "$1/$CONTAINS" \
-&& awk '!a[$0]++' "$1/$TARGET" > "$1/$TARGET.tmp" \
-&& mv "$1/$TARGET.tmp" "$1/$TARGET"
+&& awk '!a[$0]++' "$2/$CONTAINS" > "$2/$CONTAINS.tmp" \
+&& mv "$2/$CONTAINS.tmp" "$2/$CONTAINS" \
+&& awk '!a[$0]++' "$2/$TARGET" > "$2/$TARGET.tmp" \
+&& mv "$2/$TARGET.tmp" "$2/$TARGET"

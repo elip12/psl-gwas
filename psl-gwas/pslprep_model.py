@@ -5,6 +5,7 @@
 ###############################################################################
 from utility import write_list, load_pickle, printd
 import pandas as pd
+import numpy as np
 import pickle
 from sys import argv
 
@@ -30,7 +31,7 @@ def pim_truths(pim, truths):
             yield pim[pheno], pheno
 
 # convert unitig db to psl input
-def unitig_db(data, sim, pim, uim_file, truths=None, q):
+def unitig_db(data, sim, pim, uim_file, q, truths=None):
     uim = load_pickle(uim_file)
     unitig_sample_chunk = []
     unitig_pheno_chunk = []
@@ -66,7 +67,8 @@ def sample_pheno(phenos, sim, pim, outfile):
     df = pd.read_csv(phenos, delimiter='\t')
     
     idcol = df.columns[0]
-    df['sample_id'] = df[idcol].apply(lambda x: sim[x])
+    df['sample_id'] = df[idcol].apply(lambda x: sim[x])    # int(sim.get(x)) if sim.get(x) is not None else np.nan)
+    #df['sample_id'] = df['sample_id'].dropna()
     df.drop(idcol, axis=1, inplace=True)
     df.rename(columns=pim, inplace=True) 
     
