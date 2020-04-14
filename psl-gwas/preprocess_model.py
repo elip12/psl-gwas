@@ -7,10 +7,8 @@ from random import Random, randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utility import printd
+from utility import printd, complement
 
-# global complement map, only needs to be created once
-COMPLEMENT_MAP = str.maketrans('ATCG', 'TAGC')
 
 # check if a kmer occurs in fewer than upper samples and
 # in more than lower samples. This filters out kmers that are either
@@ -42,10 +40,6 @@ def parse_input(infile):
         seqs[sample] = [contigline.rstrip() for contigline in contiglines \
             if contigline[0] in ['A','T','C','G']]
     return seqs 
-
-# complements a kmer
-def complement(kmer):
-   return kmer.translate(COMPLEMENT_MAP)
 
 # consolidates kmers into unitigs. Note that we use python's dict property
 # that remembers the order in which items are added. Because of this, kmers
@@ -140,9 +134,7 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
         kmer, count = line.split('\t')
         if kmer_frequency_fails(count, upper, lower):
             continue
-        comp = complement(kmer)
         kmers[kmer] = []
-        kmers[comp] = []
     
     # map all kmers in chunk to samples containing them
     for count, (raw_id, seq) in enumerate(raw.items()):
@@ -151,6 +143,8 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
             if l >= k: # ensure this contig is long enough to sample
                 for i in range(l - k + 1):
                     kmer = contig[i: i + k]
+                    comp = complement(kmer)
+                    kmer = min(kmer, comp)
                     if kmer in kmers:
                         kmers[kmer].append((raw_id, c_id))
     # convert kmer dict to list keeping only kmers that appear in data

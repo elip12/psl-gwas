@@ -5,7 +5,7 @@
 ##  of times they occur.
 ###############################################################################
 from utility import process_file, write_dict, parse_args, printd, \
-file_exists, get_params, write_list
+file_exists, get_params, write_list, complement
 from multiprocessing import Queue, Manager
 from collections import Counter
 from os import remove
@@ -32,7 +32,8 @@ def process(data, q, k):
             continue
         for i in range(len(line) - k):
             kmer = line[i: i + k]
-            counter[kmer] += 1
+            comp = complement(kmer)
+            counter[min(kmer, comp)] += 1
     q.put(counter)
 
 def main():

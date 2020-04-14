@@ -27,6 +27,9 @@ import pickle
 import argparse
 import yaml
 
+# global complement map, only needs to be created once
+COMPLEMENT_MAP = str.maketrans('ATCG', 'TAGC')
+
 DEBUG = False
 PARAMS = None
 
@@ -165,3 +168,7 @@ def file_exists(outfile):
         printd(f'File {outfile} exists; skipping.')
         return 1
     return 0
+
+# complements a kmer
+def complement(kmer):
+   return kmer.translate(COMPLEMENT_MAP)
