@@ -7,6 +7,7 @@ from random import Random, randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from utility import printd
 
 # global complement map, only needs to be created once
 COMPLEMENT_MAP = str.maketrans('ATCG', 'TAGC')
@@ -54,6 +55,7 @@ def complement(kmer):
 # are some kmers that could be consolidated into a unitig but were not,
 # it will not affect the accuracy of the computation.
 def consolidate(data, k):
+    printd('Consolidating chunk...')
     prev_line = data.pop()
     prev_unitig = prev_line[0]
     unitigs = []
@@ -71,6 +73,7 @@ def consolidate(data, k):
             unitigs.append(prev_line)
         prev_line = line
         prev_unitig = this_unitig
+    printd('Finished consolidating chunk.')
     return unitigs
 
 # removes all unitigs that are not correlated with any pheno.
@@ -79,6 +82,7 @@ def consolidate(data, k):
 # prop is the minimum ratio, for any pheno, of samples that do not display
 # the pheno to samples that display the pheno, for this unitig to be kept.
 def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
+    printd('Filtering unitigs...')
     nphenos = dfdisp.shape[1]
     unitigs = []
     while(data):
@@ -98,11 +102,13 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
                     & (nodisp / (disp + 0.0001) < prop))[0]
         if a.size > 0:
             unitigs.append('\t'.join(line))
+    printd('Finished filtering unitigs.')
     return unitigs
 
 # takes a random sample of kmers and creates a distance matrix between
 # samples. Optionally takes in a random seed.
 def sample_kmers(data, sim, n, seed=None):
+    printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
     if seed is not None:
         rng = Random(seed)
@@ -118,6 +124,7 @@ def sample_kmers(data, sim, n, seed=None):
                 s2 = s2_[0]
                 sample_matrix[int(sim[s1])][int(sim[s2])] += 1 
                 sample_matrix[int(sim[s2])][int(sim[s1])] += 1
+    printd('Finished sampling kmers.')
     return num_kmers, sample_matrix
 
 # Creates a dictionary of all kmers passed in data, and their complements
@@ -126,7 +133,7 @@ def sample_kmers(data, sim, n, seed=None):
 # calls sample_kmers, consolidate, and filter_unitigs
 def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
         dfdisp, dfnodisp, sim, n):
-   
+    printd('Creating kmer sample map...') 
     # get all kmers in chunk and complement them
     kmers = {}
     for line in data:
@@ -148,6 +155,7 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                         kmers[kmer].append((raw_id, c_id))
     # convert kmer dict to list keeping only kmers that appear in data
     kmers = [[k, *v] for k,v in kmers.items() if len(v) > 0]
+    printd('Finished creating unitig sample map.')
     num_kmers, sample_matrix = sample_kmers(kmers, sim, n)
     # consilidate() will clear kmers list as it builds unitigs list
     # with net 0 memory gain
@@ -157,6 +165,7 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
     # with net 0 memory gain
     unitigs = filter_unitigs(unitigs, thresh, dfdisp, dfnodisp)
     q.put((unitigs, num_kmers, sample_matrix))
+    printd('Finished putting data in queue.')
 
     ## combine similarity matrices from each thread into a single matrix,
     ## and get total number of kmers sampled

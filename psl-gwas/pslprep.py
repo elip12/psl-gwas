@@ -45,7 +45,7 @@ def main():
     
     contains_exists = file_exists(contains_sample_unitig_file)
     value_exists = file_exists(value_unitig_pheno_file)
-    truths_exists = file_exists(truths_outfile)
+    truths_exists = file_exists(truths_outfile) if params.get('truth') else True
     if not contains_exists or not value_exists or not truths_exists:
         # instantiate local vars to be passed to worker processes
         sim = load_pickle(sim_file)
