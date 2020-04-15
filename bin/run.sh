@@ -119,14 +119,6 @@ while (( "$#" )) ; do
             check_usage "-k/--k" $2
             pre_opts+=("--k" "$2")
             shift 2;;
-        --upperfreq)
-            check_usage "--upperfreq" $2 
-            pre_opts+=("--upperfreq" "$2")
-            shift 2;;
-        --lowerfreq)
-            check_usage "--lowerfreq" $2
-            pre_opts+=("--lowerfreq" "$2")
-            shift 2;;
         --thresh)
             check_usage "--thresh" $2 
             pre_opts+=("--thresh" "$2")
