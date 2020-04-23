@@ -60,7 +60,7 @@ def consolidate(data, k):
         # kmers are sequential and the same set of samples contain both kmers
         if prev_unitig[0:k - 1] == this_unitig[-(k - 1):] \
                 and len(line) == len(prev_line) \
-                and set(line[1:]) == set(prev_line[1:]):
+                and set(line[1]) == set(prev_line[1]):
             this_unitig = this_unitig[0] + prev_unitig
             line[0] = prev_unitig
         else:
@@ -82,7 +82,7 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
     while(data):
         line = data.pop()
         # remove contig info and filter out all samples w/o pheno info
-        line = [line[0], *[s for s,c in line[1:] if s in dfdisp.index]]
+        line = [line[0], *set([s for s,c in line[1] if s in dfdisp.index])]
         
         # collect resistant/vulnerable frequencies for each antibiotic for
         # this unitig
@@ -219,9 +219,10 @@ def convert_to_binary(x):
 
 # separate phenos df into 2 dfs, one holding phenos present and 1 holding
 # phenos absent.
-def create_disp_nodisp_dfs(phenos):
+def create_disp_nodisp_dfs(phenos, sim):
     df = pd.read_csv(phenos, delimiter='\t')
     idcol = df.columns[0]
+    df[idcol] = df[idcol].applymap(sim)
     df.set_index(idcol, inplace=True)
     
     df = df.applymap(convert_to_binary)
