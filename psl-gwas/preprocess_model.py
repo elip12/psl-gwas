@@ -101,23 +101,21 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, prop=0.05):
 
 # takes a random sample of kmers and creates a distance matrix between
 # samples. Optionally takes in a random seed.
-def sample_kmers(data, sim, n, seed=None):
+def sample_kmers(data, n, seed=random.randint(1,100000)):
     printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
-    if seed is not None:
-        rng = Random(seed)
-    else:
-        rng = Random(randint(1,100000))
+    rng = Random(seed)
     num_kmers = int(len(data) * 0.01)
     sampled = rng.sample(data, num_kmers)
 
     for line in sampled:
-        for i, s1_ in enumerate(line[1:]):
+        samplelist = line[1]
+        for i, s1_ in enumerate(samplelist):
             s1 = s1_[0]
-            for s2_ in line[i + 1:]:
+            for s2_ in samplelist[i + 1:]:
                 s2 = s2_[0]
-                sample_matrix[int(sim[s1])][int(sim[s2])] += 1 
-                sample_matrix[int(sim[s2])][int(sim[s1])] += 1
+                sample_matrix[s1][s2] += 1 
+                sample_matrix[s2][s1] += 1
     printd('Finished sampling kmers.')
     return num_kmers, sample_matrix
 
@@ -146,11 +144,12 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                     comp = complement(kmer)
                     kmer = min(kmer, comp)
                     if kmer in kmers:
-                        kmers[kmer].append((raw_id, c_id))
+                        kmers[kmer].append((sim[raw_id], c_id))
     # convert kmer dict to list keeping only kmers that appear in data
-    kmers = [[k, *v] for k,v in kmers.items() if len(v) > 0]
     printd('Finished creating unitig sample map.')
-    num_kmers, sample_matrix = sample_kmers(kmers, sim, n)
+    kmers = list(kmers.items())
+    print(kmers[:10])
+    num_kmers, sample_matrix = sample_kmers(kmers, n)
     # consilidate() will clear kmers list as it builds unitigs list
     # with net 0 memory gain
     unitigs = consolidate(kmers, k)
@@ -213,9 +212,9 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
 
 def convert_to_binary(x):
     if x > 1.0:
-        return 1.0
+        return 1
     if x < 0.0:
-        return 0.0
+        return 0
     return x
 
 # separate phenos df into 2 dfs, one holding phenos present and 1 holding

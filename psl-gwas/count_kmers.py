@@ -27,11 +27,14 @@ def cat_samples(samples, outfile):
 # and their counts in that chunk.
 def process(data, q, k):
     counter = Counter()
+    testset = set('ATCG')
     for line in data:
         if line.startswith('>') or len(line) < k:
             continue
         for i in range(len(line) - k):
             kmer = line[i: i + k]
+            if set(kmer) != testset: # kmers with Ns and Ys in them
+                continue
             comp = complement(kmer)
             counter[min(kmer, comp)] += 1
     q.put(counter)

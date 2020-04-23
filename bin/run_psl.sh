@@ -7,9 +7,10 @@
 readonly PSL_VERSION='2.2.1'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --int-ids'
-readonly ADDITIONAL_LEARN_OPTIONS='--learn --eval org.linqs.psl.evaluation.statistics.RankingEvaluator'
+readonly ADDITIONAL_LEARN_OPTIONS='--learn RandomGridSearch --eval org.linqs.psl.evaluation.statistics.RankingEvaluator'
 readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.RankingEvaluator' #--infer SGDStreamingInference' 
-
+# random grid search, at least 50 iterations
+# likelihood based (gpp), search based
 BASE_NAME=''
 MEM=''
 runweightlearning=0
