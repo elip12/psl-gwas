@@ -4,13 +4,12 @@
 ##  Invokes PSL. 
 ##  run.sh will parse the arguments and only give this script the ones it needs.
 ###############################################################################
-readonly PSL_VERSION='2.2.1'
+readonly PSL_VERSION='CANARY-2.3.0'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --int-ids'
-readonly ADDITIONAL_LEARN_OPTIONS='--learn RandomGridSearch --eval org.linqs.psl.evaluation.statistics.RankingEvaluator'
-readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.RankingEvaluator' #--infer SGDStreamingInference' 
-# random grid search, at least 50 iterations
-# likelihood based (gpp), search based
+readonly ADDITIONAL_LEARN_OPTIONS='--learn RandomGridSearch -D weightlearning.evaluator=RankingEvaluator -D weightlearning.inference=SGDStreamingInference -D randomgridsearch.maxlocations=50'
+readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs.psl.evaluation.statistics.RankingEvaluator' 
+
 BASE_NAME=''
 MEM=''
 runweightlearning=0
