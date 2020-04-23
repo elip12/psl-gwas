@@ -51,8 +51,9 @@ def main():
         # number of samples
         n_samples = num_samples(samples_file)
         # upper and lower bounds for frequency of samples to filter kmers by
-        upper = int(params['upperfreq'] * n_samples)
-        lower = int(params['lowerfreq'] * n_samples)
+        counts = dfnodisp.shape[0] - dfnodisp.sum(axis=0) # number of 0s in each column
+        upper = max(counts)
+        lower = min(counts)
         # multiprocessing queue for transferring data to the main thread
         q = Manager().Queue()
         process_file(create_unitig_sample_map, unique_kmers_file,

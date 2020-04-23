@@ -50,10 +50,6 @@ def parse_args():
         help='max amount of memory used concurrently (GB)')
     parser.add_argument('-k', '--k', default=30, type=int,
         help='kmer length in nucleotide bases')
-    parser.add_argument('--upperfreq', default=0.98, type=float,
-        help='kmer length in nucleotide base')
-    parser.add_argument('--lowerfreq', default=0.02, type=float,
-        help='kmer length in nucleotide bases')
     parser.add_argument('--thresh', default=5, type=int,
         help='kmer length in nucleotide bases')
     parser.add_argument('-p', '--param', action='store_true',

@@ -11,12 +11,8 @@ phenos: phenos.tsv
 # initial kmer size
 k: 30
 
-# in the initial count, any kmers that occur in more than MAX% or fewer than
-# MIN% of samples will be dropped.
-upperfreq: 0.98
-lowerfreq: 0.02
-
 # proportion of kmers to sample when constructing distance matrix between samples
+#WIP: unused rn
 KMER_SAMPLE_PROP: 0.01
 
 # for each kmer, there must exist a phenotype such that the number of samples
@@ -25,9 +21,9 @@ KMER_SAMPLE_PROP: 0.01
 thresh: 5
 
 # maximum number of threads the preprocessing will use concurrently.
-threads: 20
+threads: 2
 
 # maximum amount of memory in gigabytes (G) the preprocessing/gwas/postprocessing
 # will use concurrently.
-mem: 100
+mem: 12
 
