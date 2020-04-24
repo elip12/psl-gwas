@@ -37,7 +37,7 @@ def main():
 
     # create and load sample and pheno int maps
     if not file_exists(sim_file):
-        int_maps.create_sample_int_map(samples_file, sim_file)
+        int_maps.create_sample_int_map(samples_file, phenos_file, sim_file)
     if not file_exists(pim_file):
         int_maps.create_pheno_int_map(phenos_file, pim_file)
     sim = load_pickle(sim_file)
@@ -45,15 +45,14 @@ def main():
     # only do processing if output files do not exist
     if not file_exists(unitigs_file) or not file_exists(similar_sample_file):
         # dfs holding samples that display vs not display pheno
-        dfdisp, dfnodisp = create_disp_nodisp_dfs(phenos_file)
+        dfdisp, dfnodisp = create_disp_nodisp_dfs(phenos_file, sim)
         # read in all sequences in input into python object
         seqs = parse_input(samples_file)
         # number of samples
         n_samples = num_samples(samples_file)
         # upper and lower bounds for frequency of samples to filter kmers by
-        counts = dfnodisp.shape[0] - dfnodisp.sum(axis=0) # number of 0s in each column
-        upper = max(counts)
-        lower = min(counts)
+        upper = int(0.95 * n_samples)
+        lower = int(0.01 * n_samples)
         # multiprocessing queue for transferring data to the main thread
         q = Manager().Queue()
         process_file(create_unitig_sample_map, unique_kmers_file,

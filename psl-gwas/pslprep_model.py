@@ -31,7 +31,7 @@ def pim_truths(pim, truths):
             yield pim[pheno], pheno
 
 # convert unitig db to psl input
-def unitig_db(data, sim, pim, uim_file, q, truths=None):
+def unitig_db(data, pim, uim_file, q, truths=None):
     uim = load_pickle(uim_file)
     unitig_sample_chunk = []
     unitig_pheno_chunk = []
@@ -43,7 +43,7 @@ def unitig_db(data, sim, pim, uim_file, q, truths=None):
         
         unitig_sample_lines = []
         for sample in linelist[1:]:
-            unitig_sample_lines.append(f'{sim[sample]}\t{uim[unitig]}\t1.0')
+            unitig_sample_lines.append(f'{sample}\t{uim[unitig]}\t1.0')
         unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
         
         if truths is None:
@@ -56,7 +56,7 @@ def unitig_db(data, sim, pim, uim_file, q, truths=None):
             truth_values = [l[1] for l in unitig_pheno_lines]
             truth_chunk.extend(truth_values)
             unitig_pheno_lines = [l[0] for l in unitig_pheno_lines]
-            unitig_pheno_chunk.extend(unitig_pheno_lines)
+        unitig_pheno_chunk.extend(unitig_pheno_lines)
     if truths:
         q.put((unitig_sample_chunk, unitig_pheno_chunk, truth_chunk))
     else:

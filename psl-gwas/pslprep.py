@@ -47,12 +47,9 @@ def main():
     value_exists = file_exists(value_unitig_pheno_file)
     truths_exists = file_exists(truths_outfile) if params.get('truth') else True
     if not contains_exists or not value_exists or not truths_exists:
-        # instantiate local vars to be passed to worker processes
-        sim = load_pickle(sim_file)
-        pim = load_pickle(pim_file)
         q = Manager().Queue()
         # instantiate worker processes to process large unitig file
-        process_file(unitig_db, unitig_sample_map_file, sim=sim, pim=pim,
+        process_file(unitig_db, unitig_sample_map_file, pim=pim,
             uim_file=uim_file, q=q, truths=truths_dict)
 
         # drain queue and write to output files sequentially
