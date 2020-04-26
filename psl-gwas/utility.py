@@ -107,6 +107,14 @@ def write_list(data, fname):
         s = '\n'.join(data) + '\n'
         f.write(s)
 
+def write_2_files(data1, file1, data2, file2, lock):
+    lock.acquire()
+    if file1 is not None:
+       write_list(data1, file1)
+    if file2 is not None:
+        write_list(data2, file2)
+    lock.release()
+
 # reads a chunk of size chunk_size from fname into a string,
 # splits it into a list, and calls process
 def process_chunk(process_fn, fname, chunk_start, chunk_size, n,

@@ -3,26 +3,41 @@
 ##  pslprep_model.py
 ##  This file holds helper functions for pslprep.py
 ###############################################################################
-from utility import write_list, load_pickle, printd
+from utility import write_2_files, write_list, load_pickle, printd
 import pandas as pd
 import numpy as np
 import pickle
 from sys import argv
 
-def create_truths_dict(truths_infile):
+def create_truths_dict(truths_infile, pim):
     truths = {}
     with open(truths_infile, 'r') as f:
         lines = f.readlines()
-    for i in range(0, len(lines), 2):
-        gene = lines[i][1:].rstrip()
-        seq = lines[i + 1].rstrip()
-        truths[gene] = seq
+    phenos = None
+    pim_code = None
+    for line in lines:
+        if line.startswith['>']:
+            phenos = line.rstrip().split('_')[1:]
+            for pheno in phenos:
+                pim_code = pim.get(pheno, None)
+                if pim_code is None:
+                    print('Error: Pheno in truths does not exist in phenos file')
+                    print('Exiting')
+                    exit(1)
+                if pim_code not in truths:
+                    truths[pim_code] = []
+        elif phenos is not None and pim_code is not None:
+            for pheno in phenos:
+                truths[pim_code].append(line)
     return truths
         
-
-def unitig_in_truths(unitig, seq):
-    if unitig in seq:
-        return 1
+def unitig_in_truths(unitig, truths, pheno):
+    seqs = truths.get(pheno, None)
+    if seqs is None:
+        return False
+    for seq in seqs:
+        if unitig in seq or seq in unitig:
+            return 1
     return 0
     
 def pim_truths(pim, truths):
@@ -30,37 +45,54 @@ def pim_truths(pim, truths):
         if pheno in pim:
             yield pim[pheno], pheno
 
-# convert unitig db to psl input
-def unitig_db(data, pim, uim_file, q, truths=None):
+def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
+        truth_unitig_pheno_file, lock, truths=None):
     uim = load_pickle(uim_file)
-    unitig_sample_chunk = []
     unitig_pheno_chunk = []
     if truths:
-        truth_chunk = []
+        truths_chunk = []
+    else:
+        truths_chunk = None
     for line in data:
-        linelist = line.split()
+        linelist = line.split('\t')
+        unitig = linelist[0]
+
+        for pheno in linelist[1:]:
+            unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
+            if truths:
+                if unitig_in_truths(unitig, truths, pheno):
+                    truths_chunk.append(f'{uim[unitig]}\t{pheno}\t1')
+        if len(unitig_pheno_chunk) >= 500000:
+            write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
+                truths_chunk, truth_unitig_pheno_file, lock)
+            unitig_pheno_chunk = []
+            truths_chunk = []
+    write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
+        truths_chunk, truth_unitig_pheno_file, lock)
+
+# convert unitig db to psl input
+def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=None):
+    uim = load_pickle(uim_file)
+    unitig_sample_chunk = []
+    for line in data:
+        linelist = line.split('\t')
         unitig = linelist[0]
         
         unitig_sample_lines = []
-        for sample in linelist[1:]:
-            unitig_sample_lines.append(f'{sample}\t{uim[unitig]}\t1.0')
+        for sample_ in linelist[1:]:
+            sample = sample_.split(',')
+            unitig_sample_lines.append(f'{sample[0]}\t{uim[unitig]}\tsample[1]')
         unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
         
-        if truths is None:
-            num_phenos = int(len(pim) / 2)
-            unitig_pheno_lines = [f'{uim[unitig]}\t{i}' for i in range(num_phenos)]
-        else:
-            unitig_pheno_lines = [(f'{uim[unitig]}\t{i}',
-                unitig_in_truths(unitig, truths[pheno])
-                ) for i, pheno in pim_truths(pim, truths)]
-            truth_values = [l[1] for l in unitig_pheno_lines]
-            truth_chunk.extend(truth_values)
-            unitig_pheno_lines = [l[0] for l in unitig_pheno_lines]
-        unitig_pheno_chunk.extend(unitig_pheno_lines)
-    if truths:
-        q.put((unitig_sample_chunk, unitig_pheno_chunk, truth_chunk))
-    else:
-        q.put((unitig_sample_chunk, unitig_pheno_chunk))
+        # write every 500k to limit memory usage
+        if len(unitig_sample_chunk) >= 500000:
+            lock.acquire()
+            write_list(unitig_sample_chunk, contains_sample_unitig_file)
+            lock.release()
+            unitig_sample_chunk = []
+    lock.acquire()
+    write_list(unitig_sample_chunk, contains_sample_unitig_file)
+    lock.release()
 
 # convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):
