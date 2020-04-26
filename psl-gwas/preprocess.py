@@ -53,23 +53,24 @@ def main():
         # number of samples
         n_samples = num_samples(samples_file)
         # upper and lower bounds for frequency of samples to filter kmers by
-        upper = 4 # int(0.95 * n_samples)
-        lower = 0 #int(0.01 * n_samples)
+        upper = int(0.95 * n_samples)
+        lower = int(0.01 * n_samples)
         # multiprocessing queue for transferring data to the main thread
         m = Manager()
         q = m.Queue()
         # multiprocessing lock for locking file before writing to it
         lock = m.Lock()
         # unitigs file name reference for subprocesses to write to
+        unitig_sample_file_ref = unitig_sample_file # because the int map uses it
         if file_exists(unitig_sample_file):
-            unitig_sample_file = None
+            unitig_sample_file_ref = None
         if file_exists(unitig_pheno_file):
             unitig_pheno_file = None
         
         kwargs = dict(raw=seqs, q=q, k=params['k'], thresh=params['thresh'],
                     upper=upper, lower=lower, dfdisp=dfdisp, dfnodisp=dfnodisp,
                     sim=sim, lock=lock, n=n_samples,
-                    unitig_sample_file=unitig_sample_file,
+                    unitig_sample_file=unitig_sample_file_ref,
                     unitig_pheno_file=unitig_pheno_file)
 
         process_file(create_unitig_sample_map, unique_kmers_file, **kwargs)

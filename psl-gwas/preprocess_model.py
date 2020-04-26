@@ -210,7 +210,7 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     highcutoff = df[0].quantile(thresh)
     lowcutoff = df[0].quantile(1 - thresh)
     # cut off all everything in the middle; only keep the very similar and very dissimilar
-    df = df[(df[0] >= cutoff) | (df[0] <= lowcutoff)]
+    df = df[(df[0] >= highcutoff) | (df[0] <= lowcutoff)]
     # determine new min, max, range
     min_ = df[0].min() - 0.01 # need to ensure minimum similarity has non-zero value
     max_ = df[0].max()
@@ -219,7 +219,6 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df[0] -= min_
     # rescale data to [0.01,1]
     df[0] /= range_
-
     # create similarity histogram and save it
     try:
         plt.hist(df[0], facecolor='green')
