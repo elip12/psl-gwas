@@ -16,29 +16,31 @@ def create_truths_dict(truths_infile, pim):
     phenos = None
     pim_code = None
     for line in lines:
-        if line.startswith['>']:
+        if line.startswith('>'):
             phenos = line.rstrip().split('_')[1:]
             for pheno in phenos:
                 pim_code = pim.get(pheno, None)
                 if pim_code is None:
-                    print('Error: Pheno in truths does not exist in phenos file')
+                    print('Error: Pheno in truths does not exist in \
+                    phenos file:', pheno)
                     print('Exiting')
                     exit(1)
                 if pim_code not in truths:
                     truths[pim_code] = []
-        elif phenos is not None and pim_code is not None:
+        elif phenos is not None:
             for pheno in phenos:
-                truths[pim_code].append(line)
+                pim_code = pim[pheno]
+                truths[pim_code].append(line.rstrip())
     return truths
         
 def unitig_in_truths(unitig, truths, pheno):
-    seqs = truths.get(pheno, None)
+    seqs = truths.get(int(pheno), None)
     if seqs is None:
         return False
     for seq in seqs:
         if unitig in seq or seq in unitig:
-            return 1
-    return 0
+            return True
+    return False
     
 def pim_truths(pim, truths):
     for pheno in truths:
@@ -56,12 +58,10 @@ def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
     for line in data:
         linelist = line.split('\t')
         unitig = linelist[0]
-
         for pheno in linelist[1:]:
             unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
-            if truths:
-                if unitig_in_truths(unitig, truths, pheno):
-                    truths_chunk.append(f'{uim[unitig]}\t{pheno}\t1')
+            if truths and unitig_in_truths(unitig, truths, pheno):
+                truths_chunk.append(f'{uim[unitig]}\t{pheno}\t1')
         if len(unitig_pheno_chunk) >= 500000:
             write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
                 truths_chunk, truth_unitig_pheno_file, lock)
