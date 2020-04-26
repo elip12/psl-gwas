@@ -204,23 +204,21 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
 
     df = df.stack()
     df = df.reset_index()
-    
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-    thresh = 0.9
+    thresh = 0.8
     # find numeric cutoff; the lowest 75% of the data are below this value
-    cutoff = df[0].quantile(thresh)
-    # cut off all values below (less similar than) cutoff
-    df = df[df[0] > cutoff]
+    highcutoff = df[0].quantile(thresh)
+    lowcutoff = df[0].quantile(1 - thresh)
+    # cut off all everything in the middle; only keep the very similar and very dissimilar
+    df = df[(df[0] >= cutoff) | (df[0] <= lowcutoff)]
     # determine new min, max, range
-    min_ = df[0].min()
+    min_ = df[0].min() - 0.01 # need to ensure minimum similarity has non-zero value
     max_ = df[0].max()
     range_ = max_ - min_
-    # shift df left by the min so the new min is 0
+    # shift df left by the min so the new min is 0.01
     df[0] -= min_
-    # rescale data to [0,0.5]
-    df[0] /= range_ * 2
-    # shift right by 0.5 so the new range is [0.5, 1]
-    df[0] += 0.5
+    # rescale data to [0.01,1]
+    df[0] /= range_
 
     # create similarity histogram and save it
     plt.hist(df[0], facecolor='green')

@@ -83,9 +83,9 @@ def main():
             sample_matrix += q_sample_matrix
         
         # create sample similarity file
-        #if not file_exists(similar_sample_file):
-        #    similar_sample(sample_matrix, num_kmers, similarities_tsv,
-        #        hist_orig_file, hist_scaled_file, similar_sample_file)
+        if not file_exists(similar_sample_file):
+            similar_sample(sample_matrix, num_kmers, similarities_tsv,
+                hist_orig_file, hist_scaled_file, similar_sample_file)
     # create unitig int map
     if not file_exists(uim_file):
         int_maps.create_unitig_int_map(unitig_sample_file, uim_file)
