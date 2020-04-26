@@ -221,8 +221,11 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df[0] /= range_
 
     # create similarity histogram and save it
-    plt.hist(df[0], facecolor='green')
-    plt.savefig(hist_scaled_file, dpi=150)
+    try:
+        plt.hist(df[0], facecolor='green')
+        plt.savefig(hist_scaled_file, dpi=150)
+    except ValueError as e:
+        printd('Unable to generate histogram of scaled data')
 
     # write to csv 
     df.to_csv(outfile, sep='\t', index=False, header=False)
