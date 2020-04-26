@@ -81,7 +81,7 @@ def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=N
         unitig_sample_lines = []
         for sample_ in linelist[1:]:
             sample = sample_.split(',')
-            unitig_sample_lines.append(f'{sample[0]}\t{uim[unitig]}\tsample[1]')
+            unitig_sample_lines.append(f'{sample[0]}\t{uim[unitig]}\t{sample[1]}')
         unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
         
         # write every 500k to limit memory usage
