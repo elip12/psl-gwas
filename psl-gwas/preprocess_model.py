@@ -7,7 +7,7 @@ from random import Random, randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utility import printd, write_2_files
+from utility import printd, write_2_files, complement
 from collections import Counter
 
 # check if a kmer occurs in fewer than upper samples and
@@ -164,6 +164,10 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                     kmerlist = kmers.get(kmer, None)
                     if kmerlist is not None:
                         kmerlist[sample_id] += 1
+                    else:
+                        complist = kmers.get(complement(kmer), None)
+                        if complist is not None:
+                            complist[sample_id] += 1
     printd('Finished creating unitig sample map.')
     kmers = [(k, *v.items()) for k,v in kmers.items()]
     num_kmers, sample_matrix = sample_kmers(kmers, n)
