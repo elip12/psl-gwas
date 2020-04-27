@@ -16,11 +16,13 @@ def create_sample_int_map(samples, phenos, sim_file):
     phenosdf = pd.read_csv(phenos, sep='\t', index_col=0)
     phenosdf.dropna(how='all', inplace=True)
     droppedsamples = []
-    for i, line in enumerate(lines[1:]): # ignore header
+    i = 0
+    for line in enumerate(lines[1:]): # ignore header
         name = line.split('\t')[0]
         if name in phenosdf.index:
             sim[name] = i
             sim[i] = name
+            i += 1
         else:
             droppedsamples.append(name)
     with open(sim_file, 'wb') as f:
