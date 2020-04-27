@@ -76,8 +76,9 @@ def main():
         comp = complement(kmer)
         if comp in counter:
             comp_count = counter[comp]
-            del counter[comp]
+            counter[comp] = 0
             counter[kmer] += comp_count
+    counter = +counter
     printd('Finished consolidating counters.')
 
     # write counter to file
