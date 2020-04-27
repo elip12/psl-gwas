@@ -5,7 +5,7 @@
 ##  of times they occur.
 ###############################################################################
 from utility import process_file, write_dict, parse_args, printd, \
-file_exists, get_params, write_list
+file_exists, get_params, write_list, complement
 from multiprocessing import Queue, Manager
 from collections import Counter
 from os import remove
@@ -35,7 +35,11 @@ def process(data, q, k):
             kmer = line[i: i + k]
             if set(kmer) != testset: # kmers with Ns and Ys in them
                 continue
-            counter[kmer] += 1
+            comp = complement(kmer)
+            if comp in counter:
+                counter[comp] += 1
+            else:
+                counter[kmer] += 1
     q.put(counter)
 
 def main():
@@ -67,6 +71,12 @@ def main():
     counter = Counter()
     while not q.empty():
         counter.update(q.get())
+    for kmer in counter.keys():
+        comp = complement(kmer)
+        if comp in counter:
+            comp_count = counter[comp]
+            del counter[comp]
+            counter[kmer] += comp_count
     printd('Finished consolidating counters.')
 
     # write counter to file
