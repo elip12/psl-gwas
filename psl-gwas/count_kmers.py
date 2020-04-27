@@ -71,6 +71,7 @@ def main():
     counter = Counter()
     while not q.empty():
         counter.update(q.get())
+    print('time1')
     for kmer in counter.keys():
         comp = complement(kmer)
         if comp in counter:
