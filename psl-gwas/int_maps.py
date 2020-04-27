@@ -17,7 +17,7 @@ def create_sample_int_map(samples, phenos, sim_file):
     phenosdf.dropna(how='all', inplace=True)
     droppedsamples = []
     i = 0
-    for line in enumerate(lines[1:]): # ignore header
+    for line in lines[1:]: # ignore header
         name = line.split('\t')[0]
         if name in phenosdf.index:
             sim[name] = i
