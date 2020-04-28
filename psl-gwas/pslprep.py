@@ -58,6 +58,10 @@ def main():
             contains_sample_unitig_file=contains_sample_unitig_file)
 
     if not value_exists or not truths_exists:
+        if value_exists:
+            value_unitig_pheno_file = None
+        if truths_exists:
+            truth_unitig_pheno_file = None
         process_file(unitig_pheno_db, unitig_pheno_map_file,
             uim_file=uim_file, value_unitig_pheno_file=value_unitig_pheno_file,
             truth_unitig_pheno_file=truth_unitig_pheno_file,
