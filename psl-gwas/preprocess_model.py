@@ -7,7 +7,7 @@ from random import Random, randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utility import printd, write_2_files, complement
+from utility import printd, write_2_files, complement, file_exists
 from collections import Counter
 
 # check if a kmer occurs in fewer than upper samples and
@@ -187,20 +187,21 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
 ## and get total number of kmers sampled
 def similar_sample(sample_matrix, num_kmers, similarities_tsv,
         hist_orig_file, hist_scaled_file, outfile):
-    np.fill_diagonal(sample_matrix, np.nan) 
-    sample_matrix = np.triu(sample_matrix)
+    if not file_exists(similarities_tsv):
+        np.fill_diagonal(sample_matrix, np.nan) 
+        sample_matrix = np.triu(sample_matrix)
 
-    # scale similarity counts to values in [0, 1]
-    sample_matrix /= num_kmers
+        # scale similarity counts to values in [0, 1]
+        sample_matrix /= num_kmers
 
-    df = pd.DataFrame(sample_matrix)
+        df = pd.DataFrame(sample_matrix)
 
-    # dump to tsv file for ease of restoring, and because tsv file of similarities
-    # is a common input to other mGWAS programs
-    df.to_csv(similarities_tsv, sep='\t')
+        # dump to tsv file for ease of restoring, and because tsv file of similarities
+        # is a common input to other mGWAS programs
+        df.to_csv(similarities_tsv, sep='\t')
     
-    # optionally read csv for ease of restoring
-    # df = pd.read_csv('data/intermediate/similarities.tsv', sep='\t', index_col=0)
+    else:
+        df = pd.read_csv(similarities_tsv, sep='\t', index_col=0)
    
     # create similarity histogram and save it
     plt.hist(df.values, facecolor='green')
@@ -209,7 +210,7 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df = df.stack()
     df = df.reset_index()
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-    thresh = 0.8
+    thresh = 0.95
     # find numeric cutoff; the lowest 75% of the data are below this value
     highcutoff = df[0].quantile(thresh)
     lowcutoff = df[0].quantile(1 - thresh)

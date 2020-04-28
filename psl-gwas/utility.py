@@ -169,7 +169,7 @@ def get_params():
 # checks existence of a file and printds a warning if it does not
 def file_exists(outfile):
     if isfile(outfile):
-        printd(f'File {outfile} exists; skipping.')
+        printd(f'Found file {outfile}.')
         return 1
     return 0
 

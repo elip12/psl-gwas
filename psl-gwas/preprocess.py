@@ -45,7 +45,8 @@ def main():
     
     # only do processing if output files do not exist
     if (not file_exists(unitig_sample_file) or not file_exists(unitig_pheno_file) 
-            or not file_exists(similar_sample_file)):
+            or (not file_exists(similar_sample_file)
+            and not file_exists(similarities_tsv))):
         # dfs holding samples that display vs not display pheno
         dfdisp, dfnodisp = create_disp_nodisp_dfs(phenos_file, sim)
         # read in all sequences in input into python object
@@ -83,10 +84,13 @@ def main():
             num_kmers += q_num_kmers
             sample_matrix += q_sample_matrix
         
-        # create sample similarity file
+        # create sample similarity file if the similarities tsv does not exist
         if not file_exists(similar_sample_file):
             similar_sample(sample_matrix, num_kmers, similarities_tsv,
                 hist_orig_file, hist_scaled_file, similar_sample_file)
+    if not file_exists(similar_sample_file) and file_exists(similarities_tsv):
+        similar_sample(None, None, similarities_tsv, hist_orig_file,
+            hist_scaled_file, similar_sample_file)
     # create unitig int map
     if not file_exists(uim_file):
         int_maps.create_unitig_int_map(unitig_sample_file, uim_file)
