@@ -99,8 +99,8 @@ def sample_pheno(phenos, sim, pim, outfile):
     df = pd.read_csv(phenos, delimiter='\t')
     
     idcol = df.columns[0]
-    df['sample_id'] = df[idcol].apply(lambda x: sim[x])    # int(sim.get(x)) if sim.get(x) is not None else np.nan)
-    #df['sample_id'] = df['sample_id'].dropna()
+    df['sample_id'] = df[idcol].apply(lambda x: sim.get(x, -1))    # int(sim.get(x)) if sim.get(x) is not None else np.nan)
+    df = df[df['sample_id'] != -1]
     df.drop(idcol, axis=1, inplace=True)
     df.rename(columns=pim, inplace=True) 
     

@@ -21,4 +21,4 @@
 // If two samples are dissimilar, and both display a pheno and both contain the
 // same kmer, there is evidence that kmer causes the pheno.
 // This is more tailored toward finding causal SNPs/indels
-1.0: !SimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, C) * SamplePheno(S2, C) & Contains(S1, K) & Contains(S2, K) >> UnitigPheno(K, C) ^2
+1.0: !SimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, C) & SamplePheno(S2, C) & Contains(S1, K) & Contains(S2, K) >> UnitigPheno(K, C) ^2
