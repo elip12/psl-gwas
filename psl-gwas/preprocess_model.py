@@ -124,7 +124,7 @@ def sample_kmers(data, n, seed=randint(1,100000)):
     printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
     rng = Random(seed)
-    num_kmers = int(len(data) * 0.01)
+    num_kmers = int(len(data) * 0.05)
     sampled = rng.sample(data, num_kmers)
 
     for line in sampled:
@@ -188,11 +188,16 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
 def similar_sample(sample_matrix, num_kmers, similarities_tsv,
         hist_orig_file, hist_scaled_file, outfile):
     if not file_exists(similarities_tsv):
+        # scale similarities matrix by the mean num sampled kmers each sample
+        # shares with itself. Then, normalize to [0,1]. Then remove the diagonal
+        # and the lower triangle of the array (since it is symmetric about the
+        # major diagonal), and finally round values to 4 decimal places.
+        mean_shared_w_self = sample_matrix.diagonal().mean()
+        sample_matrix /= mean_shared_w_self
+        sample_matrix *= 1.0/sample_matrix.max()
         np.fill_diagonal(sample_matrix, np.nan) 
         sample_matrix = np.triu(sample_matrix)
-
-        # scale similarity counts to values in [0, 1]
-        sample_matrix /= num_kmers
+        np.round(sample_matrix, 4)
 
         df = pd.DataFrame(sample_matrix)
 
