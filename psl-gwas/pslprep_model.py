@@ -3,7 +3,7 @@
 ##  pslprep_model.py
 ##  This file holds helper functions for pslprep.py
 ###############################################################################
-from utility import write_2_files, write_list, load_pickle, printd
+from utility import write_2_files, write_list, load_pickle, printd, complement
 import pandas as pd
 import numpy as np
 import pickle
@@ -37,8 +37,9 @@ def unitig_in_truths(unitig, truths, pheno):
     seqs = truths.get(int(pheno), None)
     if seqs is None:
         return False
+    comp = complement(unitig)
     for seq in seqs:
-        if unitig in seq or seq in unitig:
+        if unitig in seq or seq in unitig or comp in seq or seq in comp:
             return True
     return False
     
