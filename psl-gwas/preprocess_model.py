@@ -97,8 +97,9 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
 
         # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
+        penetrance_thresh = 0.5
         a = np.where((disp + nodisp >= thresh) \
-                    & (disp >= nodisp))[0]
+                    & (disp / (disp + nodisp) > penetrance_thresh))[0]
         if a.size == 0:
             continue
         unitig_pheno_chunk = [unitig]
@@ -124,7 +125,7 @@ def sample_kmers(data, n, seed=randint(1,100000)):
     printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
     rng = Random(seed)
-    num_kmers = int(len(data) * 0.05)
+    num_kmers = int(len(data) * 0.02)
     sampled = rng.sample(data, num_kmers)
 
     for line in sampled:
@@ -222,7 +223,7 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     # cut off all everything in the middle; only keep the very similar and very dissimilar
     df = df[(df[0] >= highcutoff) | (df[0] <= lowcutoff)]
     # determine new min, max, range
-    min_ = df[0].min() - 0.01 # need to ensure minimum similarity has non-zero value
+    min_ = df[0].min() - 0.001 # need to ensure minimum similarity has non-zero value
     max_ = df[0].max()
     range_ = max_ - min_
     # shift df left by the min so the new min is 0.01
@@ -252,8 +253,8 @@ def create_disp_nodisp_dfs(phenos, sim):
     df = pd.read_csv(phenos, delimiter='\t')
     idcol = df.columns[0]
     df[idcol] = df[idcol].map(sim)
+    df = df[df[idcol].notna()]
     df.set_index(idcol, inplace=True)
-    
     df = df.applymap(convert_to_binary)
     dfdisp = df.fillna(0)
     dfnodisp = 1 - df.fillna(1)
