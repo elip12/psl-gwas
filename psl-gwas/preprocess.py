@@ -28,8 +28,10 @@ def main():
     samples_file = join(project, 'data', 'raw', params['samples'])
     similarities_tsv = join(project, 'data', 'preprocessed', 'sample_similarities.tsv')
     hist_orig_file = join(project, 'data', 'preprocessed', 'hist_orig.png')
-    hist_scaled_file = join(project, 'data', 'preprocessed', 'hist_scaled.png')
+    hist_sim_scaled_file = join(project, 'data', 'preprocessed', 'hist_sim_scaled.png')
+    hist_dissim_scaled_file = join(project, 'data', 'preprocessed', 'hist_dissim_scaled.png')
     similar_sample_file = join(project, 'data', 'preprocessed', 'similar_sample_sample.txt')
+    dissimilar_sample_file = join(project, 'data', 'preprocessed', 'dissimilar_sample_sample.txt')
     unitig_sample_file = join(project, 'data', 'preprocessed', 'unitig_sample_map.txt')
     unitig_pheno_file = join(project, 'data', 'preprocessed', 'unitig_pheno_map.txt')
     sim_file = join(project, 'data', 'preprocessed', 'sample_int_map.pkl') 
@@ -45,16 +47,16 @@ def main():
     
     # only do processing if output files do not exist
     if (not file_exists(unitig_sample_file) or not file_exists(unitig_pheno_file) 
-            or (not file_exists(similar_sample_file)
+            or ((not file_exists(similar_sample_file) or not file_exists(dissimilar_sample_file))
             and not file_exists(similarities_tsv))):
         # dfs holding samples that display vs not display pheno
         dfdisp, dfnodisp = create_disp_nodisp_dfs(phenos_file, sim)
         # read in all sequences in input into python object
         seqs = parse_input(samples_file)
         # number of samples
-        n_samples = num_samples(samples_file)
+        n_samples = int(len(sim) / 2)
         # upper and lower bounds for frequency of samples to filter kmers by
-        upper = int(0.95 * n_samples)
+        upper = int(0.7 * n_samples)
         lower = int(0.01 * n_samples)
         # multiprocessing queue for transferring data to the main thread
         m = Manager()
@@ -68,13 +70,13 @@ def main():
         if file_exists(unitig_pheno_file):
             unitig_pheno_file = None
         
-        kwargs = dict(raw=seqs, q=q, k=params['k'], thresh=params['thresh'],
+        kwargs = dict(raw=seqs, k=params['k'], thresh=params['thresh'],
                     upper=upper, lower=lower, dfdisp=dfdisp, dfnodisp=dfnodisp,
-                    sim=sim, lock=lock, n=n_samples,
+                    sim=sim, n=n_samples,
                     unitig_sample_file=unitig_sample_file_ref,
                     unitig_pheno_file=unitig_pheno_file)
 
-        process_file(create_unitig_sample_map, unique_kmers_file, **kwargs)
+        process_file(create_unitig_sample_map, unique_kmers_file, q=q, lock=lock, **kwargs)
        
         sample_matrix = np.zeros((n_samples, n_samples))
         num_kmers = 0
@@ -85,12 +87,13 @@ def main():
             sample_matrix += q_sample_matrix
         
         # create sample similarity file if the similarities tsv does not exist
-        if not file_exists(similar_sample_file):
+        if not file_exists(similar_sample_file) or not file_exists(dissimilar_sample_file):
             similar_sample(sample_matrix, num_kmers, similarities_tsv,
-                hist_orig_file, hist_scaled_file, similar_sample_file)
-    if not file_exists(similar_sample_file) and file_exists(similarities_tsv):
+                hist_orig_file, hist_scaled_file, similar_sample_file, dissimilar_sample_file)
+    if (not file_exists(similar_sample_file) or not file_exists(dissimilar_sample_file)) and file_exists(similarities_tsv):
         similar_sample(None, None, similarities_tsv, hist_orig_file,
-            hist_scaled_file, similar_sample_file)
+            hist_sim_scaled_file, hist_dissim_scaled_file,
+            similar_sample_file, dissimilar_sample_file)
     # create unitig int map
     if not file_exists(uim_file):
         int_maps.create_unitig_int_map(unitig_sample_file, uim_file)

@@ -2,6 +2,7 @@ predicates:
     Contains/2: closed
     SamplePheno/2: closed
     SimilarSample/2: closed
+    DissimilarSample/2: closed
     SimilarPheno/2: closed
     UnitigPheno/2: open
 
@@ -9,6 +10,7 @@ observations:
     Contains: ./data/preprocessed/contains_sample_unitig.txt
     SamplePheno: ./data/preprocessed/value_sample_pheno.txt
     SimilarSample: ./data/preprocessed/similar_sample_sample.txt
+    DissimilarSample: ./data/preprocessed/dissimilar_sample_sample.txt
     SimilarPheno: ./data/preprocessed/similar_pheno_pheno.txt
 
 targets:

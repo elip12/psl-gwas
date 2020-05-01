@@ -92,8 +92,12 @@ def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=N
             lock.release()
             unitig_sample_chunk = []
     lock.acquire()
-    write_list(unitig_sample_chunk, contains_sample_unitig_file)
-    lock.release()
+    try:
+        write_list(unitig_sample_chunk, contains_sample_unitig_file)
+    except Exception as e:
+        print('Error: unable to write list:', e)
+    finally:
+        lock.release()
 
 # convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):

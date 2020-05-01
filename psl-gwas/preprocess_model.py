@@ -3,7 +3,7 @@
 ##  preprocess_model.py
 ##  This file holds helper functions for preprocess.py.
 ###############################################################################
-from random import Random, randint
+from random import Random, randint, random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -97,9 +97,9 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
 
         # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
-        penetrance_thresh = 0.5
+        penetrance_thresh = 0.7
         a = np.where((disp + nodisp >= thresh) \
-                    & (disp / (disp + nodisp) > penetrance_thresh))[0]
+                    & (disp / (disp + nodisp + .01) > penetrance_thresh))[0]
         if a.size == 0:
             continue
         unitig_pheno_chunk = [unitig]
@@ -117,6 +117,7 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
     write_2_files(unitig_samples, unitig_sample_file, unitig_phenos,
         unitig_pheno_file, lock)
     printd('Finished filtering unitigs.')
+    return
     
 
 # takes a random sample of kmers and creates a distance matrix between
@@ -125,13 +126,13 @@ def sample_kmers(data, n, seed=randint(1,100000)):
     printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
     rng = Random(seed)
-    num_kmers = int(len(data) * 0.02)
+    num_kmers = int(len(data) * 0.1)
     sampled = rng.sample(data, num_kmers)
 
     for line in sampled:
         samplelist = line[1:]
         for i, s1 in enumerate(samplelist):
-            for s2 in samplelist[i + 1:]:
+            for s2 in samplelist[i:]:
                 sample_matrix[s1[0]][s2[0]] += 1
                 sample_matrix[s2[0]][s1[0]] += 1
     printd('Finished sampling kmers.')
@@ -141,7 +142,7 @@ def sample_kmers(data, n, seed=randint(1,100000)):
 # Then, iterates through genomes. If a genome contains a kmer, that genome's
 # metadata is added to dict entry for that kmer.
 # calls sample_kmers, consolidate, and filter_unitigs
-def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
+def create_unitig_sample_map(data, raw, q, k, upper, lower, thresh,
         dfdisp, dfnodisp, sim, n, lock, unitig_sample_file, unitig_pheno_file):
     printd('Creating kmer sample map...') 
     # get all kmers in chunk and complement them
@@ -169,10 +170,12 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
                         complist = kmers.get(complement(kmer), None)
                         if complist is not None:
                             complist[sample_id] += 1
+    kmers = [(key, *v.items()) for key,v in kmers.items()]
     printd('Finished creating unitig sample map.')
-    kmers = [(k, *v.items()) for k,v in kmers.items()]
     num_kmers, sample_matrix = sample_kmers(kmers, n)
+    printd('Putting data in queue')
     q.put((num_kmers, sample_matrix))
+    printd('Finished putting data in queue')
     if unitig_sample_file is None and unitig_pheno_file is None:
         return
     # consolidate() will clear kmers list as it builds unitigs list
@@ -183,11 +186,13 @@ def create_unitig_sample_map(data, raw, k, q, upper, lower, thresh,
     # with net 0 memory gain
     unitigs = filter_unitigs(unitigs, thresh, dfdisp, dfnodisp,
         unitig_sample_file, unitig_pheno_file, lock)
+    return
 
 ## combine similarity matrices from each thread into a single matrix,
 ## and get total number of kmers sampled
 def similar_sample(sample_matrix, num_kmers, similarities_tsv,
-        hist_orig_file, hist_scaled_file, outfile):
+        hist_orig_file, hist_sim_scaled_file, hist_dissim_scaled_file,
+        similarities_file, dissimilarities_file):
     if not file_exists(similarities_tsv):
         # scale similarities matrix by the mean num sampled kmers each sample
         # shares with itself. Then, normalize to [0,1]. Then remove the diagonal
@@ -195,8 +200,9 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
         # major diagonal), and finally round values to 4 decimal places.
         mean_shared_w_self = sample_matrix.diagonal().mean()
         sample_matrix /= mean_shared_w_self
+        sample_matrix += 0.001 # ensure all values are nonzero
         sample_matrix *= 1.0/sample_matrix.max()
-        np.fill_diagonal(sample_matrix, np.nan) 
+        np.fill_diagonal(sample_matrix, np.nan)
         sample_matrix = np.triu(sample_matrix)
         np.round(sample_matrix, 4)
 
@@ -212,33 +218,43 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     # create similarity histogram and save it
     plt.hist(df.values, facecolor='green')
     plt.savefig(hist_orig_file, dpi=150)
-
+    plt.clf()
     df = df.stack()
     df = df.reset_index()
+    df = df[df[0] > 0] # remove the lower half of the triangle
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
     thresh = 0.95
     # find numeric cutoff; the lowest 75% of the data are below this value
     highcutoff = df[0].quantile(thresh)
     lowcutoff = df[0].quantile(1 - thresh)
     # cut off all everything in the middle; only keep the very similar and very dissimilar
-    df = df[(df[0] >= highcutoff) | (df[0] <= lowcutoff)]
+    simdf = df[df[0] >= highcutoff].copy(deep=True)
+    dissimdf = df[df[0] <= lowcutoff].copy(deep=True)
+    dissimdf[0] = 1 - dissimdf[0]
+    dfs = (simdf, dissimdf)
     # determine new min, max, range
-    min_ = df[0].min() - 0.001 # need to ensure minimum similarity has non-zero value
-    max_ = df[0].max()
-    range_ = max_ - min_
-    # shift df left by the min so the new min is 0.01
-    df[0] -= min_
-    # rescale data to [0.01,1]
-    df[0] /= range_
-    # create similarity histogram and save it
-    try:
-        plt.hist(df[0], facecolor='green')
-        plt.savefig(hist_scaled_file, dpi=150)
-    except ValueError as e:
-        printd('Unable to generate histogram of scaled data')
+    files = ((hist_sim_scaled_file, similarities_file), (hist_dissim_scaled_file, dissimilarities_file))
+    for i, (pngfile, outfile) in enumerate(files):
+        df = dfs[i]
+        min_ = df[0].min()
+        max_ = df[0].max()
+        range_ = max_ - min_
+        # shift df left by the min so the new min is 0.0001
+        df[0] -= min_
+        # rescale data to [0,0.5]
+        df[0] /= range_ * 2
+        # rescale data to [0.5, 1]
+        df[0] += 0.5
+        # create similarity histogram and save it
+        try:
+            plt.hist(df[0], bins=50, facecolor='green')
+            plt.savefig(pngfile, dpi=150)
+            plt.clf()
+        except ValueError as e:
+            printd('Unable to generate histogram of scaled data')
 
-    # write to csv 
-    df.to_csv(outfile, sep='\t', index=False, header=False)
+        # write to csv 
+        df.to_csv(outfile, sep='\t', index=False, header=False)
 
 def convert_to_binary(x):
     if x > 1.0:

@@ -168,6 +168,7 @@ if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
 && [[ -r "$PPATH/value_sample_pheno.txt" ]] \
 && [[ -r "$PPATH/similar_pheno_pheno.txt" ]] \
 && [[ -r "$PPATH/similar_sample_sample.txt" ]] \
+&& [[ -r "$PPATH/dissimilar_sample_sample.txt" ]] \
 && [[ -r "$PPATH/pheno_int_map.pkl" ]] \
 && [[ -r "$PPATH/sample_int_map.pkl" ]] \
 && [[ -r "$PPATH/unitig_int_map.pkl" ]] \

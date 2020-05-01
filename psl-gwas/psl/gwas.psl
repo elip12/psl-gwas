@@ -1,24 +1,24 @@
 // If a sample contains a kmer and displays a pheno, there is evidence that kmer
 // causes that pheno
-1.0: Contains(S, K) & SamplePheno(S, C) >> UnitigPheno(K, C) ^2
+1.0: Contains(S, K) & SamplePheno(S, P) >> UnitigPheno(K, P) ^2
 
 // If a sample contains a kmer and does not display a pheno, there is evidence
 // that kmer does not cause the pheno
-1.0: Contains(S, K) & !SamplePheno(S, C) >> !UnitigPheno(K, C) ^2
+1.0: Contains(S, K) & !SamplePheno(S, P) >> !UnitigPheno(K, P) ^2
 
 // Most kmers do not cause a pheno
-1.0: !UnitigPheno(K, C) ^2
+1.0: !UnitigPheno(K, P) ^2
 
 // If two phenos are similar, and a kmer causes one of them, there is evidence
 // it causes the other
-1.0: SimilarPheno(C1, C2) & (C1 != C2) & UnitigPheno(K, C1) >> UnitigPheno(K, C2) ^2
+1.0: SimilarPheno(P1), P2) & (P1) != P2) & UnitigPheno(K, P1) >> UnitigPheno(K, P2) ^2
 
 // If two samples are similar, and one contains a kmer and displays a pheno and
 // the other does neither, there is evidence that kmer causes that pheno
 // This is more tailored toward finding causal genes
-1.0: SimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, C) & !SamplePheno(S2, C) & Contains(S1, K) & !Contains(S2, K) >> UnitigPheno(K, C) ^2
+1.0: SimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, P) & !SamplePheno(S2, P) & Contains(S1, K) & !Contains(S2, K) >> UnitigPheno(K, P) ^2
 
 // If two samples are dissimilar, and both display a pheno and both contain the
 // same kmer, there is evidence that kmer causes the pheno.
 // This is more tailored toward finding causal SNPs/indels
-1.0: !SimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, C) & SamplePheno(S2, C) & Contains(S1, K) & Contains(S2, K) >> UnitigPheno(K, C) ^2
+1.0: DissimilarSample(S1, S2) & (S1 != S2) & SamplePheno(S1, P) & SamplePheno(S2, P) & Contains(S1, K) & Contains(S2, K) >> UnitigPheno(K, P) ^2

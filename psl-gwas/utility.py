@@ -26,6 +26,7 @@ from os.path import getsize, isfile
 import pickle
 import argparse
 import yaml
+from random import randint
 
 # global complement map, only needs to be created once
 COMPLEMENT_MAP = str.maketrans('ATCG', 'TAGC')
@@ -109,11 +110,18 @@ def write_list(data, fname):
 
 def write_2_files(data1, file1, data2, file2, lock):
     lock.acquire()
-    if file1 is not None:
-       write_list(data1, file1)
-    if file2 is not None:
-        write_list(data2, file2)
-    lock.release()
+    myid = randint(1,100)
+    printd('Lock acquired', myid)
+    try:
+        if file1 is not None:
+           write_list(data1, file1)
+        if file2 is not None:
+            write_list(data2, file2)
+    except Exception as e:
+        print('Error: unable to write to files:', e)
+    finally:
+        lock.release()
+        printd('Lock released', myid)
 
 # reads a chunk of size chunk_size from fname into a string,
 # splits it into a list, and calls process
