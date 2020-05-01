@@ -11,7 +11,7 @@
 
 // If two phenos are similar, and a kmer causes one of them, there is evidence
 // it causes the other
-1.0: SimilarPheno(P1), P2) & (P1) != P2) & UnitigPheno(K, P1) >> UnitigPheno(K, P2) ^2
+1.0: SimilarPheno(P1, P2) & (P1 != P2) & UnitigPheno(K, P1) >> UnitigPheno(K, P2) ^2
 
 // If two samples are similar, and one contains a kmer and displays a pheno and
 // the other does neither, there is evidence that kmer causes that pheno
