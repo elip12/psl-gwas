@@ -62,12 +62,13 @@ def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
         for pheno in linelist[1:]:
             unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
             if truths and unitig_in_truths(unitig, truths, pheno):
-                truths_chunk.append(f'{uim[unitig]}\t{pheno}\t1')
+                truths_chunk.append(f'{uim[unitig]}\t{pheno}')
         if len(unitig_pheno_chunk) >= 500000:
             write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
                 truths_chunk, truth_unitig_pheno_file, lock)
             unitig_pheno_chunk = []
-            truths_chunk = []
+            if truths_chunk is not None:
+                truths_chunk = []
     write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
         truths_chunk, truth_unitig_pheno_file, lock)
 

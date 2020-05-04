@@ -253,6 +253,9 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
         except ValueError as e:
             printd('Unable to generate histogram of scaled data')
 
+        otherdf = dfs[1 - i].copy(deep=True)
+        otherdf[0] = 0
+        df = df.append(otherdf)
         # write to csv 
         df.to_csv(outfile, sep='\t', index=False, header=False)
 

@@ -163,16 +163,18 @@ else
     echo -e "$N postprocessed"
 fi
 # check for preprocessed files
-if [[ -r "$PPATH/contains_sample_unitig.txt" ]] \
-&& [[ -r "$PPATH/value_unitig_pheno.txt" ]] \
-&& [[ -r "$PPATH/value_sample_pheno.txt" ]] \
-&& [[ -r "$PPATH/similar_pheno_pheno.txt" ]] \
-&& [[ -r "$PPATH/similar_sample_sample.txt" ]] \
-&& [[ -r "$PPATH/dissimilar_sample_sample.txt" ]] \
+if [[ -r "$PPATH/contains_obs.txt" ]] \
+&& [[ -r "$PPATH/block_obs.txt" ]] \
+&& [[ -r "$PPATH/unitigPheno_target.txt" ]] \
+&& [[ -r "$PPATH/samplePheno_obs.txt" ]] \
+&& [[ -r "$PPATH/similarPheno_obs.txt" ]] \
+&& [[ -r "$PPATH/similarSample_obs.txt" ]] \
+&& [[ -r "$PPATH/dissimilarSample_obs.txt" ]] \
 && [[ -r "$PPATH/pheno_int_map.pkl" ]] \
 && [[ -r "$PPATH/sample_int_map.pkl" ]] \
 && [[ -r "$PPATH/unitig_int_map.pkl" ]] \
 && [[ -r "$PPATH/unitig_sample_map.txt" ]] \
+&& [[ -r "$PPATH/unitig_pheno_map.txt" ]] \
 && [[ -r "$PPATH/sample_similarities.tsv" ]] \
 && [[ -r "$PPATH/unique_kmers.txt" ]]; then
     preprocessed=1

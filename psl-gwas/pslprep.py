@@ -23,10 +23,10 @@ def main():
     unitig_sample_map_file = join(project, 'data', 'preprocessed', 'unitig_sample_map.txt')
     unitig_pheno_map_file = join(project, 'data', 'preprocessed', 'unitig_pheno_map.txt')
     phenos_file = join(project, 'data', 'raw', params['phenos'])
-    contains_sample_unitig_file = join(project, 'data', 'preprocessed', 'contains_sample_unitig.txt')
-    value_sample_pheno_file = join(project, 'data', 'preprocessed', 'value_sample_pheno.txt')
-    value_unitig_pheno_file = join(project, 'data', 'preprocessed', 'value_unitig_pheno.txt')
-    similar_pheno_pheno_file = join(project, 'data', 'preprocessed', 'similar_pheno_pheno.txt')
+    contains_sample_unitig_file = join(project, 'data', 'preprocessed', 'contains_obs.txt')
+    value_sample_pheno_file = join(project, 'data', 'preprocessed', 'samplePheno_obs.txt')
+    value_unitig_pheno_file = join(project, 'data', 'preprocessed', 'unitigPheno_target.txt')
+    similar_pheno_pheno_file = join(project, 'data', 'preprocessed', 'similarPheno_obs.txt')
     
     sim = load_pickle(sim_file)
     pim = load_pickle(pim_file)
@@ -35,7 +35,7 @@ def main():
     if params.get('truth'):
         truths_infile = join(project, 'data', 'raw', params['truth'])
         truths_dict = create_truths_dict(truths_infile, pim)
-        truth_unitig_pheno_file = join(project, 'data', 'preprocessed', 'truth_unitig_pheno.txt')
+        truth_unitig_pheno_file = join(project, 'data', 'preprocessed', 'unitigPheno_truth.txt')
     else:
         truths_dict = None
         truth_unitig_pheno_file = None
