@@ -49,7 +49,7 @@ def main():
     k = params['k']
 
     # define file paths
-    samples_file = join(project, 'data', 'raw', params['samples'])
+    samples_file = join(project, 'data', 'raw', params['sample'])
     outfile = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
     catted_samples = join(project, 'data', 'preprocessed', 'samples.fa')
 

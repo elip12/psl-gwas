@@ -119,6 +119,14 @@ while (( "$#" )) ; do
             check_usage "-k/--k" $2
             pre_opts+=("--k" "$2")
             shift 2;;
+        --minkf)
+            check_usage "--minkf" $2
+            pre_opts+=("--minkf" "$2")
+            shift 2;;
+        --maxkf)
+            check_usage "--maxkf" $2
+            pre_opts+=("--maxkf" "$2")
+            shift 2;;
         --thresh)
             check_usage "--thresh" $2 
             pre_opts+=("--thresh" "$2")

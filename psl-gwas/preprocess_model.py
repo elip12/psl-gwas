@@ -97,9 +97,9 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
 
         # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
-        penetrance_thresh = 0.7
-        a = np.where((disp + nodisp >= thresh) \
-                    & (disp / (disp + nodisp + .01) > penetrance_thresh))[0]
+        samples_thresh = 5
+        a = np.where((disp + nodisp >= samples_thresh) \
+                    & (disp / (disp + nodisp + .01) > thresh))[0]
         if a.size == 0:
             continue
         unitig_pheno_chunk = [unitig]

@@ -24,8 +24,8 @@ def main():
 
     # define file paths
     unique_kmers_file = join(project, 'data', 'preprocessed', 'unique_kmers.txt')
-    phenos_file = join(project, 'data', 'raw', params['phenos'])
-    samples_file = join(project, 'data', 'raw', params['samples'])
+    phenos_file = join(project, 'data', 'raw', params['pheno'])
+    samples_file = join(project, 'data', 'raw', params['sample'])
     similarities_tsv = join(project, 'data', 'preprocessed', 'sample_similarities.tsv')
     hist_orig_file = join(project, 'data', 'preprocessed', 'hist_orig.png')
     hist_sim_scaled_file = join(project, 'data', 'preprocessed', 'hist_sim_scaled.png')
@@ -56,8 +56,8 @@ def main():
         # number of samples
         n_samples = int(len(sim) / 2)
         # upper and lower bounds for frequency of samples to filter kmers by
-        upper = int(0.7 * n_samples)
-        lower = int(0.01 * n_samples)
+        upper = int(params['maxkf'] * n_samples)
+        lower = int(params['minkf'] * n_samples)
         # multiprocessing queue for transferring data to the main thread
         m = Manager()
         q = m.Queue()
@@ -89,7 +89,8 @@ def main():
         # create sample similarity file if the similarities tsv does not exist
         if not file_exists(similar_sample_file) or not file_exists(dissimilar_sample_file):
             similar_sample(sample_matrix, num_kmers, similarities_tsv,
-                hist_orig_file, hist_scaled_file, similar_sample_file, dissimilar_sample_file)
+                hist_orig_file, hist_sim_scaled_file, hist_dissim_scaled_file,
+                similar_sample_file, dissimilar_sample_file)
     if (not file_exists(similar_sample_file) or not file_exists(dissimilar_sample_file)) and file_exists(similarities_tsv):
         similar_sample(None, None, similarities_tsv, hist_orig_file,
             hist_sim_scaled_file, hist_dissim_scaled_file,

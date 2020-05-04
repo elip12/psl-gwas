@@ -22,7 +22,7 @@
 ##  or complexity.
 ###############################################################################
 from multiprocessing import Pool
-from os.path import getsize, isfile
+from os.path import getsize, isfile, join
 import pickle
 import argparse
 import yaml
@@ -41,21 +41,25 @@ def parse_args():
         help='turn on debug mode')
     parser.add_argument('--project', required=True, type=str,
         help='name of project, defined with startproject.sh <name>')
-    parser.add_argument('--samples', required=True, type=str,
+    parser.add_argument('--sample', required=True, type=str,
         help='basename of samples file. ex: samples.tsv')
-    parser.add_argument('--phenos', required=True, type=str,
+    parser.add_argument('--pheno', required=True, type=str,
         help='basename of phenos file. ex: phenos.tsv')
-    parser.add_argument('--threads', default=2, type=int,
+    parser.add_argument('--threads', default=24, type=int,
         help='max number of threads used concurrently')
-    parser.add_argument('--mem', default=12, type=int,
-        help='max amount of memory used concurrently (GB)')
+    parser.add_argument('--mem', default=350, type=int,
+        help='upper memory limit (GB)')
     parser.add_argument('-k', '--k', default=30, type=int,
         help='kmer length in nucleotide bases')
-    parser.add_argument('--thresh', default=5, type=int,
-        help='kmer length in nucleotide bases')
+    parser.add_argument('--minkf', default=0.01, type=float,
+        help='minimum kmer frequency')
+    parser.add_argument('-maxkf', default=0.95, type=float,
+        help='maximum kmer frequency')
+    parser.add_argument('--thresh', default=0.5, type=float,
+        help='penetrance threshold for filtering in preprocessing')
     parser.add_argument('-p', '--param', action='store_true',
-        help=('ignore threads, mem, k, lowerfreq, upperfreq, and thresh options'
-            ' and use param file in project directory'))
+        help=('ignore sample, pheno, truth, threads, mem, k, minkf, maxkf,'
+            ' and thresh options and use param file in project directory'))
     parser.add_argument('--truth', type=str,
         help=('fasta file holding truths data for benchmarking.'
             'Labels correspond to phenos, sequences hold genes or unitigs'
@@ -64,10 +68,9 @@ def parse_args():
     global DEBUG
     DEBUG = args.debug
     global PARAMS
+    PARAMS = vars(args)
     if args.param:
-        PARAMS = read_yaml(args.param).update({'project': args.project})
-    else:
-        PARAMS = vars(args)
+        PARAMS.update(read_yaml(join(args.project, 'parameters.yaml')))
 
 # read a yaml file and return the python dict
 def read_yaml(fname):

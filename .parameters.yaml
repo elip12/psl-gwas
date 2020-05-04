@@ -2,23 +2,20 @@ DO NOT MODIFY THIS FILE! IF YOU CREATED A PROJECT USING THE STARTPROJECT
 SCRIPT, THERE WILL BE A COPY OF THIS FILE IN YOUR PROJECT DIRECTORY. 
 
 # This file holds parameters that will be used by the pre and post processing
-# pipelines. Currently, this file is not used.
-
-# input files holding locations of fasta files and phenotype data
-samples: samples.tsv
-phenos: phenos.tsv
+# pipeline. Using this parameters file is an alternative to specifying parameters
+# using the command line. You must always specify the project, samples, phenos,
+# and optional truths file from the command line.
 
 # initial kmer size
 k: 30
 
-# proportion of kmers to sample when constructing distance matrix between samples
-#WIP: unused rn
-KMER_SAMPLE_PROP: 0.01
-
 # for each kmer, there must exist a phenotype such that the number of samples
 # with data recorded for that phenotype is greater or equal to this threshold
 # or that kmer will be thrown out
-thresh: 5
+thresh: 0.7
+
+minkf: 0.01
+maxkf: 0.95
 
 # maximum number of threads the preprocessing will use concurrently.
 threads: 2

@@ -22,7 +22,7 @@ def main():
     uim_file = join(project, 'data', 'preprocessed', 'unitig_int_map.pkl')
     unitig_sample_map_file = join(project, 'data', 'preprocessed', 'unitig_sample_map.txt')
     unitig_pheno_map_file = join(project, 'data', 'preprocessed', 'unitig_pheno_map.txt')
-    phenos_file = join(project, 'data', 'raw', params['phenos'])
+    phenos_file = join(project, 'data', 'raw', params['pheno'])
     contains_sample_unitig_file = join(project, 'data', 'preprocessed', 'contains_obs.txt')
     value_sample_pheno_file = join(project, 'data', 'preprocessed', 'samplePheno_obs.txt')
     value_unitig_pheno_file = join(project, 'data', 'preprocessed', 'unitigPheno_target.txt')
