@@ -206,9 +206,10 @@ if [[ $postprocessed -eq 1 ]]; then
     exit 0
 elif [[ $preprocessed -eq 1 ]]; then
     if ! [[ -r "$OPATH/UNITIGPHENO.txt" ]]; then
-        run_psl
+        run_psl && run_postprocess
+    else
+        run_postprocess
     fi
-    run_postprocess
     echo "Done."
     exit 0
 elif [[ $raw -eq 1 ]]; then
