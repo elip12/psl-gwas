@@ -45,15 +45,15 @@ def parse_args():
         help='basename of samples file. ex: samples.tsv')
     parser.add_argument('--pheno', required=True, type=str,
         help='basename of phenos file. ex: phenos.tsv')
-    parser.add_argument('--threads', default=24, type=int,
+    parser.add_argument('--threads', default=4, type=int,
         help='max number of threads used concurrently')
-    parser.add_argument('--mem', default=350, type=int,
+    parser.add_argument('--mem', default=8, type=int,
         help='upper memory limit (GB)')
     parser.add_argument('-k', '--k', default=30, type=int,
         help='kmer length in nucleotide bases')
     parser.add_argument('--minkf', default=0.01, type=float,
         help='minimum kmer frequency')
-    parser.add_argument('-maxkf', default=0.95, type=float,
+    parser.add_argument('--maxkf', default=0.95, type=float,
         help='maximum kmer frequency')
     parser.add_argument('--thresh', default=0.5, type=float,
         help='penetrance threshold for filtering in preprocessing')

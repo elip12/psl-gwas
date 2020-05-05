@@ -47,7 +47,7 @@ function main() {
 function runWeightLearning() {
     echo "Running PSL Weight Learning"
 
-    java -Xmx350G -Xms50G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java $MEM -Xms1G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run weight learning'
         exit 60
@@ -57,7 +57,7 @@ function runWeightLearning() {
 function runEvaluation() {
     echo "Running PSL Inference"
 
-    java -Xmx350G -Xms50G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java $MEM -Xms1G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run infernce'
         exit 70

@@ -15,6 +15,19 @@ project=0
 sample=0
 pheno=0
 
+get_mem() {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        mem=$(( $(free -g | awk '/^Mem:/{print $2}') * 19 / 20))
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        mem=$(( $(sysctl -n hw.memsize) * 19 / 20 / 2**30))
+    fi
+    echo $mem
+}
+
+get_cpus() {
+    echo $(getconf _NPROCESSORS_ONLN)
+}
+
 # checks project directory exists
 check_project() {
     if [[ -d "$project" ]]; then
@@ -106,15 +119,6 @@ while (( "$#" )) ; do
         -d|--debug)
             pre_opts+=("--debug")
             shift;;
-        --threads)
-            pre_opts+=("--threads" "$2")
-            check_usage "--threads" $2
-            shift 2;;
-        --mem)
-            check_usage "--mem" $2
-            psl_opts+=("--mem" "$2")
-            pre_opts+=("--mem" "$2")
-            shift 2;;
         -k|--k)
             check_usage "-k/--k" $2
             pre_opts+=("--k" "$2")
@@ -147,6 +151,9 @@ while (( "$#" )) ; do
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
 done
+pre_opts+=("--threads" "$(get_cpus)")
+pre_opts+=("--mem" "$(get_mem)")
+psl_opts+=("--mem" "$(get_mem)")
 pre_opts=("${proj[@]}" "${pre_opts[@]}")
 check_project
 
