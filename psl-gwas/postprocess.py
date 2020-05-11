@@ -8,7 +8,7 @@ def process(data, q, pim, uim_file):
     chunk = []
     for line in data:
         linelist = line.split()
-        if float(linelist[2]) < 0.0:
+        if float(linelist[2]) < 0.999:
             continue
         outline = (uim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
         chunk.append(outline)

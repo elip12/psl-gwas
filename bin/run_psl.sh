@@ -6,9 +6,9 @@
 ###############################################################################
 readonly PSL_VERSION='2.3.0-SNAPSHOT'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
-readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=DEBUG --int-ids -D eval.closetruth=true'
-readonly ADDITIONAL_LEARN_OPTIONS='--learn RandomGridSearch -D weightlearning.evaluator=RankingEvaluator -D weightlearning.inference=SGDStreamingInference -D randomgridsearch.maxlocations=50'
-readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs.psl.evaluation.statistics.RankingEvaluator' 
+readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=TRACE --int-ids -D eval.closetruth=false -D runtimestats.collect=true --skipAtomCommit'
+readonly ADDITIONAL_LEARN_OPTIONS='--learn ContinuousRandomGridSearch -D weightlearning.evaluator=ContinuousEvaluator -D continuousrandomgridsearch.maxlocations=250'
+readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator' 
 
 BASE_NAME=''
 MEM=''
@@ -21,7 +21,7 @@ function main() {
     while (( "$#" )) ; do
         case "$1" in
             --project) BASE_NAME="$2" ; shift 2;;
-            --mem) MEM="-Xmx$2G" ; shift 2;;
+            --mem) MEM="$2G" ; shift 2;;
             --weight_learning) runweightlearning=1 ; shift;;
             *) ARGS+=("$1") ; shift ;;
         esac
@@ -47,7 +47,7 @@ function main() {
 function runWeightLearning() {
     echo "Running PSL Weight Learning"
 
-    java $MEM -Xms1G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java -Xmx350G -Xms350G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run weight learning'
         exit 60
@@ -57,7 +57,7 @@ function runWeightLearning() {
 function runEvaluation() {
     echo "Running PSL Inference"
 
-    java $MEM -Xms1G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java -Xmx350G -Xms350G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run infernce'
         exit 70

@@ -119,6 +119,7 @@ def sample_pheno(phenos, sim, pim, outfile):
             new = pd.concat([new, slice_[['sample_id', 'value', 'pheno']]],
                 ignore_index=True, sort=False) 
     df = new.dropna()
+    df = df[df['value'] > 0]
     df.to_csv(outfile, sep='\t', index=False, header=False)
 
 # rescale similar pheno data to have better distribution
