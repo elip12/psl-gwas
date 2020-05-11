@@ -8,3 +8,4 @@ logs/
 ecoli/
 train/
 ecoli_train/
+_build/
