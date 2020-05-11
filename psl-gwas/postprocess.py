@@ -1,18 +1,20 @@
 from utility import process_file, write_list, parse_args, load_pickle, \
 get_params, file_exists
-from multiprocessing import Manager, Queue
+from multiprocessing import Manager
 from os.path import join
 
-def process(data, q, pim, uim_file):
+def process(data, lock, pim, uim_file, thresh, fsa_file, scored_unitigs_file):
     uim = load_pickle(uim_file)
     chunk = []
     for line in data:
         linelist = line.split()
-        if float(linelist[2]) < 0.999:
+        if float(linelist[2]) < thresh:
             continue
         outline = (uim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
         chunk.append(outline)
-    q.put(chunk)
+    unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
+    values = ['\t'.join(tup) for tup in chunk]
+    write_2_files(values, scored_unitigs_file, unitigs, fas_file, lock)
 
 def main():
     # get params
@@ -27,22 +29,17 @@ def main():
     scored_unitigs_file = join(project, 'data', 'postprocessed', 'scored_unitigs.txt')
 
     # create output files if they do not exist
-    fsa_file_exists = file_exists(fsa_file)
-    scored_unitigs_file_exists = file_exists(scored_unitigs_file)
-    if not fsa_file_exists or not scored_unitigs_file_exists:
-        q = Manager().Queue()
+    if file_exists(fsa_file):
+        fsa_file = None
+    if file_exists(scored_unitigs_file):
+        scored_unitigs_file = None
+    if fsa_file or scored_unitigs_file:
+        lock = Manager().Lock()
         pim = load_pickle(pim_file)
         
-        process_file(process, INPUT_FILE, q=q, pim=pim, uim_file=uim_file)
-        
-        while not q.empty():
-            chunk = q.get()
-            if not fsa_file_exists:
-                unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
-                write_list(unitigs, fsa_file)
-            if not scored_unitigs_file_exists:
-                values = ['\t'.join(tup) for tup in chunk]
-                write_list(values, scored_unitigs_file)
+        process_file(process, INPUT_FILE, lock=lock, pim=pim, uim_file=uim_file,
+                thresh=params['classification_thresh'], fsa_file=fsa_file,
+                scored_unitigs_file=scored_unitigs_file)
 
 if __name__ == '__main__':
     parse_args()

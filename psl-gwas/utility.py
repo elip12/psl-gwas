@@ -55,8 +55,10 @@ def parse_args():
         help='minimum kmer frequency')
     parser.add_argument('--maxkf', default=0.95, type=float,
         help='maximum kmer frequency')
-    parser.add_argument('--thresh', default=0.5, type=float,
+    parser.add_argument('--penetrance_thresh', default=0.5, type=float,
         help='penetrance threshold for filtering in preprocessing')
+    parser.add_argument('--classiciation_thresh', default=0.999, type=float,
+        help='classiciation threshhold used to round continuous values')
     parser.add_argument('-p', '--param', action='store_true',
         help=('ignore sample, pheno, truth, threads, mem, k, minkf, maxkf,'
             ' and thresh options and use param file in project directory'))

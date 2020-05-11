@@ -131,9 +131,9 @@ while (( "$#" )) ; do
             check_usage "--maxkf" $2
             pre_opts+=("--maxkf" "$2")
             shift 2;;
-        --thresh)
-            check_usage "--thresh" $2 
-            pre_opts+=("--thresh" "$2")
+        --penetrance-thresh)
+            check_usage "--penetrance-thresh" $2 
+            pre_opts+=("--penetrance_thresh" "$2")
             shift 2;;
         --postgres)
             check_usage "--postgres" $2
@@ -147,6 +147,10 @@ while (( "$#" )) ; do
             pre_opts+=("--truth" "$2")
             psl_opts+=("--weight_learning")
             shift 2;;
+    --classification-thresh)
+	    check_usage "--classification-thresh" $2
+	    pre_opts+=("--classification_thresh" "$2")
+	    shift 2;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
