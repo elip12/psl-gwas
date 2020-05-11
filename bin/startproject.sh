@@ -11,7 +11,7 @@
 # copies .parameters.yaml to project parameters.yaml for user to edit,
 # removing do not edit message at top
 project_params() {
-    tail -n +3 .parameters.yaml > $1
+    tail -n +3 psl-gwas/.parameters.yaml > $1
     chmod o+w $1
 }
 
