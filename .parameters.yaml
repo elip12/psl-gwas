@@ -7,20 +7,17 @@ SCRIPT, THERE WILL BE A COPY OF THIS FILE IN YOUR PROJECT DIRECTORY.
 # and optional truths file from the command line.
 
 # initial kmer size
-k: 30
+k: 31
 
 # for each kmer, there must exist a phenotype such that the number of samples
 # with data recorded for that phenotype is greater or equal to this threshold
-# or that kmer will be thrown out
-thresh: 0.7
+#, or that kmer will be thrown out
+penetrance-thresh: 0.5
 
+# min and max kmer frequencies. Any kmer that occurs with greater frequency than max
+# or less frequency than min gets thrown out
 minkf: 0.01
 maxkf: 0.95
 
-# maximum number of threads the preprocessing will use concurrently.
-threads: 2
-
-# maximum amount of memory in gigabytes (G) the preprocessing/gwas/postprocessing
-# will use concurrently.
-mem: 12
-
+# classification threshhold for rounding continuous values.
+classification-thresh: 0.999
