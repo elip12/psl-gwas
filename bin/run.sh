@@ -133,7 +133,7 @@ while (( "$#" )) ; do
             shift 2;;
         --penetrance-thresh)
             check_usage "--penetrance-thresh" $2 
-            pre_opts+=("--penetrance_thresh" "$2")
+            pre_opts+=("--penetrance-thresh" "$2")
             shift 2;;
         --postgres)
             check_usage "--postgres" $2
@@ -149,7 +149,7 @@ while (( "$#" )) ; do
             shift 2;;
     --classification-thresh)
 	    check_usage "--classification-thresh" $2
-	    pre_opts+=("--classification_thresh" "$2")
+	    pre_opts+=("--classification-thresh" "$2")
 	    shift 2;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
