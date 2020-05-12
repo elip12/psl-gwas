@@ -1,5 +1,5 @@
 from utility import process_file, write_list, parse_args, load_pickle, \
-get_params, file_exists
+get_params, file_exists, write_2_files
 from multiprocessing import Manager
 from os.path import join
 
@@ -14,7 +14,7 @@ def process(data, lock, pim, uim_file, thresh, fsa_file, scored_unitigs_file):
         chunk.append(outline)
     unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
     values = ['\t'.join(tup) for tup in chunk]
-    write_2_files(values, scored_unitigs_file, unitigs, fas_file, lock)
+    write_2_files(values, scored_unitigs_file, unitigs, fsa_file, lock)
 
 def main():
     # get params
