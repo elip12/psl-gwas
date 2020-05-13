@@ -8,7 +8,7 @@ readonly PSL_VERSION='2.3.0-SNAPSHOT'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=TRACE --int-ids -D eval.closetruth=false -D runtimestats.collect=true --skipAtomCommit'
 readonly ADDITIONAL_LEARN_OPTIONS='--learn ContinuousRandomGridSearch -D weightlearning.evaluator=ContinuousEvaluator -D continuousrandomgridsearch.maxlocations=250'
-readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator' 
+readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval org.linqs.psl.evaluation.statistics.ContinuousEvaluator' 
 
 BASE_NAME=''
 MEM=''
