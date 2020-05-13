@@ -3,6 +3,11 @@
     You can adapt this file completely to your liking, but it should at least
     contain the root `toctree` directive.
 
+.. image:: _static/psl-gwas-logo-v1.svg
+   :width: 300px
+   :alt: PSL-GWAS
+   :align: right
+
 PSL-GWAS Documentation
 ======================
 
@@ -16,6 +21,7 @@ Genetic elements include chromosomal and plasmid genes, SNPs, indels,
 and copy number variants. Phenotypes of interest could include antibiotic
 resistance or virulence.
 
+
 Given some microbial samples, including their sequenced genomes and
 information on which samples display which phenotypes,
 PSL-GWAS finds genetic elements likely to cause those phenotypes.
@@ -27,7 +33,7 @@ PSL-GWAS is also easy to customize, allowing users to incorporate
 domain-specific knowledge in their models.
 
 PSL-GWAS is open source and licensed under the MIT license.
-The source code is available on `github`_.
+The source code is available on `Github`_.
 
 
 .. toctree::
@@ -43,4 +49,4 @@ The source code is available on `github`_.
 
 .. _PSL: https://psl.linqs.org/wiki/master/Introduction-to-Probabilistic-Soft-Logic.html
 .. _GWAS: https://en.wikipedia.org/wiki/Genome-wide_association_study
-.. _github: https://github.com/elip12/psl-gwas
+.. _Github: https://github.com/elip12/psl-gwas

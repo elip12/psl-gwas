@@ -34,9 +34,9 @@ in FASTA (.fa, .fsa) format.
     =====   =====  
     ID      Path      
     =====   =====  
-    s1      <project>/data/raw/contigs/s1.fa
-    s2      <project>/data/raw/contigs/s2.fa 
-    s3      <project>/data/raw/contigs/s3.fa
+    s1      <project>/data/raw/contigs/s1_ctgs.fa
+    s2      <project>/data/raw/contigs/s2_ctgs.fa 
+    s3      <project>/data/raw/contigs/s3_ctgs.fa
     ...     ...
     =====   =====
 
@@ -60,14 +60,14 @@ in FASTA (.fa, .fsa) format.
     If you are testing antibiotic resistance, your phenotypes file could look
     like this:
 
-    =====   ==========  =========== ===
-    ID      Penicillin  Ampicilllin ...
-    =====   ==========  =========== ===
+    =====   ==========  ==========  ===
+    ID      Penicillin  Ampicillin  ...
+    =====   ==========  ==========  ===
     s1      0           0.75        ...
     s2      1           NA          ...
     s3      1           1           ...
     ...     ...         ...         ...
-    =====   ==========  =========== ===
+    =====   ==========  ==========  ===
 
     You can call this file anything. ``phenos.tsv`` is simple and easy.
     This file goes in ``<project>/data/raw/``
