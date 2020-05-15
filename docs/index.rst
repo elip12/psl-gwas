@@ -3,11 +3,11 @@
     You can adapt this file completely to your liking, but it should at least
     contain the root `toctree` directive.
 
-.. image:: _static/psl-gwas-logo-v1.svg
+.. figure:: _static/psl-gwas-logo-v2.png
    :width: 300px
    :alt: PSL-GWAS
    :align: right
-
+   
 PSL-GWAS Documentation
 ======================
 
