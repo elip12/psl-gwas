@@ -3,7 +3,7 @@
 ##  pslprep_model.py
 ##  This file holds helper functions for pslprep.py
 ###############################################################################
-from utility import write_2_files, write_list, load_pickle, printd, complement
+from utility import write_files, write_list, load_pickle, printd, complement
 import pandas as pd
 import numpy as np
 import pickle
@@ -49,13 +49,18 @@ def pim_truths(pim, truths):
             yield pim[pheno], pheno
 
 def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
-        truth_unitig_pheno_file, lock, truths=None):
+        truth_unitig_pheno_file, baseline_unitig_pheno_file, lock, truths=None,
+        baseline=None):
     uim = load_pickle(uim_file)
     unitig_pheno_chunk = []
     if truths:
         truths_chunk = []
     else:
         truths_chunk = None
+    if baseline:
+        baseline_chunk = []
+    else:
+        baseline_chunk = None
     for line in data:
         linelist = line.split('\t')
         unitig = linelist[0]
@@ -63,14 +68,20 @@ def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
             unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
             if truths and unitig_in_truths(unitig, truths, pheno):
                 truths_chunk.append(f'{uim[unitig]}\t{pheno}')
+            if baseline and unitig_in_truths(unitig, baseline, pheno):
+                baseline_chunk.append(f'{uim[unitig]}\t{pheno}')
         if len(unitig_pheno_chunk) >= 500000:
-            write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
-                truths_chunk, truth_unitig_pheno_file, lock)
+            write_files(lock,
+                (unitig_pheno_chunk, value_unitig_pheno_file),
+                (truths_chunk, truth_unitig_pheno_file),
+                (baseline_chunk, baseline_unitig_pheno_file))
             unitig_pheno_chunk = []
             if truths_chunk is not None:
                 truths_chunk = []
-    write_2_files(unitig_pheno_chunk, value_unitig_pheno_file,
-        truths_chunk, truth_unitig_pheno_file, lock)
+    write_files(lock,
+        (unitig_pheno_chunk, value_unitig_pheno_file),
+        (truths_chunk, truth_unitig_pheno_file),
+        (baseline_chunk, baseline_unitig_pheno_file))
 
 # convert unitig db to psl input
 def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=None):
@@ -92,13 +103,7 @@ def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=N
             write_list(unitig_sample_chunk, contains_sample_unitig_file)
             lock.release()
             unitig_sample_chunk = []
-    lock.acquire()
-    try:
-        write_list(unitig_sample_chunk, contains_sample_unitig_file)
-    except Exception as e:
-        print('Error: unable to write list:', e)
-    finally:
-        lock.release()
+    write_files(lock, (unitig_sample_chunk, contains_sample_unitig_file))
 
 # convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):

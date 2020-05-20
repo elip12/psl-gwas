@@ -113,13 +113,12 @@ def write_list(data, fname):
         s = '\n'.join(data) + '\n'
         f.write(s)
 
-def write_2_files(data1, file1, data2, file2, lock):
+def write_files(lock, *data):
     lock.acquire()
     try:
-        if file1 is not None:
-           write_list(data1, file1)
-        if file2 is not None:
-            write_list(data2, file2)
+        for chunk, fname in data:
+            if fname is not None:
+                write_list(chunk, fname)
     except Exception as e:
         print('Error: unable to write to files:', e)
     finally:
