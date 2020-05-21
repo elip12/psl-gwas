@@ -7,7 +7,7 @@ from random import Random, randint, random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utility import printd, write_2_files, complement, file_exists
+from utility import printd, write_files, complement, file_exists
 from collections import Counter
 
 # check if a kmer occurs in fewer than upper samples and
@@ -110,12 +110,14 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
         unitig_samples.append('\t'.join(map(format_tuple, line)))
         # write every 500K kmers to keep memory consumption under control
         if len(unitig_phenos) >= 500000:
-            write_2_files(unitig_samples, unitig_sample_file, unitig_phenos,
-                unitig_pheno_file, lock)
+            write_files(lock,
+                (unitig_samples, unitig_sample_file),
+                (unitig_phenos, unitig_pheno_file))
             unitig_samples = []
             unitig_phenos = []
-    write_2_files(unitig_samples, unitig_sample_file, unitig_phenos,
-        unitig_pheno_file, lock)
+    write_files(lock,
+        (unitig_samples, unitig_sample_file),
+        (unitig_phenos, unitig_pheno_file))
     printd('Finished filtering unitigs.')
     return
     

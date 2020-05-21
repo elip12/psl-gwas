@@ -31,7 +31,7 @@ def main():
     sim = load_pickle(sim_file)
     pim = load_pickle(pim_file)
     
-    # simulate truth data
+    # incorporate truth data
     if params.get('truth'):
         truths_infile = join(project, 'data', 'raw', params['truth'])
         truths_dict = create_truths_dict(truths_infile, pim)
@@ -39,6 +39,15 @@ def main():
     else:
         truths_dict = None
         truth_unitig_pheno_file = None
+
+    # incorporate baseline data
+    if params.get('baseline'):
+        baseline_infile = join(project, 'data', 'raw', params['baseline'])
+        baseline_dict = create_truths_dict(baseline_infile, pim)
+        baseline_unitig_pheno_file = join(project, 'data', 'preprocessed', 'baseline_obs.txt')
+    else:
+        baseline_dict = None
+        baseline_unitig_pheno_file = None
 
     # create smaller psl input files that can be efficiently done w 1 thread
     if not file_exists(value_sample_pheno_file):
@@ -49,7 +58,8 @@ def main():
     contains_exists = file_exists(contains_sample_unitig_file)
     value_exists = file_exists(value_unitig_pheno_file)
     truths_exists = file_exists(truth_unitig_pheno_file) if params.get('truth') else True
-    
+    baseline_exists = file_exists(baseline_unitig_pheno_file) if params.get('baseline') else True
+
     lock = Manager().Lock()
     
     if not contains_exists:
@@ -57,15 +67,18 @@ def main():
             uim_file=uim_file, lock=lock, truths=truths_dict,
             contains_sample_unitig_file=contains_sample_unitig_file)
 
-    if not value_exists or not truths_exists:
+    if not value_exists or not truths_exists or not baseline_exists:
         if value_exists:
             value_unitig_pheno_file = None
         if truths_exists:
             truth_unitig_pheno_file = None
+        if baseline_exists:
+            baseline_unitig_pheno_file = None
         process_file(unitig_pheno_db, unitig_pheno_map_file,
             uim_file=uim_file, value_unitig_pheno_file=value_unitig_pheno_file,
             truth_unitig_pheno_file=truth_unitig_pheno_file,
-            lock=lock, truths=truths_dict) 
+            lock=lock, truths=truths_dict, baseline=baseline_dict,
+            baseline_unitig_pheno_file=baseline_unitig_pheno_file) 
 
 if __name__ == '__main__':
     parse_args()
