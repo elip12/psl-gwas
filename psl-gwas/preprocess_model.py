@@ -126,7 +126,7 @@ def sample_kmers(data, n, seed=randint(1,100000)):
     printd('Sampling kmers...')
     sample_matrix = np.zeros((n, n)) 
     rng = Random(seed)
-    num_kmers = int(len(data) * 0.1)
+    num_kmers = int(len(data) * 0.05)
     sampled = rng.sample(data, num_kmers)
 
     for line in sampled:
@@ -223,13 +223,14 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df = df.reset_index()
     df = df[df[0] > 0] # remove the lower half of the triangle
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-    thresh = 0.98
+    highthresh = 0.98
+    lowthresh = .35
     # find numeric cutoff; the lowest 75% of the data are below this value
-    highcutoff = df[0].quantile(thresh)
-    #lowcutoff = df[0].quantile(1 - thresh)
+    highcutoff = df[0].quantile(highthresh)
+    lowcutoff = df[0].quantile(lowthresh)
     # cut off all everything in the middle; only keep the very similar and very dissimilar
     simdf = df[df[0] >= highcutoff].copy(deep=True)
-    dissimdf = df #[df[0] <= lowcutoff].copy(deep=True)
+    dissimdf = df[df[0] <= lowcutoff].copy(deep=True)
     dissimdf[0] = 1 - dissimdf[0]
     dfs = (simdf, dissimdf)
     # determine new min, max, range
@@ -242,12 +243,12 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
         # shift df left by the min so the new min is 0
         df[0] -= min_
         # rescale data to [0,0.5] or [0,1]
-        if i == 0:
+        if i == 0: # high
             scale_factor = 2
             intercept = 0.5
-        else:
-            scale_factor = 1
-            intercept = 0.00001
+        else: # low
+            scale_factor = 2
+            intercept = 0.5
         df[0] /= range_ * scale_factor
         # rescale data to [0.5, 1] or [0.00001, 1]
         df[0] += intercept
