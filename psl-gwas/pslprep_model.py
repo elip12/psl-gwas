@@ -15,9 +15,20 @@ def create_truths_dict(truths_infile, pim):
         lines = f.readlines()
     phenos = None
     pim_code = None
+    score = None
     for line in lines:
         if line.startswith('>'):
-            phenos = line.rstrip().split('_')[1:]
+            linelist = line.rstrip().split('_')
+            if 'baseline' in linelist[0]:
+                baseline = linelist[0].split('-')
+                if len(baseline) == 2:
+                    try:
+                        score = float(baseline[1])
+                        if score < 0.0 or score > 1.0:
+                            score = None
+                    except ValueError as e:
+                        score = None
+            phenos = linelist[1:]
             for pheno in phenos:
                 pim_code = pim.get(pheno, None)
                 if pim_code is None:
@@ -30,7 +41,7 @@ def create_truths_dict(truths_infile, pim):
         elif phenos is not None:
             for pheno in phenos:
                 pim_code = pim[pheno]
-                truths[pim_code].append(line.rstrip())
+                truths[pim_code].append((line.rstrip(), score))
     return truths
         
 def unitig_in_truths(unitig, truths, pheno):
@@ -38,9 +49,12 @@ def unitig_in_truths(unitig, truths, pheno):
     if seqs is None:
         return False
     comp = complement(unitig)
-    for seq in seqs:
+    for seq, score in seqs:
         if unitig in seq or seq in unitig or comp in seq or seq in comp:
-            return True
+            if score is None:
+                return True
+            else:
+                return score
     return False
     
 def pim_truths(pim, truths):
@@ -68,8 +82,12 @@ def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
             unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
             if truths and unitig_in_truths(unitig, truths, pheno):
                 truths_chunk.append(f'{uim[unitig]}\t{pheno}')
-            if baseline and unitig_in_truths(unitig, baseline, pheno):
-                baseline_chunk.append(f'{uim[unitig]}\t{pheno}')
+            if baseline:
+                score = unitig_in_truths(unitig, baseline, pheno)
+                if score is True:
+                    baseline_chunk.append(f'{uim[unitig]}\t{pheno}')
+                elif score is not False and score > 0.0 and score < 1.0:
+                    baseline_chunk.append(f'{uim[unitig]}\t{pheno}\t{score}')
         if len(unitig_pheno_chunk) >= 500000:
             write_files(lock,
                 (unitig_pheno_chunk, value_unitig_pheno_file),

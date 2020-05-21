@@ -97,7 +97,7 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
 
         # 1 test per antibiotic; unitig needs to pass only 1 to avoid
         # getting filtered out
-        samples_thresh = 1 #5
+        samples_thresh = 5
         a = np.where((disp + nodisp >= samples_thresh) \
                     & (disp / (disp + nodisp + .01) > thresh))[0]
         if a.size == 0:
