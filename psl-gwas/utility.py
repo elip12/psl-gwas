@@ -64,8 +64,12 @@ def parse_args():
             ' and thresh options and use param file in project directory'))
     parser.add_argument('--truth', type=str,
         help=('fasta file holding truths data for benchmarking.'
-            'Labels correspond to phenos, sequences hold genes or unitigs'
+            'labels correspond to phenos, sequences hold genes or unitigs'
             'that cause the phenotype'))
+    parser.add_argument('--baseline', type=str,
+        help=('fasta file holding baseline data for'
+            'labels correspond to phenos, sequences hold genes or unitigs'
+            'that you suspect cause the phenotype'))
     args = parser.parse_args()
     global DEBUG
     DEBUG = args.debug
@@ -108,6 +112,9 @@ def write_dict(data, fname, sep=''):
 # writes data to a file, where each line corresponds to an element in
 # the data list
 def write_list(data, fname):
+    if len(data) == 0:
+        printd(f'Data is empty; not writing to {fname}')
+        return
     printd(f'Writing data to {fname}')
     with open(fname, 'a+') as f:
         s = '\n'.join(data) + '\n'

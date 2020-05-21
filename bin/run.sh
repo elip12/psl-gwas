@@ -147,6 +147,10 @@ while (( "$#" )) ; do
             pre_opts+=("--truth" "$2")
             psl_opts+=("--weight_learning")
             shift 2;;
+        --baseline)
+            check_usage "--baseline" $2
+            pre_opts+=("--baseline" "$2")
+            shift 2;;
     --classification-thresh)
 	    check_usage "--classification-thresh" $2
 	    pre_opts+=("--classification-thresh" "$2")

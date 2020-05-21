@@ -58,7 +58,7 @@ def main():
     contains_exists = file_exists(contains_sample_unitig_file)
     value_exists = file_exists(value_unitig_pheno_file)
     truths_exists = file_exists(truth_unitig_pheno_file) if params.get('truth') else True
-    baseline_exists = file_exists(baseline_unitig_pheno_file_ if params.get('baseline') else True
+    baseline_exists = file_exists(baseline_unitig_pheno_file) if params.get('baseline') else True
 
     lock = Manager().Lock()
     
