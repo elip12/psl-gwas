@@ -17,12 +17,8 @@
 CONTAINS='data/preprocessed/contains_obs.txt'
 TARGET='data/preprocessed/unitigPheno_target.txt'
 BLOCK='data/preprocessed/block_obs.txt'
-python3 psl-gwas/count_kmers.py "$@" \
-&& python3 psl-gwas/preprocess.py "$@" \
-&& python3 psl-gwas/pslprep.py "$@" \
+python3 psl_gwas/count_kmers.py "$@" \
+&& python3 psl_gwas/preprocess.py "$@" \
+&& python3 psl_gwas/pslprep.py "$@" \
 && cp "$2/$TARGET" "$2/$BLOCK"
 
-#&& awk '!a[$0]++' "$2/$CONTAINS" > "$2/$CONTAINS.tmp" \
-#&& mv "$2/$CONTAINS.tmp" "$2/$CONTAINS" \
-#&& awk '!a[$0]++' "$2/$TARGET" > "$2/$TARGET.tmp" \
-#&& mv "$2/$TARGET.tmp" "$2/$TARGET"
