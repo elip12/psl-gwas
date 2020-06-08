@@ -9,3 +9,4 @@ ecoli/
 train/
 ecoli_train/
 _build/
+psl_gwas.egg-info/
