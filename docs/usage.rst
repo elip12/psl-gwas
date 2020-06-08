@@ -88,12 +88,9 @@ Optional flags:
     -k K, --k K           Kmer length in nucleotide bases. Default: 31
     --minkf MINKF         Minimum kmer frequency used during preprocessing filtering. Default: 0.01
     --maxkf MAXKF         Maximum kmer frequency, used during preprocessing filtering. Default: 0.95
-    --penetrance-thresh PENETRANCE_THRESH
+    --correlation-thresh CORRELATION_THRESH
                           Penetrance threshold for filtering in preprocessing. Default: 0.5
-    --classification-thresh CLASSIFICATION_THRESH
-                            classiciation threshhold used to round continuous
-                            values in postprocessing. Default: 0.999
-    -p, --param           Ignore k, minkf, maxkf, penetrance-thresh, and classification-thresh options
+    -p, --param           Ignore k, minkf, maxkf, and correlation-thresh options
                             and use param file in project directory.
     --truth TRUTH         Fasta file holding truths data for benchmarking or weight learning.
                           Labels correspond to phenos, sequences hold genes or

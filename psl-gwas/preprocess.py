@@ -70,7 +70,7 @@ def main():
         if file_exists(unitig_pheno_file):
             unitig_pheno_file = None
         
-        kwargs = dict(raw=seqs, k=params['k'], thresh=params['penetrance-thresh'],
+        kwargs = dict(raw=seqs, k=params['k'], thresh=params['correlation-thresh'],
                     upper=upper, lower=lower, dfdisp=dfdisp, dfnodisp=dfnodisp,
                     sim=sim, n=n_samples,
                     unitig_sample_file=unitig_sample_file_ref,

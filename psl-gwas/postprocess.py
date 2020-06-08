@@ -3,13 +3,11 @@ get_params, file_exists, write_files
 from multiprocessing import Manager
 from os.path import join
 
-def process(data, lock, pim, uim_file, thresh, fsa_file, scored_unitigs_file):
+def process(data, lock, pim, uim_file, fsa_file, scored_unitigs_file):
     uim = load_pickle(uim_file)
     chunk = []
     for line in data:
         linelist = line.split()
-        if float(linelist[2]) < thresh:
-            continue
         outline = (uim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
         chunk.append(outline)
     unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
@@ -40,8 +38,7 @@ def main():
         pim = load_pickle(pim_file)
         
         process_file(process, INPUT_FILE, lock=lock, pim=pim, uim_file=uim_file,
-                thresh=params['classification-thresh'], fsa_file=fsa_file,
-                scored_unitigs_file=scored_unitigs_file)
+                fsa_file=fsa_file, scored_unitigs_file=scored_unitigs_file)
 
 if __name__ == '__main__':
     parse_args()
