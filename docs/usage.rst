@@ -4,7 +4,9 @@ Usage
 Quick Start
 ===========
 
-``./bin/run.sh --project <project> --sample <samples.tsv> --pheno <phenos.tsv>``
+.. code-block:: bash
+
+    ./bin/run.sh --project <project> --sample <samples.tsv> --pheno <phenos.tsv>
 
 Detailed Usage
 ==============
@@ -73,7 +75,10 @@ in FASTA (.fa, .fsa) format.
     This file goes in ``<project>/data/raw/``
 
 #. Run the gwas from the root of the repo
-    ``./bin/run.sh --project <project> --sample <samples.tsv> --pheno <phenos.tsv> ...``
+
+.. code-block:: bash
+
+    ./bin/run.sh --project <project> --sample <samples.tsv> --pheno <phenos.tsv> ...
 
 Options Reference for run.sh
 ============================
@@ -89,7 +94,7 @@ Optional flags:
     --minkf MINKF         Minimum kmer frequency used during preprocessing filtering. Default: 0.01
     --maxkf MAXKF         Maximum kmer frequency, used during preprocessing filtering. Default: 0.95
     --correlation-thresh CORRELATION_THRESH
-                          Penetrance threshold for filtering in preprocessing. Default: 0.5
+                          Correlation threshold for filtering in preprocessing. Default: 0.5
     -p, --param           Ignore k, minkf, maxkf, and correlation-thresh options
                             and use param file in project directory.
     --truth TRUTH         Fasta file holding truths data for benchmarking or weight learning.
