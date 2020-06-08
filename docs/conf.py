@@ -24,7 +24,6 @@ author = 'Eli Pandolfo'
 # The full version, including alpha/beta/rc tags
 release = '0.2.0'
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -41,6 +40,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 
