@@ -1,16 +1,16 @@
 #!/bin/bash
 
-readonly DATA_URL='https://linqs-data.soe.ucsc.edu/public/psl-gwas-data/ecoli.tar.gz'
-readonly DATA_FILE='ecoli.tar.gz'
-readonly DATA_DIR='ecoli'
+readonly DATA_URL='https://linqs-data.soe.ucsc.edu/public/psl-gwas-data/example.tar.gz'
+readonly DATA_FILE='example.tar.gz'
+readonly DATA_DIR='example'
 
 function main() {
    trap exit SIGINT
 
    check_requirements
 
-   fetch_file "${DATA_URL}" "${DATA_FILE}" 'ecoli data'
-   extract_tar "${DATA_FILE}" "${DATA_DIR}" 'ecoli data'
+   fetch_file "${DATA_URL}" "${DATA_FILE}" 'example data'
+   extract_tar "${DATA_FILE}" "${DATA_DIR}" 'example data'
 }
 
 function check_requirements() {
