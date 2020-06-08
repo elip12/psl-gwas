@@ -21,7 +21,6 @@ Genetic elements include chromosomal and plasmid genes, SNPs, indels,
 and copy number variants. Phenotypes of interest could include antibiotic
 resistance or virulence.
 
-
 Given some microbial samples, including their sequenced genomes and
 information on which samples display which phenotypes,
 PSL-GWAS finds genetic elements likely to cause those phenotypes.
