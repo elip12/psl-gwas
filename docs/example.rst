@@ -1,8 +1,7 @@
 PSL-GWAS Example
 ################
 
-We provide example data to allow you to use PSL-GWAS yourself. The data
-and parameters mirror those used in `Pandolfo et al. 2020
+We provide example data to allow you to replicate the results of `Pandolfo et al. 2020
 <nothing yet>`_.
 
 #. Ensure postgres is installed and running, and create a new database your default user can access.

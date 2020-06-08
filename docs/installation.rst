@@ -3,22 +3,24 @@ Installation
 
 Required dependencies:
 
-* bash
-* python3
-* java
+* Bash
+* Python3
+* Java
 
 Recommended dependencies:
 
-* postgres
+* Postgres
 
 We recommend using a python3 virtual environment (or some equivalent like
 `pyenv`_).
 
 Installation:
 
-#. ``git clone https://github.com/elip12/psl-gwas.git``
-#. ``cd psl-gwas``
-#. ``./bin/startproject.sh <project>``
+.. code-block:: bash
+
+    git clone https://github.com/elip12/psl-gwas.git
+    cd psl-gwas
+    ./bin/startproject.sh <project>
 
 This will create a project directory with the given project name,
 copy all necessary files into it, and install all necessary python packages.

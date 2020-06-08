@@ -27,7 +27,7 @@ PSL-GWAS finds genetic elements likely to cause those phenotypes.
 
 Unlike other microbial GWAS programs, PSL-GWAS implicitly models
 bacterial population structure and other domain-specific attributes,
-and can efficiently infer over multiple phenotypes simultaneously.
+and can efficiently jointly infer over multiple phenotypes.
 PSL-GWAS is also easy to customize, allowing users to incorporate
 domain-specific knowledge in their models.
 
