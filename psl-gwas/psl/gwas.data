@@ -5,7 +5,7 @@ predicates:
     DissimilarSample/2: closed
     SimilarPheno/2: closed
     Block/2: closed
-    UnitigPheno/2: open
+    KmerPheno/2: open
 
 observations:
     Contains: ./data/preprocessed/contains_obs.txt
@@ -16,7 +16,7 @@ observations:
     Block: ./data/preprocessed/block_obs.txt
 
 targets:
-    UnitigPheno: ./data/preprocessed/unitigPheno_target.txt
+    KmerPheno: ./data/preprocessed/kmerPheno_target.txt
 
 truth:
 

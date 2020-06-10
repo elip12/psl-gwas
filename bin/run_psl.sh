@@ -7,8 +7,8 @@
 readonly PSL_VERSION='2.3.0-SNAPSHOT'
 readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
 readonly ADDITIONAL_PSL_OPTIONS='-D log4j.threshold=TRACE --int-ids -D eval.closetruth=false -D runtimestats.collect=true --skipAtomCommit -D streamingtermstore.pagelocation=/scratch/epandolf/streaming-term-cache-pages -D admmreasoner.epsilonabs=1e-8f -D admmreasoner.epsilonrel=1e-6f'
-readonly ADDITIONAL_LEARN_OPTIONS='--learn ContinuousRandomGridSearch -D weightlearning.evaluator=ContinuousEvaluator -D continuousrandomgridsearch.maxlocations=250' 
-readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval ContinuousEvaluator' 
+readonly ADDITIONAL_LEARN_OPTIONS='--learn ContinuousRandomGridSearch -D weightlearning.evaluator=ContinuousEvaluator -D continuousrandomgridsearch.maxlocations=250 -D weightlearning.inference=SGDStreamingInference' 
+readonly ADDITIONAL_EVAL_OPTIONS='--infer SGDStreamingInference --eval ContinuousEvaluator' 
 
 BASE_NAME=''
 MEM=''
@@ -57,7 +57,7 @@ function runWeightLearning() {
 function runEvaluation() {
     echo "Running PSL Inference"
 
-    java -Xmx350G -Xms350G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas-learned.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+    java -Xmx350G -Xms350G -jar "${JAR_PATH}" --model "${BASE_NAME}/gwas.psl" --data "${BASE_NAME}/gwas.data" --output ${BASE_NAME}/data/postprocessed ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
     if [[ "$?" -ne 0 ]]; then
         echo 'ERROR: Failed to run infernce'
         exit 70

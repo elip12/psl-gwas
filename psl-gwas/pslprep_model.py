@@ -44,13 +44,13 @@ def create_truths_dict(truths_infile, pim):
                 truths[pim_code].append((line.rstrip(), score))
     return truths
         
-def unitig_in_truths(unitig, truths, pheno):
+def kmer_in_truths(kmer, truths, pheno):
     seqs = truths.get(int(pheno), None)
     if seqs is None:
         return False
-    comp = complement(unitig)
+    comp = complement(kmer)
     for seq, score in seqs:
-        if unitig in seq or seq in unitig or comp in seq or seq in comp:
+        if kmer in seq or seq in kmer or comp in seq or seq in comp:
             if score is None:
                 return True
             else:
@@ -62,11 +62,11 @@ def pim_truths(pim, truths):
         if pheno in pim:
             yield pim[pheno], pheno
 
-def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
-        truth_unitig_pheno_file, baseline_unitig_pheno_file, lock, truths=None,
+def kmer_pheno_db(data, kim_file, value_kmer_pheno_file,
+        truth_kmer_pheno_file, baseline_kmer_pheno_file, lock, truths=None,
         baseline=None):
-    uim = load_pickle(uim_file)
-    unitig_pheno_chunk = []
+    kim = load_pickle(kim_file)
+    kmer_pheno_chunk = []
     if truths:
         truths_chunk = []
     else:
@@ -77,51 +77,51 @@ def unitig_pheno_db(data, uim_file, value_unitig_pheno_file,
         baseline_chunk = None
     for line in data:
         linelist = line.split('\t')
-        unitig = linelist[0]
+        kmer = linelist[0]
         for pheno in linelist[1:]:
-            unitig_pheno_chunk.append(f'{uim[unitig]}\t{pheno}')
-            if truths and unitig_in_truths(unitig, truths, pheno):
-                truths_chunk.append(f'{uim[unitig]}\t{pheno}')
+            kmer_pheno_chunk.append(f'{kim[kmer]}\t{pheno}')
+            if truths and kmer_in_truths(kmer, truths, pheno):
+                truths_chunk.append(f'{kim[kmer]}\t{pheno}')
             if baseline:
-                score = unitig_in_truths(unitig, baseline, pheno)
+                score = kmer_in_truths(kmer, baseline, pheno)
                 if score is True:
-                    baseline_chunk.append(f'{uim[unitig]}\t{pheno}')
+                    baseline_chunk.append(f'{kim[kmer]}\t{pheno}')
                 elif score is not False and score > 0.0 and score < 1.0:
-                    baseline_chunk.append(f'{uim[unitig]}\t{pheno}\t{score}')
-        if len(unitig_pheno_chunk) >= 500000:
+                    baseline_chunk.append(f'{kim[kmer]}\t{pheno}\t{score}')
+        if len(kmer_pheno_chunk) >= 500000:
             write_files(lock,
-                (unitig_pheno_chunk, value_unitig_pheno_file),
-                (truths_chunk, truth_unitig_pheno_file),
-                (baseline_chunk, baseline_unitig_pheno_file))
-            unitig_pheno_chunk = []
+                (kmer_pheno_chunk, value_kmer_pheno_file),
+                (truths_chunk, truth_kmer_pheno_file),
+                (baseline_chunk, baseline_kmer_pheno_file))
+            kmer_pheno_chunk = []
             if truths_chunk is not None:
                 truths_chunk = []
     write_files(lock,
-        (unitig_pheno_chunk, value_unitig_pheno_file),
-        (truths_chunk, truth_unitig_pheno_file),
-        (baseline_chunk, baseline_unitig_pheno_file))
+        (kmer_pheno_chunk, value_kmer_pheno_file),
+        (truths_chunk, truth_kmer_pheno_file),
+        (baseline_chunk, baseline_kmer_pheno_file))
 
-# convert unitig db to psl input
-def unitig_sample_db(data, uim_file, contains_sample_unitig_file, lock, truths=None):
-    uim = load_pickle(uim_file)
-    unitig_sample_chunk = []
+# convert kmer db to psl input
+def kmer_sample_db(data, kim_file, contains_sample_kmer_file, lock, truths=None):
+    kim = load_pickle(kim_file)
+    kmer_sample_chunk = []
     for line in data:
         linelist = line.split('\t')
-        unitig = linelist[0]
+        kmer = linelist[0]
         
-        unitig_sample_lines = []
+        kmer_sample_lines = []
         for sample_ in linelist[1:]:
             sample = sample_.split(',')
-            unitig_sample_lines.append(f'{sample[0]}\t{uim[unitig]}') # add some perturbation of sample[1] to the end to get different truth values for different num CNVs
-        unitig_sample_chunk.append('\n'.join(unitig_sample_lines))
+            kmer_sample_lines.append(f'{sample[0]}\t{kim[kmer]}') # add some perturbation of sample[1] to the end to get different truth values for different num CNVs
+        kmer_sample_chunk.append('\n'.join(kmer_sample_lines))
         
         # write every 500k to limit memory usage
-        if len(unitig_sample_chunk) >= 500000:
+        if len(kmer_sample_chunk) >= 500000:
             lock.acquire()
-            write_list(unitig_sample_chunk, contains_sample_unitig_file)
+            write_list(kmer_sample_chunk, contains_sample_kmer_file)
             lock.release()
-            unitig_sample_chunk = []
-    write_files(lock, (unitig_sample_chunk, contains_sample_unitig_file))
+            kmer_sample_chunk = []
+    write_files(lock, (kmer_sample_chunk, contains_sample_kmer_file))
 
 # convert phenos tsv to psl input
 def sample_pheno(phenos, sim, pim, outfile):

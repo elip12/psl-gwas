@@ -3,20 +3,20 @@ get_params, file_exists, write_files
 from multiprocessing import Manager
 from os.path import join
 
-def process(data, lock, pim, uim_file, thresh, fsa_file, scored_unitigs_file):
-    uim = load_pickle(uim_file)
+def process(data, lock, pim, kim_file, thresh, fsa_file, scored_kmers_file):
+    kim = load_pickle(kim_file)
     chunk = []
     for line in data:
         linelist = line.split()
         if float(linelist[2]) < thresh:
             continue
-        outline = (uim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
+        outline = (kim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
         chunk.append(outline)
-    unitigs = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
+    kmers = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
     values = ['\t'.join(tup) for tup in chunk]
     write_files(lock,
-        (values, scored_unitigs_file),
-        (unitigs, fsa_file))
+        (values, scored_kmers_file),
+        (kmers, fsa_file))
 
 def main():
     # get params
@@ -24,24 +24,24 @@ def main():
     project = params['project']
     
     # define file paths
-    INPUT_FILE = join(project, 'data', 'postprocessed', 'UNITIGPHENO.txt')
+    INPUT_FILE = join(project, 'data', 'postprocessed', 'KMERPHENO.txt')
     pim_file = join(project, 'data', 'preprocessed', 'pheno_int_map.pkl')
-    fsa_file = join(project, 'data', 'postprocessed', 'scored_unitigs.fsa')
-    uim_file = join(project, 'data', 'preprocessed', 'unitig_int_map.pkl')
-    scored_unitigs_file = join(project, 'data', 'postprocessed', 'scored_unitigs.txt')
+    fsa_file = join(project, 'data', 'postprocessed', 'scored_kmers.fsa')
+    kim_file = join(project, 'data', 'preprocessed', 'kmer_int_map.pkl')
+    scored_kmers_file = join(project, 'data', 'postprocessed', 'scored_kmers.txt')
 
     # create output files if they do not exist
     if file_exists(fsa_file):
         fsa_file = None
-    if file_exists(scored_unitigs_file):
-        scored_unitigs_file = None
-    if fsa_file or scored_unitigs_file:
+    if file_exists(scored_kmers_file):
+        scored_kmers_file = None
+    if fsa_file or scored_kmers_file:
         lock = Manager().Lock()
         pim = load_pickle(pim_file)
         
-        process_file(process, INPUT_FILE, lock=lock, pim=pim, uim_file=uim_file,
+        process_file(process, INPUT_FILE, lock=lock, pim=pim, kim_file=kim_file,
                 thresh=params['classification-thresh'], fsa_file=fsa_file,
-                scored_unitigs_file=scored_unitigs_file)
+                scored_kmers_file=scored_kmers_file)
 
 if __name__ == '__main__':
     parse_args()

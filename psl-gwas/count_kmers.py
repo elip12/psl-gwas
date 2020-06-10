@@ -10,7 +10,7 @@ from multiprocessing import Queue, Manager
 from collections import Counter
 from os import remove
 from os.path import join
-from int_maps import create_unitig_int_map
+from int_maps import create_kmer_int_map
 
 # cat all sample .fa together
 def cat_samples(samples, outfile):

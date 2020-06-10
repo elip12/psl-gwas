@@ -177,9 +177,9 @@ raw=0
 
 # check for postprocessed files
 echo "Checking for data files..."
-if [[ -r "$OPATH/scored_unitigs.txt" ]] \
-&& [[ -r "$OPATH/scored_unitigs.fsa" ]] \
-&& [[ -r "$OPATH/UNITIGPHENO.txt" ]]; then
+if [[ -r "$OPATH/scored_kmers.txt" ]] \
+&& [[ -r "$OPATH/scored_kmers.fsa" ]] \
+&& [[ -r "$OPATH/KMERPHENO.txt" ]]; then
     postprocessed=1
     echo -e "$Y postprocessed"
 else
@@ -188,16 +188,16 @@ fi
 # check for preprocessed files
 if [[ -r "$PPATH/contains_obs.txt" ]] \
 && [[ -r "$PPATH/block_obs.txt" ]] \
-&& [[ -r "$PPATH/unitigPheno_target.txt" ]] \
+&& [[ -r "$PPATH/kmerPheno_target.txt" ]] \
 && [[ -r "$PPATH/samplePheno_obs.txt" ]] \
 && [[ -r "$PPATH/similarPheno_obs.txt" ]] \
 && [[ -r "$PPATH/similarSample_obs.txt" ]] \
 && [[ -r "$PPATH/dissimilarSample_obs.txt" ]] \
 && [[ -r "$PPATH/pheno_int_map.pkl" ]] \
 && [[ -r "$PPATH/sample_int_map.pkl" ]] \
-&& [[ -r "$PPATH/unitig_int_map.pkl" ]] \
-&& [[ -r "$PPATH/unitig_sample_map.txt" ]] \
-&& [[ -r "$PPATH/unitig_pheno_map.txt" ]] \
+&& [[ -r "$PPATH/kmer_int_map.pkl" ]] \
+&& [[ -r "$PPATH/kmer_sample_map.txt" ]] \
+&& [[ -r "$PPATH/kmer_pheno_map.txt" ]] \
 && [[ -r "$PPATH/sample_similarities.tsv" ]] \
 && [[ -r "$PPATH/unique_kmers.txt" ]]; then
     preprocessed=1
@@ -220,7 +220,7 @@ if [[ $postprocessed -eq 1 ]]; then
     echo "Exiting."
     exit 0
 elif [[ $preprocessed -eq 1 ]]; then
-    if ! [[ -r "$OPATH/UNITIGPHENO.txt" ]]; then
+    if ! [[ -r "$OPATH/KMERPHENO.txt" ]]; then
         run_psl && run_postprocess
     else
         run_postprocess

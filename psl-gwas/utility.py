@@ -64,11 +64,11 @@ def parse_args():
             ' and thresh options and use param file in project directory'))
     parser.add_argument('--truth', type=str,
         help=('fasta file holding truths data for benchmarking.'
-            'labels correspond to phenos, sequences hold genes or unitigs'
+            'labels correspond to phenos, sequences hold genes or kmers'
             'that cause the phenotype'))
     parser.add_argument('--baseline', type=str,
         help=('fasta file holding baseline data for'
-            'labels correspond to phenos, sequences hold genes or unitigs'
+            'labels correspond to phenos, sequences hold genes or kmers'
             'that you suspect cause the phenotype'))
     args = parser.parse_args()
     global DEBUG
