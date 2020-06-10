@@ -39,9 +39,8 @@ def main():
         lock = Manager().Lock()
         pim = load_pickle(pim_file)
         
-        process_file(process, INPUT_FILE, lock=lock, pim=pim, kim_file=kim_file,
-                thresh=params['classification-thresh'], fsa_file=fsa_file,
-                scored_kmers_file=scored_kmers_file)
+        process_file(process, INPUT_FILE, lock=lock, pim=pim, uim_file=uim_file,
+                fsa_file=fsa_file, scored_unitigs_file=scored_unitigs_file)
 
 if __name__ == '__main__':
     parse_args()
