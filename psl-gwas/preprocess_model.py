@@ -81,15 +81,15 @@ def format_tuple(tup):
 # contain this unitig and have recorded pheno values.
 # prop is the minimum ratio, for any pheno, of samples that do not display
 # the pheno to samples that display the pheno, for this unitig to be kept.
-def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
-        unitig_pheno_file, lock):
-    printd('Filtering unitigs...')
+def filter_kmers(data, thresh, dfdisp, dfnodisp, kmer_sample_file,
+        kmer_pheno_file, lock):
+    printd('Filtering kmers...')
     nphenos = dfdisp.shape[1]
-    unitig_samples = []
-    unitig_phenos = []
+    kmer_samples = []
+    kmer_phenos = []
     while(data):
         line = data.pop()
-        unitig = line[0]
+        kmer = line[0]
         # collect resistant/vulnerable frequencies for each antibiotic for
         # this unitig
         disp = sum(dfdisp[sample_id[0]] for sample_id in line[1:])
@@ -102,23 +102,23 @@ def filter_unitigs(data, thresh, dfdisp, dfnodisp, unitig_sample_file,
                     & (disp / (disp + nodisp + .01) > thresh))[0]
         if a.size == 0:
             continue
-        unitig_pheno_chunk = [unitig]
+        kmer_pheno_chunk = [kmer]
         for pheno in a:
-            unitig_pheno_chunk.append(str(pheno))
-        unitig_phenos.append('\t'.join(unitig_pheno_chunk))
+            kmer_pheno_chunk.append(str(pheno))
+        kmer_phenos.append('\t'.join(kmer_pheno_chunk))
         
-        unitig_samples.append('\t'.join(map(format_tuple, line)))
+        kmer_samples.append('\t'.join(map(format_tuple, line)))
         # write every 500K kmers to keep memory consumption under control
-        if len(unitig_phenos) >= 500000:
+        if len(kmer_phenos) >= 500000:
             write_files(lock,
-                (unitig_samples, unitig_sample_file),
-                (unitig_phenos, unitig_pheno_file))
-            unitig_samples = []
-            unitig_phenos = []
+                (kmer_samples, kmer_sample_file),
+                (kmer_phenos, kmer_pheno_file))
+            kmer_samples = []
+            kmer_phenos = []
     write_files(lock,
-        (unitig_samples, unitig_sample_file),
-        (unitig_phenos, unitig_pheno_file))
-    printd('Finished filtering unitigs.')
+        (kmer_samples, kmer_sample_file),
+        (kmer_phenos, kmer_pheno_file))
+    printd('Finished filtering kmers.')
     return
     
 
@@ -144,8 +144,8 @@ def sample_kmers(data, n, seed=randint(1,100000)):
 # Then, iterates through genomes. If a genome contains a kmer, that genome's
 # metadata is added to dict entry for that kmer.
 # calls sample_kmers, consolidate, and filter_unitigs
-def create_unitig_sample_map(data, raw, q, k, upper, lower, thresh,
-        dfdisp, dfnodisp, sim, n, lock, unitig_sample_file, unitig_pheno_file):
+def create_kmer_sample_map(data, raw, q, k, upper, lower, thresh,
+        dfdisp, dfnodisp, sim, n, lock, kmer_sample_file, kmer_pheno_file):
     printd('Creating kmer sample map...') 
     # get all kmers in chunk and complement them
     kmers = {}
@@ -173,21 +173,21 @@ def create_unitig_sample_map(data, raw, q, k, upper, lower, thresh,
                         if complist is not None:
                             complist[sample_id] += 1
     kmers = [(key, *v.items()) for key,v in kmers.items()]
-    printd('Finished creating unitig sample map.')
+    printd('Finished creating kmer sample map.')
     num_kmers, sample_matrix = sample_kmers(kmers, n)
     printd('Putting data in queue')
     q.put((num_kmers, sample_matrix))
     printd('Finished putting data in queue')
-    if unitig_sample_file is None and unitig_pheno_file is None:
+    if kmer_sample_file is None and kmer_pheno_file is None:
         return
+    
     # consolidate() will clear kmers list as it builds unitigs list
     # with net 0 memory gain
-    unitigs = consolidate(kmers, k)
-    kmers = None
+    kmers = consolidate(kmers, k)
     # filter_unitigs() will clear unitigs list as it builds new unitigs list
     # with net 0 memory gain
-    unitigs = filter_unitigs(unitigs, thresh, dfdisp, dfnodisp,
-        unitig_sample_file, unitig_pheno_file, lock)
+    filter_kmers(kmers, thresh, dfdisp, dfnodisp,
+        kmer_sample_file, kmer_pheno_file, lock)
     return
 
 ## combine similarity matrices from each thread into a single matrix,
@@ -225,8 +225,8 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df = df.reset_index()
     df = df[df[0] > 0] # remove the lower half of the triangle
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-    highthresh = 0.98
-    lowthresh = .35
+    highthresh = 0.998
+    lowthresh = 0.01
     # find numeric cutoff; the lowest 75% of the data are below this value
     highcutoff = df[0].quantile(highthresh)
     lowcutoff = df[0].quantile(lowthresh)
@@ -252,7 +252,7 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
             scale_factor = 2
             intercept = 0.5
         df[0] /= range_ * scale_factor
-        # rescale data to [0.5, 1] or [0.00001, 1]
+        # rescale data to [0.5, 1] or [0, 1]
         df[0] += intercept
         # create similarity histogram and save it
         try:

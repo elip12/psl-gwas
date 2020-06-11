@@ -15,7 +15,7 @@
 ##      input.
 ###############################################################################
 CONTAINS='data/preprocessed/contains_obs.txt'
-TARGET='data/preprocessed/unitigPheno_target.txt'
+TARGET='data/preprocessed/kmerPheno_target.txt'
 BLOCK='data/preprocessed/block_obs.txt'
 python3 psl-gwas/count_kmers.py "$@" \
 && python3 psl-gwas/preprocess.py "$@" \
