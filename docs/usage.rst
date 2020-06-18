@@ -92,7 +92,7 @@ Optional flags:
     -d, --debug           More verbose logging.
     -k K, --k K           Kmer length in nucleotide bases. Default: 31
     --minkf MINKF         Minimum kmer frequency used during preprocessing filtering. Default: 0.01
-    --maxkf MAXKF         Maximum kmer frequency, used during preprocessing filtering. Default: 0.95
+    --maxkf MAXKF         Maximum kmer frequency, used during preprocessing filtering. Default: 0.99
     --correlation-thresh CORRELATION_THRESH
                           Correlation threshold for filtering in preprocessing. Default: 0.5
     -p, --param           Ignore k, minkf, maxkf, and correlation-thresh options
@@ -101,4 +101,6 @@ Optional flags:
                           Labels correspond to phenos, sequences hold genes or
                           unitigs that cause the phenotype.
     --postgres DATABASE   Postgres database the default user (usually your username) can access.    
-
+    --baseline BASELINE   Optional baseline data (if you have some prior information on the strength of specific kmer, pheno associations)
+    --separate-phenos N   Separate PSL output into one file per phenotype, taking the best N kmers for each phenotype
+    --no-consolidate      Do not consolidate best N kmers for each phenotype using custom assembler. Defaults to false.
