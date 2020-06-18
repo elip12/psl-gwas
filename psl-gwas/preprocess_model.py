@@ -225,8 +225,8 @@ def similar_sample(sample_matrix, num_kmers, similarities_tsv,
     df = df.reset_index()
     df = df[df[0] > 0] # remove the lower half of the triangle
     # set threshold; 0.75 means drop lowest 75%, keep highest 25%
-    highthresh = 0.998
-    lowthresh = 0.01
+    highthresh = 0.9
+    lowthresh = 0.1
     # find numeric cutoff; the lowest 75% of the data are below this value
     highcutoff = df[0].quantile(highthresh)
     lowcutoff = df[0].quantile(lowthresh)
