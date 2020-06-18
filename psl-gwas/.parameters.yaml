@@ -12,12 +12,17 @@ k: 31
 # for each kmer, there must exist a phenotype such that the number of samples
 # with data recorded for that phenotype is greater or equal to this threshold
 #, or that kmer will be thrown out
-penetrance-thresh: 0.5
+correlation-thresh: 0.5
 
 # min and max kmer frequencies. Any kmer that occurs with greater frequency than max
 # or less frequency than min gets thrown out
 minkf: 0.01
-maxkf: 0.95
+maxkf: 0.99
 
-# classification threshhold for rounding continuous values.
-classification-thresh: 0.999
+# separate phenos into separate files, taking N best kmers for each pheno
+separate-phenos: 30000
+
+# optional param, whether or not to consolidate kmers.
+# False means kmers will be consolidated, true means they will not
+no-consolidate: false
+

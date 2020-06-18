@@ -45,18 +45,18 @@ def parse_args():
         help='basename of samples file. ex: samples.tsv')
     parser.add_argument('--pheno', required=True, type=str,
         help='basename of phenos file. ex: phenos.tsv')
-    parser.add_argument('--threads', default=4, type=int,
+    parser.add_argument('--threads', metavar='T', default=4, type=int,
         help='max number of threads used concurrently')
-    parser.add_argument('--mem', default=8, type=int,
+    parser.add_argument('--mem', metavar='M', default=8, type=int,
         help='upper memory limit (GB)')
-    parser.add_argument('-k', '--k', default=30, type=int,
+    parser.add_argument('-k', '--k', default=31, type=int,
         help='kmer length in nucleotide bases')
     parser.add_argument('--minkf', default=0.01, type=float,
         help='minimum kmer frequency')
-    parser.add_argument('--maxkf', default=0.95, type=float,
+    parser.add_argument('--maxkf', default=0.99, type=float,
         help='maximum kmer frequency')
-    parser.add_argument('--correlation-thresh', default=0.5, type=float,
-        help='penetrance threshold for filtering in preprocessing')
+    parser.add_argument('--correlation-thresh', metavar='R' default=0.5,
+        type=float, help='correlation threshold for filtering in preprocessing')
     parser.add_argument('-p', '--param', action='store_true',
         help=('ignore sample, pheno, truth, threads, mem, k, minkf, maxkf,'
             ' and thresh options and use param file in project directory'))
@@ -68,6 +68,11 @@ def parse_args():
         help=('fasta file holding baseline data for'
             'labels correspond to phenos, sequences hold genes or kmers'
             'that you suspect cause the phenotype'))
+    parser.add_argument('--separate-phenos', type=int, metavar='N', default=30000,
+        help=('separate phenos into separate files,'
+            'taking N best kmers for each pheno'))
+    parser.add_argument('--no-consolidate', action='store_true', default=False
+        help='do not consolidate best N kmers for each pheno (not recommended)')
     args = parser.parse_args()
     global DEBUG
     DEBUG = args.debug

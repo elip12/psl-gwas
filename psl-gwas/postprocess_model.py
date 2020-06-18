@@ -1,21 +1,23 @@
-from sys import argv
-from os.path import basename
+from os.path import basename, join
 import pandas as pd
+from utility import printd, write_list
 
-"""
-This script takes in a file holding newline separated kmers.
-It loops through all pairs of kmers, and if two kmers share a significant
-portion of their sequence, it consolidates them into a single kmer.
+def process(data, lock, pim, kim_file, thresh, fsa_file, scored_kmers_file):
+    kim = load_pickle(kim_file)
+    chunk = []
+    for line in data:
+        linelist = line.split()
+        if float(linelist[2]) < thresh:
+            continue
+        outline = (kim[int(linelist[0])], pim[int(linelist[1])], linelist[2])
+        chunk.append(outline)
+    kmers = [f'>{i}\n{line[0]}' for i, line in enumerate(chunk)]
+    values = ['\t'.join(tup) for tup in chunk]
+    write_files(lock,
+        (values, scored_kmers_file),
+        (kmers, fsa_file))
 
-Max value of K is 30, since no kmer will be shorter than 30 kmers
-Min value of K I set to 20, which seems to be a nice number. You can
-check how many kmers get consolidated at each value of k, and for
-ceftazidime, there is no difference between min k of 22 and min k of 10.
-Anything under 10 has a high enough probability of randomly matching that I
-dont want to look at it.
-"""
-
-def consolidate(data, k, p=False):
+def consolidate_model(data, k, p=False):
     for i, (unitig1, ranks1) in enumerate(data):
         for j in range(i + 1, len(data)):
             unitig2, ranks2 = data[j]
@@ -42,23 +44,26 @@ def consolidate(data, k, p=False):
     return [d for d in data if d is not None]
 
 
-def main():
-    name = basename(argv[1])
-    unitigs = pd.read_csv(argv[1], sep='\t', index_col=0)
+def consolidate(name, unitigs, outdir):
     unitigs = list(unitigs.iloc[:, 0])
     unitigs = [(u, [1/(i+1)]) for i, u in enumerate(unitigs)]
-    print('Original num kmers:', len(unitigs))
+    printd('Original num kmers:', len(unitigs))
     for k in range(30, 20, -1):
-        unitigs = consolidate(unitigs, k, p=False)
-        #print(len(unitigs))
-    print('Final num kmers:', len(unitigs))
+        unitigs = consolidate_model(unitigs, k, p=False)
+        printd(f'K: {k}, num kmers: {len(unitigs)}')
+    printd('Final num kmers:', len(unitigs))
     unitigs = [(unitig, 1 / (sum(ranks) / len(ranks))) for unitig, ranks in unitigs]
     unitigs = sorted(unitigs, key=lambda x: x[1])
     unitigs = [u[0] for u in unitigs]
-    with open(f'{argv[2]}/{name}', 'w') as f:
-        for u in unitigs:
-            f.write(u + '\n')
-        #print(u)
+    write_list(unitigs, join(outdir, name))
 
-
-main()
+def separate_phenos(infile, outdir, n, no_consolidate=False)
+df = pd.read_csv(infile, sep='\t', header=None)
+for col in df[1].unique():
+    dfcol = df[df[1] == col]
+    dfcol = dfcol.nlargest(n, columns=2)
+    name = f'psl.{col.lower()}'
+    if no_consolidate:
+        dfcol.to_csv(join(outdir, name), sep='\t')
+    else:
+        consolidate(name, dfcol, outdir)

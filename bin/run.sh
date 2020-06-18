@@ -151,6 +151,13 @@ while (( "$#" )) ; do
             check_usage "--baseline" $2
             pre_opts+=("--baseline" "$2")
             shift 2;;
+        --no-consolidate)
+            pre_opts+=("--no-consolidate")
+            shift;;
+        --separate-phenos)
+            check_usage "--separate-phenos" $2
+            pre_opts+=("--separate_phenos" "$2")
+            shift 2;;
         --) shift;;
         *) echo "Invalid argument: $1" ; exit 1;;
     esac
