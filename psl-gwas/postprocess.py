@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+###############################################################################
+##  postprocess.py
+##  This script separates the scored kmers into one file per phenotype,
+##  then optionally consolidates the best kmers.
+###############################################################################
 from utility import process_file, write_list, parse_args, load_pickle, \
 get_params, file_exists, write_files
 from multiprocessing import Manager

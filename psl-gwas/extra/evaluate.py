@@ -102,9 +102,9 @@ def main():
     error = compute_precision(kmers, truths, pheno)
     print(f'Precision ({pheno}) (kmers):\t{error}')
     genes_missed = compute_recall(kmers, truths, pheno)
-    print(f'Recall ({pheno}) (genes):\t{genes_missed}')
+    print(f'Hits ({pheno}) (genes):\t{genes_missed}')
     rank = compute_rank_of_1st_hit(kmers, truths, pheno)
-    print(f'MMR ({pheno}):\t{rank}')
+    print(f'MRR ({pheno}):\t{rank}')
 
 if __name__ == '__main__':
     main()

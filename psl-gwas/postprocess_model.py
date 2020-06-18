@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+###############################################################################
+##  postprocess_model.py
+##  This file provides helper functions for the postprocessing stage. 
+###############################################################################
 from os.path import basename, join
 import pandas as pd
 from utility import printd, write_list
