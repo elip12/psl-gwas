@@ -27,7 +27,7 @@ The base PSL model (defined in ``<project>/gwas.psl``) has the following rules:
     This is more tailored toward finding causal genes. An extreme example of this could
     be two bacteria of two different species that share almost no chromosomal DNA but
     share a phenotype-causing plasmid.
-7.  !DissimilarSample(S1, S2) & SamplePheno(S1, P) & SamplePheno(S2, P) & Contains(S1, K) & Contains(S2, K) & (S1 != S2) >> !KmerPheno(K, P) ^2
+7. !DissimilarSample(S1, S2) & SamplePheno(S1, P) & SamplePheno(S2, P) & Contains(S1, K) & Contains(S2, K) & (S1 != S2) >> !KmerPheno(K, P) ^2
     This is the opposite of the above rule; it serves to lower the confidence scores
     of kmers that appear in highly related samples. 
 8. !KmerPheno(K, P)
