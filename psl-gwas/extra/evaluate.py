@@ -12,13 +12,15 @@ def create_truths_dict(truths_infile):
     pim_code = None
     for line in lines:
         if line.startswith('>'):
-            phenos = line.rstrip().split('_')[1:]
+            phenos = line.rstrip().split('_')
+            name = phenos[0]
+            phenos = phenos[1:]
             for pheno in phenos:
                 if pheno not in truths:
                     truths[pheno] = []
         elif phenos is not None:
             for pheno in phenos:
-                truths[pheno].append(line.rstrip())
+                truths[pheno].append((name, line.rstrip()))
     return truths
 
 def chunkify(unitig):
@@ -35,7 +37,7 @@ def unitig_in_truths(unitig, truths, pheno):
     seqs = truths.get(pheno, None)
     if seqs is None:
         return False
-    for seq in seqs:
+    for name, seq in seqs:
         if len(unitig) > 60:
             for unitigchunk in chunkify(unitig):
                 comp = complement(unitigchunk)
@@ -48,10 +50,11 @@ def unitig_in_truths(unitig, truths, pheno):
     return False
 
 
-def get_kmers(pyseer_output):
+def get_kmers(pyseer_output, n):
     kmers = []
     with open(pyseer_output, 'r') as f:
         lines = f.readlines()
+    lines = lines[:n]
     for line in lines:
         for word in line.split():#','):
             if set(word.rstrip()) == set('ATCG'):
@@ -72,10 +75,11 @@ def kmer_in_gene(kmer, gene):
 
 def compute_recall(kmers, truths, pheno):
     genes_covered = 0
-    for gene in truths[pheno]:
+    for name, gene in truths[pheno]:
         for kmer in kmers:
             if kmer_in_gene(kmer, gene):
                 genes_covered += 1
+                print(name)
                 break
     rec = genes_covered / len(truths[pheno])
     return round(rec, 5)
@@ -98,7 +102,7 @@ def main():
     pyseer_output = argv[2]
     pheno = pyseer_output.split('.')[1].capitalize()
     truths = create_truths_dict(truths_infile)
-    kmers = get_kmers(pyseer_output)
+    kmers = get_kmers(pyseer_output, int(argv[3]))
     error = compute_precision(kmers, truths, pheno)
     print(f'Precision ({pheno}) (kmers):\t{error}')
     genes_missed = compute_recall(kmers, truths, pheno)
