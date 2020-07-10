@@ -18,10 +18,13 @@ We provide example data to allow you to replicate the results of `Pandolfo et al
 
 In ``example/data/postprocessed/`` you will see one file for each phenotype, holding the highest-ranking *k*-mers.
 
-To evaluate the results, you can ``head`` one of the files and use the included evaluation script.
+To evaluate the results, you can use the included evaluation script. The first argument
+is the path to the truth data, the second is the path to output *k*-mers, and the third
+is the number of *k*-mers to use when evaluating.
 
 .. code-block:: bash
 
-    head -10 example/data/postprocessed/psl.tobramycin > example/data/postprocessed/psl.tobramycin.head10
-    python3 psl-gwas/extra/evaluate.py example/data/raw/truths.fa example/data/postprocessed/psl.tobramycin.head10
+    python3 psl-gwas/extra/evaluate.py example/data/raw/truths.fa example/data/postprocessed/psl.tobramycin 10
 
+This invocation will compute and print the precision, hits, and recirpocal rank of the first hit, as well
+as printing out the annotations of the specific truth sequences identified.

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 import pandas as pd
 import numpy as np
 from utility import load_pickle, dump_pickle
